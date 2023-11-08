@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Flappy", "Flappy\Flappy.vcxproj", "{6104E868-E198-4E6E-94DF-535455D794AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC} = {A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6104E868-E198-4E6E-94DF-535455D794AA}.Debug|x64.ActiveCfg = Debug|x64
+		{6104E868-E198-4E6E-94DF-535455D794AA}.Debug|x64.Build.0 = Debug|x64
+		{6104E868-E198-4E6E-94DF-535455D794AA}.Release|x64.ActiveCfg = Release|x64
+		{6104E868-E198-4E6E-94DF-535455D794AA}.Release|x64.Build.0 = Release|x64
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Debug|x64.ActiveCfg = Debug|x64
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Debug|x64.Build.0 = Debug|x64
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Release|x64.ActiveCfg = Release|x64
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA5E9D1C-E035-4191-82B3-A5DB7E306C2D}
+	EndGlobalSection
+EndGlobal
