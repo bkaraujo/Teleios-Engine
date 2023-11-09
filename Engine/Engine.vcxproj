@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -46,15 +46,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\bin\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)build\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>teleios</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;TELEIOS_EXPORT;TELEIOS_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,6 +80,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\stb\image.h" />
+    <ClInclude Include="src\teleios\defines.h" />
+    <ClInclude Include="src\teleios\engine.h" />
+    <ClInclude Include="src\teleios\enty.h" />
+    <ClInclude Include="src\teleios\logger.h" />
+    <ClInclude Include="src\teleios\platform\console.h" />
+    <ClInclude Include="src\teleios\platform\detector.h" />
+    <ClInclude Include="src\teleios\platform\manager.h" />
+    <ClInclude Include="src\teleios\platform\memory.h" />
+    <ClInclude Include="src\teleios\platform\winapi\externals.h" />
+    <ClInclude Include="src\teleios\sring.h" />
+    <ClInclude Include="src\teleios\types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\stb\image.c" />
+    <ClCompile Include="src\teleios\engine.c" />
+    <ClCompile Include="src\teleios\logger.c" />
+    <ClCompile Include="src\teleios\platform\winapi\console.c" />
+    <ClCompile Include="src\teleios\platform\winapi\manager.c" />
+    <ClCompile Include="src\teleios\platform\winapi\memory.c" />
+    <ClCompile Include="src\teleios\platform\winapi\time.c" />
+    <ClCompile Include="src\teleios\platform\winapi\window.c" />
+    <ClCompile Include="src\teleios\string.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
