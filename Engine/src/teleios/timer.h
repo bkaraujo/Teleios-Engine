@@ -1,0 +1,11 @@
+#ifndef TELEIOS_TIMER_H
+#define TELEIOS_TIMER_H
+
+#include "teleios/types.h"
+
+void tl_timer_begin(TLTimer* timer);
+void tl_timer_reset(TLTimer* timer);
+void tl_timer_update(TLTimer* timer);
+u64 tl_timer_micros(TLTimer* timer);
+
+#endif // TELEIOS_TIMER_H

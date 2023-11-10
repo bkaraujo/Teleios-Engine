@@ -18,7 +18,7 @@
     <ClInclude Include="src\stb\image.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\enty.h">
+    <ClInclude Include="src\teleios\entry.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\types.h">
@@ -48,10 +48,19 @@
     <ClInclude Include="src\teleios\platform\memory.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\platform\winapi\externals.h">
+    <ClInclude Include="src\teleios\platform\time.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\platform\time.h">
+    <ClInclude Include="src\teleios\timer.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\memory\allocator.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\memory\manager.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\platform\window.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,19 +77,10 @@
     <ClCompile Include="src\teleios\string.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="src\teleios\platform\winapi\manager.c">
+    <ClCompile Include="src\teleios\memory\memory.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="src\teleios\platform\winapi\time.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="src\teleios\platform\winapi\memory.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="src\teleios\platform\winapi\window.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="src\teleios\platform\winapi\console.c">
+    <ClCompile Include="src\teleios\platform\winapi.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

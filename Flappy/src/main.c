@@ -1,1 +1,1 @@
-#include <teleios/enty.h>
+#include <teleios/entry.h>

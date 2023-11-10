@@ -31,4 +31,4 @@
 # error "Unknown platform!"
 #endif
 
-#endif
+#endif // TELEIOS_PLATFORM_DETECTOR_H

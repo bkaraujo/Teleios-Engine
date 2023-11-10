@@ -21,14 +21,42 @@ typedef signed char         b8;
 #define true                1
 #define false               0
 
+#define KiB(b)       (b * 1024)
+#define MiB(b)       (KiB(b) * 1024)
+#define GiB(b)       (MiB(b) * 1024)
+
 typedef struct {
   u16 year;
-  u8 month;
-  u8 day;
+  u8  month;
+  u8  day;
   u8  hour;
-  u8 minute;
-  u8 second;
+  u8  minute;
+  u8  second;
   u16 milliseconds;
 } TLDateTime;
+
+typedef struct {
+  u64 start;
+  u64 current;
+} TLTimer;
+
+typedef enum {
+  TL_MEMORY_TYPE_OBJECT,
+  TL_MEMORY_TYPE_SCENE,
+  TL_MEMORY_TYPE_REGION,
+  TL_MEMORY_TYPE_LAYER,
+  TL_MEMORY_TYPE_ENTITY,
+  TL_MEMORY_TYPE_COMPONENT,
+
+  TL_MEMORY_TYPE_MAXIMUM
+} TLEMemoryType;
+
+typedef struct {
+  const char identity[38];
+  const u8 refs;
+  const u64 allocated;
+  const TLEMemoryType type;
+  void* pointer;
+} TLObject;
 
 #endif // TELEIOS_TYPES_H
