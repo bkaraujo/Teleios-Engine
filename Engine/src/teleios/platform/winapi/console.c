@@ -34,14 +34,16 @@ void tl_platform_stdout(u8 level, const char* message) {
   // Backup console screen buffer info
   CONSOLE_SCREEN_BUFFER_INFO csbi; 
   GetConsoleScreenBufferInfo(hconsole, &csbi);
+  // transforme the ansi to utf8
   i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, message, -1, NULL, 0);
   u16* utf8 = _malloca(sizeof(u16) * needed);
   MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, message, -1, utf8, needed);
   
+  // Apply the console color and print the message
   SetConsoleTextAttribute(hconsole, levels[level]);
   WriteConsole(hconsole, utf8, needed, NULL, 0);
+  
+  // Free and Restore resources
   _freea(utf8);
-
-  // Restore console screen buffer info
   SetConsoleTextAttribute(hconsole, csbi.wAttributes);
 }

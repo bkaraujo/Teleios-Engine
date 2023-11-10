@@ -1,6 +1,7 @@
 #include "teleios/platform/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
+#include "teleios/platform/time.h"
 
 TLAPI b8 tl_engine_pre_initialize(void) {
   if (!tl_platform_initialize()) {
@@ -11,16 +12,15 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 }
 
 TLAPI b8 tl_engine_initialize(void) {
-  TLTRACE("Trace");
-  TLDEBUG("Trace");
-  TLINFO("Trace");
-  TLWARN("Trace");
-  TLERROR("Trace");
-  TLFATAL("Trace");
   return true;
 }
 
 TLAPI b8 tl_engine_run(void) {
+  while (true) {
+    TLINFO("tl_platform_time_epoch: %u", tl_platform_time_epoch());
+
+    tl_platform_update();
+  }
   return true;
 }
 

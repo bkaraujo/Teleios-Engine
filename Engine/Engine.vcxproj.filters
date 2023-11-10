@@ -51,6 +51,9 @@
     <ClInclude Include="src\teleios\platform\winapi\externals.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\platform\time.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stb\image.c">

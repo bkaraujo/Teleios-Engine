@@ -1,6 +1,8 @@
 #ifndef TELEIOS_TYPES_H
 #define TELEIOS_TYPES_H
 
+#include <stddef.h>
+
 typedef unsigned char       u8;
 typedef unsigned short      u16;
 typedef unsigned int        u32;
@@ -18,6 +20,15 @@ typedef signed char         b8;
 
 #define true                1
 #define false               0
-#define null                ((char *)0)
+
+typedef struct {
+  u16 year;
+  u8 month;
+  u8 day;
+  u8  hour;
+  u8 minute;
+  u8 second;
+  u16 milliseconds;
+} TLDateTime;
 
 #endif // TELEIOS_TYPES_H
