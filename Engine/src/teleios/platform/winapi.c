@@ -2,6 +2,7 @@
 
 #ifdef TELEIOS_PLATFORM_WINDOWS
 #include <Windows.h>
+#include <malloc.h>
 
 #include "teleios/logger.h"
 
@@ -44,7 +45,6 @@ void tl_platform_memory_set(const void* target, i32 value, u64 size) {
 //
 // ##############################################################################################
 #include "teleios/platform/console.h"
-#include <malloc.h>
 
 static HANDLE hconsole;
 
@@ -182,9 +182,9 @@ u64 tl_timer_micros(TLTimer* timer) {
 //
 // ##############################################################################################
 #include "teleios/platform/window.h"
-#include "teleios/sring.h"
 #include <stdarg.h>
 #include <stdio.h>
+
 static HWND hwnd;
 
 b8 tl_platform_window_create(TLSpecification* spec) {
@@ -210,9 +210,9 @@ b8 tl_platform_window_create(TLSpecification* spec) {
   u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
   u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
 
-  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, tl_string_length(spec->name), NULL, 0);
+  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, -1, NULL, 0);
   u16* utf8 = _malloca(sizeof(u16) * needed);
-  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, tl_string_length(spec->name), utf8, needed);
+  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, -1, utf8, needed);
 
   hwnd = CreateWindowEx(
     window_ex_style, 
