@@ -87,6 +87,9 @@
     <ClInclude Include="src\teleios\logger.h" />
     <ClInclude Include="src\teleios\memory\manager.h" />
     <ClInclude Include="src\teleios\memory\allocator.h" />
+    <ClInclude Include="src\teleios\object\reference.h" />
+    <ClInclude Include="src\teleios\object\factory.h" />
+    <ClInclude Include="src\teleios\object\comparator.h" />
     <ClInclude Include="src\teleios\platform\console.h" />
     <ClInclude Include="src\teleios\platform\detector.h" />
     <ClInclude Include="src\teleios\platform\manager.h" />
@@ -102,6 +105,7 @@
     <ClCompile Include="src\teleios\engine.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory\memory.c" />
+    <ClCompile Include="src\teleios\object\object.c" />
     <ClCompile Include="src\teleios\platform\winapi.c" />
     <ClCompile Include="src\teleios\string.c" />
   </ItemGroup>

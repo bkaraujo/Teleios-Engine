@@ -42,21 +42,21 @@ typedef struct {
 
 typedef enum {
   TL_MEMORY_TYPE_OBJECT,
-  TL_MEMORY_TYPE_SCENE,
-  TL_MEMORY_TYPE_REGION,
-  TL_MEMORY_TYPE_LAYER,
-  TL_MEMORY_TYPE_ENTITY,
-  TL_MEMORY_TYPE_COMPONENT,
-
+  TL_MEMORY_TYPE_OBJECT_DEFINED,
   TL_MEMORY_TYPE_MAXIMUM
 } TLEMemoryType;
 
 typedef struct {
+  /* General Data */
+  const char* name;
   const char identity[38];
   const u8 refs;
-  const u64 allocated;
-  const TLEMemoryType type;
-  void* pointer;
+  
+  /* Particular Data */
+  const void* pointer;
+  const u64 stride;
+  void (*destructor)(const void*);
+
 } TLObject;
 
 #endif // TELEIOS_TYPES_H
