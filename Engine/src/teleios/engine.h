@@ -4,9 +4,11 @@
 #include "teleios/defines.h"
 #include "teleios/types.h"
 
-TLAPI b8 tl_engine_pre_initialize(void);
-TLAPI b8 tl_engine_initialize(void);
-TLAPI b8 tl_engine_run(void);
-TLAPI b8 tl_engine_terminate(void);
+// TODO: TLAPI when moving back to DLL
+
+b8 tl_engine_pre_initialize(void);
+b8 tl_engine_initialize(void);
+b8 tl_engine_run(void);
+b8 tl_engine_terminate(void);
 
 #endif // TELEIOS_ENGINE_H

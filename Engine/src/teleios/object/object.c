@@ -28,7 +28,7 @@ TLAPI TLObject* tl_object_create(const char* name, const u64 stride, void (*dest
 
   *((u8*)&object->refs) = 1;
   *((u64*)&object->stride) = stride;
-  *((char*)&object->name) = name;
+  object->name = name;
 
   for (unsigned i = 0; i < 37; ++i) {
     *((i8*)&object->identity[i]) = UUID[rand() % 16];
@@ -43,10 +43,6 @@ TLAPI TLObject* tl_object_create(const char* name, const u64 stride, void (*dest
   object->destructor = destructor;
 
   return object;
-}
-
-TLAPI b8 tl_object_destroy(const TLObject* object) {
-
 }
 
 // ################################################################################

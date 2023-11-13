@@ -1,10 +1,11 @@
 #include "teleios/platform/manager.h"
 #include "teleios/memory/manager.h"
+#include "teleios/event/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
 #include "teleios/timer.h"
 
-TLAPI b8 tl_engine_pre_initialize(void) {
+b8 tl_engine_pre_initialize(void) {
   if (!tl_platform_initialize()) {
     TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
     return false;
@@ -17,21 +18,26 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 
   return true;
 }
-TLAPI b8 tl_engine_initialize(void) {
+
+b8 tl_engine_initialize(void) {
+  if (!tl_event_initialize()) {
+    TLERROR("tl_engine_initialize: Failed to initialize the event manager");
+    return false;
+  }
+
   return true;
 }
 
-TLAPI b8 tl_engine_run(void) {
+b8 tl_engine_run(void) {
   TLTimer timer; tl_timer_begin(&timer);
   
   u64 fps = 0;
   u64 ups = 0;
 
-  while (true) {
+  //while (true) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame initialization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    
 
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // CPU-bounded Rotines
@@ -57,13 +63,18 @@ TLAPI b8 tl_engine_run(void) {
       tl_timer_reset(&timer);
     
       fps = 0;
-    }
+    //}
   }
 
   return true;
 }
 
-TLAPI b8 tl_engine_terminate(void) {
+b8 tl_engine_terminate(void) {
+  if (!tl_event_terminate()) {
+    TLERROR("tl_engine_terminate: Failed to terminate the event manager");
+    return false;
+  }
+
   if (!tl_memory_terminate()) {
     TLERROR("tl_engine_terminate: Failed to terminate the memory manager");
     return false;
