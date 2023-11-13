@@ -81,6 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\stb\image.h" />
+    <ClInclude Include="src\teleios\application.h" />
     <ClInclude Include="src\teleios\container.h" />
     <ClInclude Include="src\teleios\defines.h" />
     <ClInclude Include="src\teleios\engine.h" />

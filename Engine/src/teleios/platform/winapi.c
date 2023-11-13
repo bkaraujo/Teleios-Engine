@@ -75,7 +75,6 @@ static const u8 levels[6] = {
 };
 
 void tl_platform_stdout(u8 level, const char* message) {
-
   // Backup console screen buffer info
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   GetConsoleScreenBufferInfo(hconsole, &csbi);
@@ -183,9 +182,95 @@ u64 tl_timer_micros(TLTimer* timer) {
 //
 // ##############################################################################################
 #include "teleios/platform/window.h"
-
+#include "teleios/sring.h"
+#include <stdarg.h>
+#include <stdio.h>
 static HWND hwnd;
 
+b8 tl_platform_window_create(TLSpecification* spec) {
+  u32 window_width = spec->window.witdh;
+  u32 window_height = spec->window.height;
+
+  u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
+  u32 window_ex_style = WS_EX_APPWINDOW;
+
+  window_style |= WS_MAXIMIZEBOX;
+  window_style |= WS_MINIMIZEBOX;
+  window_style |= WS_THICKFRAME;
+
+  // Obtain the size of the border.
+  RECT border_rect = { 0, 0, 0, 0 };
+  AdjustWindowRectEx(&border_rect, window_style, false, window_ex_style);
+
+  // Ensure border doesn't overlap with desired content area
+  window_width += border_rect.right - border_rect.left;
+  window_height += border_rect.bottom - border_rect.top;
+
+  // Centralize the window
+  u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
+  u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
+
+  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, tl_string_length(spec->name), NULL, 0);
+  u16* utf8 = _malloca(sizeof(u16) * needed);
+  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, tl_string_length(spec->name), utf8, needed);
+
+  hwnd = CreateWindowEx(
+    window_ex_style, 
+    TEXT("teleios_window_class"), 
+    utf8,
+    window_style, 
+    window_x, window_y, 
+    window_width, window_height,
+    0, 
+    0, 
+    hinstance, 
+    0
+  );
+
+  // Free and Restore resources
+  _freea(utf8);
+
+  if (hwnd == NULL) {
+    TLERROR("tl_platform_window_create: Failed to create window 0x%x", GetLastError());
+    return false;
+  }
+
+  return true;
+}
+
+void tl_platform_window_show(void) {
+  if (hwnd == NULL) return;
+  ShowWindow(hwnd, SW_SHOW);
+}
+
+void tl_platform_window_hide(void) {
+  if (hwnd == NULL) return;
+  ShowWindow(hwnd, SW_HIDE);
+
+}
+
+static char intermediate[80];
+void tl_platform_window_set_title(const char* title, ...) {
+  va_list parameters; va_start(parameters, title);
+  vsnprintf(intermediate, 80, title, parameters);
+  va_end(parameters);
+
+  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, intermediate, -1, NULL, 0);
+  u16* utf8 = _malloca(sizeof(u16) * needed);
+  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, intermediate, -1, utf8, needed);
+  SetWindowText(hwnd, utf8);
+  _freea(utf8);
+}
+
+LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
+  switch (msg) {
+    case WM_CLOSE:
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+  }
+  return DefWindowProcA(hwnd, msg, wParam, lParam);
+}
 // ##############################################################################################
 //
 //                                        MANAGER
@@ -193,12 +278,28 @@ static HWND hwnd;
 // ##############################################################################################
 #include "teleios/platform/manager.h"
 
-b8 tl_platform_initialize(void) {
+b8 tl_platform_initialize(TLSpecification* spec) {
   QueryPerformanceFrequency(&frequency);
 
   hinstance = GetModuleHandle(NULL);
   hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  heap = HeapCreate(HEAP_NO_SERIALIZE, GiB(1), 0);
+  heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
+
+  WNDCLASS wc       = { 0 };
+  wc.style          = CS_DBLCLKS;
+  wc.lpfnWndProc    = tl_platform_window_procedure;
+  wc.cbClsExtra     = 0;
+  wc.cbWndExtra     = 0;
+  wc.hInstance      = hinstance;
+  wc.hIcon          = LoadIcon(hinstance, IDI_APPLICATION);
+  wc.hCursor        = LoadCursor(NULL, IDC_ARROW);  
+  wc.hbrBackground  = NULL;                   
+  wc.lpszClassName  = TEXT("teleios_window_class");
+
+  if (!RegisterClass(&wc)) {
+    TLERROR("tl_platform_initialize: Failed to RegisterClass 0x%x", GetLastError());
+    return false;
+  }
 
   return true;
 }

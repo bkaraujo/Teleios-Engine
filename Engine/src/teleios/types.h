@@ -111,4 +111,13 @@ typedef struct {
 
 } TLObject;
 
+typedef struct {
+  const char* name;
+
+  struct {
+    u32 witdh;
+    u32 height;
+  } window;
+} TLSpecification;
+
 #endif // TELEIOS_TYPES_H

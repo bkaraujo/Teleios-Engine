@@ -1,12 +1,13 @@
 #include "teleios/platform/manager.h"
+#include "teleios/platform/window.h"
 #include "teleios/memory/manager.h"
 #include "teleios/event/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
 #include "teleios/timer.h"
 
-b8 tl_engine_pre_initialize(void) {
-  if (!tl_platform_initialize()) {
+b8 tl_engine_pre_initialize(TLSpecification* spec) {
+  if (!tl_platform_initialize(spec)) {
     TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
     return false;
   }
@@ -19,9 +20,14 @@ b8 tl_engine_pre_initialize(void) {
   return true;
 }
 
-b8 tl_engine_initialize(void) {
+b8 tl_engine_initialize(TLSpecification* spec) {
   if (!tl_event_initialize()) {
     TLERROR("tl_engine_initialize: Failed to initialize the event manager");
+    return false;
+  }
+
+  if (!tl_platform_window_create(spec)) {
+    TLERROR("tl_engine_initialize: Failed create window");
     return false;
   }
 
@@ -34,7 +40,8 @@ b8 tl_engine_run(void) {
   u64 fps = 0;
   u64 ups = 0;
 
-  //while (true) {
+  tl_platform_window_show();
+  while (true) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame initialization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -60,12 +67,14 @@ b8 tl_engine_run(void) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     if (timer.current > 10000000) {
       TLDEBUG("FPS %llu", fps);
+      tl_platform_window_set_title("FPS %llu", fps);
       tl_timer_reset(&timer);
     
       fps = 0;
-    //}
+    }
   }
 
+  tl_platform_window_hide();
   return true;
 }
 

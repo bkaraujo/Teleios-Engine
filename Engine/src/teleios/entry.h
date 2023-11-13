@@ -4,8 +4,14 @@
 #include "teleios/engine.h"
 
 int main(int argc, char** argv) {
-  if (!tl_engine_pre_initialize()) return -1;
-  if (!tl_engine_initialize()) return -1;
+  TLSpecification spec = { 0 };
+  
+  spec.name = "Teleios APP";
+  spec.window.witdh = 640;
+  spec.window.height = 480;
+
+  if (!tl_engine_pre_initialize(&spec)) return -1;
+  if (!tl_engine_initialize(&spec)) return -1;
   if (!tl_engine_run()) return -1;
   if (!tl_engine_terminate()) return -1;
 
