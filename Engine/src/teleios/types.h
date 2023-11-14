@@ -48,7 +48,10 @@ typedef enum {
   TL_MEMORY_TYPE_MAXIMUM
 } TLEMemoryType;
 
-typedef struct event_context {
+#define TL_EVENT_STOP true
+#define TL_EVENT_CONTINUE false
+
+typedef struct {
   // 128 bytes
   union {
     i64 i64[2];

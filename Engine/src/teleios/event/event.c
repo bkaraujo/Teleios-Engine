@@ -42,9 +42,26 @@ b8 tl_event_terminate(void) {
 //
 // ##############################################################################################
 #include "teleios/event/subcriber.h"
+#include "teleios/event/codes.h"
 
-void tl_event_subscribe(u8 code, PFN_EventHandler handler) {
-  tl_list_append(list[code], handler);
+b8 tl_event_subscribe(u8 code, PFN_EventHandler handler) {
+  if (code != TL_EVENT_CODE_MAXIMUM) {
+    if (!tl_list_append(list[code], handler)) {
+      TLERROR("tl_event_subscribe: Failed to subscribe for event %d", code);
+      return false;
+    }
+
+    return true;
+  }
+
+  for (unsigned i = 0; i < U8MAX; ++i) {
+    if (!tl_list_append(list[i], handler)) {
+      TLERROR("tl_event_subscribe: Failed to subscribe for event %d", i);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // ##############################################################################################
@@ -58,7 +75,7 @@ void tl_event_fire(u8 code, TLEvent* event) {
   TLNode* current = list[code]->head;
   while (current != NULL) {
     PFN_EventHandler handler = current->payload;
-    if (!handler(event)) {
+    if (!handler(code, event)) {
       break;
     }
 

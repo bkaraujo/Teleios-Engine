@@ -2,9 +2,13 @@
 #include "teleios/platform/window.h"
 #include "teleios/memory/manager.h"
 #include "teleios/event/manager.h"
+#include "teleios/event/subcriber.h"
+#include "teleios/event/codes.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
 #include "teleios/timer.h"
+
+static b8 running = true;
 
 b8 tl_engine_pre_initialize(TLSpecification* spec) {
   if (!tl_platform_initialize(spec)) {
@@ -20,9 +24,22 @@ b8 tl_engine_pre_initialize(TLSpecification* spec) {
   return true;
 }
 
+b8 tl_engine_eventhandler(u8 code, TLEvent* event) {
+  if (code == TL_EVENT_CODE_APPLICATION_QUIT) {
+    running = false;
+  }
+
+  return TL_EVENT_CONTINUE;
+}
+
 b8 tl_engine_initialize(TLSpecification* spec) {
   if (!tl_event_initialize()) {
     TLERROR("tl_engine_initialize: Failed to initialize the event manager");
+    return false;
+  }
+
+  if (!tl_event_subscribe(TL_EVENT_CODE_MAXIMUM, tl_engine_eventhandler)) {
+    TLERROR("tl_engine_initialize: Failed to register tl_engine_eventhandler");
     return false;
   }
 
@@ -41,7 +58,7 @@ b8 tl_engine_run(void) {
   u64 ups = 0;
 
   tl_platform_window_show();
-  while (true) {
+  while (running) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame initialization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
