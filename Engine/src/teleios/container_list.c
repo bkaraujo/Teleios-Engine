@@ -47,6 +47,107 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload) {
   return true;
 }
 
+TLAPI b8 tl_list_remove_payload(TLList* list, const void* payload) {
+  if (list == NULL) {
+    TLERROR("tl_list_remove_payload: list is null");
+    return false;
+  }
+
+  if (payload == NULL) {
+    TLERROR("tl_list_remove_payload: payload is null");
+    return false;
+  }
+
+  switch (list->size) {
+    case 0: 
+      TLWARN("tl_list_remove_payload: Trying to remove content from a empty list");
+      return false;
+
+    case 1:
+      if (list->head->payload != payload)
+        return false;
+
+      tl_memory_free(list->head, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+      list->head = NULL;
+      list->tail = NULL;
+      list->size--;
+      return true;
+
+    default:
+      if (list->head->payload == payload) {
+        TLNode* next = list->head->next;
+        
+        list->size--;
+        tl_memory_free(list->head, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+        list->head = next;
+        
+        return true;
+      }
+
+      if (list->tail->payload == payload) {
+        TLNode* previous = list->tail->previous;
+        previous->next = NULL;
+        
+        list->size--;
+        tl_memory_free(list->tail, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+        list->tail = previous;
+        
+        return true;
+      }
+
+      TLNode* current = list->head;
+      while (current != NULL) {
+        TLNode* next = current->next;
+        if (current->payload != payload) {
+          current = next;
+          continue;
+        }
+
+        list->size--;
+        current->previous->next = current->next;
+        tl_memory_free(current, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+      }
+
+      return true;
+  }
+
+  return false;
+}
+
+TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
+  if (list == NULL) {
+    TLERROR("tl_list_remove_node: list is null");
+    return false;
+  }
+
+  if (node == NULL) {
+    TLERROR("tl_list_remove_node: payload is null");
+    return false;
+  }
+
+  if (node == list->head) {
+    list->size--;
+    list->head = node->next;
+    tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+
+    return true;
+  }
+
+  if (node == list->tail) {
+    list->size--;
+    list->tail = node->previous;
+    tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+
+    return true;
+  }
+
+  list->size--;
+  node->previous->next = node->next;
+  tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+
+  return true;
+}
+
 TLAPI b8 tl_list_clear(TLList* list, b8 (*dealocator)(const void* payload)) {
   if (list == NULL) {
     TLERROR("tl_list_clear: list is null");

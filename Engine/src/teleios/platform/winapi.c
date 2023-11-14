@@ -186,6 +186,7 @@ u64 tl_timer_micros(TLTimer* timer) {
 #include "teleios/event/publisher.h"
 #include <windowsx.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 static HWND hwnd;
 static b8 minimized = false;

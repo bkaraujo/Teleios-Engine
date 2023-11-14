@@ -43,6 +43,8 @@ typedef signed char         b8;
 typedef enum {
   TL_MEMORY_TYPE_CONTAINER_LIST,
   TL_MEMORY_TYPE_CONTAINER_NODE,
+  TL_MEMORY_TYPE_SCENE,
+  TL_MEMORY_TYPE_SCENE_REGION,
   TL_MEMORY_TYPE_OBJECT,
   TL_MEMORY_TYPE_OBJECT_DEFINED,
   TL_MEMORY_TYPE_MAXIMUM
@@ -102,13 +104,17 @@ typedef struct {
 } TLList;
 
 typedef struct {
+  const char identity[38];
+} TLIdentity;
+
+typedef struct {
   /* General Data */
   const char* name;
   const char identity[38];
   const u8 refs;
   
   /* Particular Data */
-  const void* pointer;
+  void* pointer;
   const u64 stride;
   void (*destructor)(const void*);
 

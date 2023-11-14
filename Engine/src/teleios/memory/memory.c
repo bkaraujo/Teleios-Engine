@@ -63,6 +63,8 @@ static const char* tl_memory_type(TLEMemoryType type) {
   switch (type) {
     case TL_MEMORY_TYPE_CONTAINER_LIST: return "TL_MEMORY_TYPE_CONTAINER_LIST";
     case TL_MEMORY_TYPE_CONTAINER_NODE: return "TL_MEMORY_TYPE_CONTAINER_NODE";
+    case TL_MEMORY_TYPE_SCENE:          return "TL_MEMORY_TYPE_SCENE         ";
+    case TL_MEMORY_TYPE_SCENE_REGION:   return "TL_MEMORY_TYPE_SCENE_REGION  ";
     case TL_MEMORY_TYPE_OBJECT:         return "TL_MEMORY_TYPE_OBJECT        ";
     case TL_MEMORY_TYPE_OBJECT_DEFINED: return "TL_MEMORY_TYPE_OBJECT_DEFINED";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";

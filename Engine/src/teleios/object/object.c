@@ -71,7 +71,7 @@ TLAPI void tl_memory_ref_increase(const TLObject* object) {
   *((u8*)&object->refs) = object->refs + 1;
 }
 
-TLAPI b8 tl_memory_ref_decrease(const TLObject* object) {
+TLAPI b8 tl_object_ref_decrease(const TLObject* object) {
   if (object == NULL) return false;
 
   *((u8*)&object->refs) = object->refs - 1;
@@ -79,6 +79,7 @@ TLAPI b8 tl_memory_ref_decrease(const TLObject* object) {
 
   if (object->destructor != NULL) object->destructor(object->pointer);
   tl_memory_free(object->pointer, TL_MEMORY_TYPE_OBJECT_DEFINED, object->stride);
+  tl_memory_free(object, TL_MEMORY_TYPE_OBJECT, OSIZE);
 
   return true;
 }

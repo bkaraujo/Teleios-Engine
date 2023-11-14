@@ -7,12 +7,14 @@
 # else
 #   define TLAPI __attribute__((visibility("default")))
 # endif
-#else
+#eleif
 # ifdef _MSC_VER
 #   define TLAPI __declspec(dllimport)
 # else
 #   define TLAPI
 # endif
+#else 
+# define TLAPI
 #endif // TELEIOS_EXPORT
 
 #endif // TELEIOS_DEFINES_H
