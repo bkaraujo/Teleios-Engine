@@ -90,6 +90,8 @@
     <ClInclude Include="src\teleios\event\manager.h" />
     <ClInclude Include="src\teleios\event\publisher.h" />
     <ClInclude Include="src\teleios\event\subcriber.h" />
+    <ClInclude Include="src\teleios\input\manager.h" />
+    <ClInclude Include="src\teleios\input\pool.h" />
     <ClInclude Include="src\teleios\logger.h" />
     <ClInclude Include="src\teleios\memory\manager.h" />
     <ClInclude Include="src\teleios\memory\allocator.h" />
@@ -111,6 +113,7 @@
     <ClCompile Include="src\teleios\container_list.c" />
     <ClCompile Include="src\teleios\engine.c" />
     <ClCompile Include="src\teleios\event\event.c" />
+    <ClCompile Include="src\teleios\input\input.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory\memory.c" />
     <ClCompile Include="src\teleios\object\object.c" />

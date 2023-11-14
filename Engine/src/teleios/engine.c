@@ -4,6 +4,7 @@
 #include "teleios/event/manager.h"
 #include "teleios/event/subcriber.h"
 #include "teleios/event/codes.h"
+#include "teleios/input/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
 #include "teleios/timer.h"
@@ -25,7 +26,7 @@ b8 tl_engine_pre_initialize(TLSpecification* spec) {
 }
 
 b8 tl_engine_eventhandler(u8 code, TLEvent* event) {
-  if (code == TL_EVENT_CODE_APPLICATION_QUIT) {
+  if (code == TL_EVENT_APPLICATION_QUIT) {
     running = false;
   }
 
@@ -38,7 +39,7 @@ b8 tl_engine_initialize(TLSpecification* spec) {
     return false;
   }
 
-  if (!tl_event_subscribe(TL_EVENT_CODE_MAXIMUM, tl_engine_eventhandler)) {
+  if (!tl_event_subscribe(TL_EVENT_MAXIMUM, tl_engine_eventhandler)) {
     TLERROR("tl_engine_initialize: Failed to register tl_engine_eventhandler");
     return false;
   }
@@ -48,9 +49,15 @@ b8 tl_engine_initialize(TLSpecification* spec) {
     return false;
   }
 
+  if (!tl_input_initialize()) {
+    TLERROR("tl_engine_initialize: Failed to initialize input manager");
+    return false;
+  }
+
   return true;
 }
-
+#include "teleios/input/pool.h"
+#include "teleios/event/publisher.h"
 b8 tl_engine_run(void) {
   TLTimer timer; tl_timer_begin(&timer);
   
@@ -67,6 +74,11 @@ b8 tl_engine_run(void) {
     // CPU-bounded Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     ups++;
+    
+    if (tl_input_key_released(TL_KEY_ESCAPE)) {
+      tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
+      continue;
+    }
 
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // GPU-bounded Rotines
@@ -76,6 +88,7 @@ b8 tl_engine_run(void) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame finalization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    tl_input_update();
     tl_platform_update();
     tl_timer_update(&timer);
 
@@ -89,6 +102,7 @@ b8 tl_engine_run(void) {
     
       fps = 0;
     }
+
   }
 
   tl_platform_window_hide();
@@ -96,6 +110,11 @@ b8 tl_engine_run(void) {
 }
 
 b8 tl_engine_terminate(void) {
+  if (!tl_input_terminate()) {
+    TLERROR("tl_engine_terminate: Failed to terminate input manager");
+    return false;
+  }
+
   if (!tl_event_terminate()) {
     TLERROR("tl_engine_terminate: Failed to terminate the event manager");
     return false;

@@ -15,7 +15,7 @@ TLAPI TLList* tl_list_create(void) {
   return list;
 }
 
-TLAPI b8 tl_list_append(TLList* list, void* payload) {
+TLAPI b8 tl_list_append(TLList* list, const void* payload) {
   if (list == NULL) {
     TLERROR("tl_list_append: list is null");
     return false;
@@ -53,17 +53,13 @@ TLAPI b8 tl_list_clear(TLList* list, b8 (*dealocator)(const void* payload)) {
     return false;
   }
 
-  if (list->size == 0) {
-    return true;
-  }
-
   if (dealocator == NULL) {
     TLERROR("tl_list_clear: dealocator is null");
     return false;
   }
 
   TLNode* current = list->head;
-  for (unsigned i = 0; i < list->size; ++i) {
+  while (current != NULL) {
     if (!dealocator(current->payload)) {
       TLERROR("tl_list_clear: Failed to dealocate TLNode->payload");
       return false;
@@ -99,7 +95,7 @@ TLAPI b8 tl_list_destroy(TLList* list) {
 
     default: {
       TLNode* current = list->head;
-      for (unsigned i = 0; i < list->size; ++i) {
+      while (current != NULL) {
         if (current->payload != NULL) {
           TLERROR("tl_list_destroy: TLNode->payload must be null");
           return false;

@@ -184,8 +184,8 @@ u64 tl_timer_micros(TLTimer* timer) {
 #include "teleios/platform/window.h"
 #include "teleios/event/codes.h"
 #include "teleios/event/publisher.h"
+#include <windowsx.h>
 #include <stdarg.h>
-#include <stdio.h>
 
 static HWND hwnd;
 static b8 minimized = false;
@@ -268,20 +268,39 @@ void tl_platform_window_set_title(const char* title, ...) {
 
 LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
+    case WM_ERASEBKGND: {
+      // Background will be handled by the graphics context
+      return 1;
+    } break;
+
     case WM_CLOSE: {
       PostQuitMessage(0);
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_APPLICATION_QUIT");
-      tl_event_fire(TL_EVENT_CODE_APPLICATION_QUIT, NULL);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_APPLICATION_QUIT");
+      tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
+      return 0;
     } break;
-    
+
+    case WM_DESTROY: {
+      PostQuitMessage(0);
+      return 0;
+    } break;
+
     case WM_SETFOCUS: {
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_FOCUS_GAINED");
-      tl_event_fire(TL_EVENT_CODE_WINDOW_FOCUS_GAINED, NULL);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_FOCUS_GAINED");
+      tl_event_fire(TL_EVENT_WINDOW_FOCUS_GAINED, NULL);
     } break;
     
     case WM_KILLFOCUS: {
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_FOCUS_LOST");
-      tl_event_fire(TL_EVENT_CODE_WINDOW_FOCUS_LOST, NULL);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_FOCUS_LOST");
+      tl_event_fire(TL_EVENT_WINDOW_FOCUS_LOST, NULL);
+    } break;
+
+    case WM_MOVE: {
+      TLEvent event = { 0 };
+      event.data.i32[0] = (i32)(i16)LOWORD(lParam);
+      event.data.i32[1] = (i32)(i16)HIWORD(lParam);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MOVED {%d, %d}", event.data.i32[0], event.data.i32[1]);
+      tl_event_fire(TL_EVENT_WINDOW_MOVED, &event);
     } break;
     
     case WM_SIZE: {
@@ -290,56 +309,95 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
         case SIZE_MINIMIZED: {
           maximized = false;
           minimized = true;
-          tl_event_fire(TL_EVENT_CODE_WINDOW_MINIMIZED, NULL);
-          TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MINIMIZED");
+          tl_event_fire(TL_EVENT_WINDOW_MINIMIZED, NULL);
+          TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MINIMIZED");
         } break;
 
         case SIZE_MAXIMIZED: {
           maximized = true;
           minimized = false;
-          tl_event_fire(TL_EVENT_CODE_WINDOW_MAXIMIZED, NULL);
-          TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MAXIMIZED");
+          tl_event_fire(TL_EVENT_WINDOW_MAXIMIZED, NULL);
+          TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MAXIMIZED");
         } break;
 
         case SIZE_RESTORED: {
           if (maximized || minimized) {
             maximized = false;
             minimized = false;
-            tl_event_fire(TL_EVENT_CODE_WINDOW_RESTORED, NULL);
-            TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_RESTORED");
+            tl_event_fire(TL_EVENT_WINDOW_RESTORED, NULL);
+            TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_RESTORED");
           } else {
             TLEvent event = { 0 };
             event.data.u32[0] = LOWORD(lParam);
             event.data.u32[1] = HIWORD(lParam);
-            tl_event_fire(TL_EVENT_CODE_WINDOW_RESIZED, &event);
-            TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_RESIZED {%llu, %llu}", event.data.u32[0], event.data.u32[1]);
+            tl_event_fire(TL_EVENT_WINDOW_RESIZED, &event);
+            TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_RESIZED {%llu, %llu}", event.data.u32[0], event.data.u32[1]);
           }
         } break;
       }
     } break;
-    
-    case WM_MOVE: {
-      TLEvent event = { 0 };
-      event.data.i32[0] = (i32)(i16)LOWORD(lParam);
-      event.data.i32[1] = (i32)(i16)HIWORD(lParam);
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MOVED {%d, %d}", event.data.i32[0], event.data.i32[1]);
-      tl_event_fire(TL_EVENT_CODE_WINDOW_MOVED, &event);
-    } break;
 
     case WM_KEYDOWN:
-    case WM_KEYUP:
-    case WM_SYSKEYDOWN:
-    case WM_SYSKEYUP: {
+    case WM_SYSKEYDOWN: {
+      TLEvent event = { 0 };
+      event.data.u16[0] = (u16)wParam;
 
+      tl_event_fire(TL_EVENT_INPUT_KEY_PRESSED, &event);
+
+      // Prevent default window behaviour such as context menu, etc.
+      return 0;
+    } break;
+
+    case WM_KEYUP:
+    case WM_SYSKEYUP: {
+      TLEvent event = { 0 };
+      event.data.u16[0] = (u16)wParam;
+
+      tl_event_fire(TL_EVENT_INPUT_KEY_RELEASED, &event);
+    } break;
+
+    case WM_MOUSEMOVE: {
+      TLEvent event = { 0 };
+      event.data.i32[0] = GET_X_LPARAM(lParam);
+      event.data.i32[1] = GET_Y_LPARAM(lParam);
+      tl_event_fire(TL_EVENT_INPUT_MOUSE_MOVE, &event);
+    } break;
+
+    case WM_MOUSEWHEEL: {
+      i32 delta = GET_WHEEL_DELTA_WPARAM(wParam);
+      if (delta != 0) {
+        TLEvent event = { 0 };
+        event.data.i8[0] = (delta < 0) ? -1 : 1;
+        tl_event_fire(TL_EVENT_INPUT_MOUSE_WHELL, &event);
+      }
+    } break;
+
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP: {
+      TLEvent event = { 0 };
+
+      switch (msg) {
+        case WM_LBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_LEFT; break;
+        case WM_RBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_RIGHT; break;
+        case WM_MBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
+      }
+
+      tl_event_fire(TL_EVENT_INPUT_MOUSE_RELEASED, &event);
     } break;
 
     case WM_LBUTTONDOWN:
-    case WM_LBUTTONUP:
     case WM_RBUTTONDOWN:
-    case WM_RBUTTONUP:
-    case WM_MBUTTONDOWN:
-    case WM_MBUTTONUP: {
+    case WM_MBUTTONDOWN: {
+      TLEvent event = { 0 };
 
+      switch (msg) {
+      case WM_LBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_LEFT; break;
+      case WM_RBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_RIGHT; break;
+      case WM_MBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
+      }
+
+      tl_event_fire(TL_EVENT_INPUT_MOUSE_PRESSED, &event);
     } break;
   }
   return DefWindowProcA(hwnd, msg, wParam, lParam);

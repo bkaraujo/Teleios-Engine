@@ -7,5 +7,5 @@
 TLAPI TLList* tl_list_create(void);
 TLAPI b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload));
 TLAPI b8 tl_list_destroy(TLList* list);
-TLAPI b8 tl_list_append(TLList* list, void* payload);
+TLAPI b8 tl_list_append(TLList* list, const void* payload);
 #endif // TELEIOS_CONTAINER_H
