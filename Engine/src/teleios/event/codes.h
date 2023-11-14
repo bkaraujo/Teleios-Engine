@@ -1,0 +1,22 @@
+#ifndef TELEIOS_EVENT_CODES_H
+#define TELEIOS_EVENT_CODES_H
+
+#include "teleios/types.h"
+
+typedef enum {
+  TL_EVENT_CODE_APPLICATION_QUIT    = 200, // Null
+
+  TL_EVENT_CODE_WINDOW_RESIZED      = 210, // u32[0, 1]
+  TL_EVENT_CODE_WINDOW_MINIMIZED    = 211, // Null
+  TL_EVENT_CODE_WINDOW_MAXIMIZED    = 212, // Null
+  TL_EVENT_CODE_WINDOW_RESTORED     = 213, // Null
+  TL_EVENT_CODE_WINDOW_FOCUS_GAINED = 214, // Null
+  TL_EVENT_CODE_WINDOW_FOCUS_LOST   = 215, // Null
+  TL_EVENT_CODE_WINDOW_MOVED        = 216, // i32[0, 1]
+  
+  TL_EVENT_CODE_MAXIMUM             = U8MAX
+
+} TLEventCodes;
+
+
+#endif // TELEIOS_EVENT_CODES_H

@@ -182,10 +182,14 @@ u64 tl_timer_micros(TLTimer* timer) {
 //
 // ##############################################################################################
 #include "teleios/platform/window.h"
+#include "teleios/event/codes.h"
+#include "teleios/event/publisher.h"
 #include <stdarg.h>
 #include <stdio.h>
 
 static HWND hwnd;
+static b8 minimized = false;
+static b8 maximized = false;
 
 b8 tl_platform_window_create(TLSpecification* spec) {
   u32 window_width = spec->window.witdh;
@@ -264,10 +268,79 @@ void tl_platform_window_set_title(const char* title, ...) {
 
 LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
-    case WM_CLOSE:
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
+    case WM_CLOSE: {
+      PostQuitMessage(0);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_APPLICATION_QUIT");
+      tl_event_fire(TL_EVENT_CODE_APPLICATION_QUIT, NULL);
+    } break;
+    
+    case WM_SETFOCUS: {
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_FOCUS_GAINED");
+      tl_event_fire(TL_EVENT_CODE_WINDOW_FOCUS_GAINED, NULL);
+    } break;
+    
+    case WM_KILLFOCUS: {
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_FOCUS_LOST");
+      tl_event_fire(TL_EVENT_CODE_WINDOW_FOCUS_LOST, NULL);
+    } break;
+    
+    case WM_SIZE: {
+      switch (wParam) {
+
+        case SIZE_MINIMIZED: {
+          maximized = false;
+          minimized = true;
+          tl_event_fire(TL_EVENT_CODE_WINDOW_MINIMIZED, NULL);
+          TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MINIMIZED");
+        } break;
+
+        case SIZE_MAXIMIZED: {
+          maximized = true;
+          minimized = false;
+          tl_event_fire(TL_EVENT_CODE_WINDOW_MAXIMIZED, NULL);
+          TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MAXIMIZED");
+        } break;
+
+        case SIZE_RESTORED: {
+          if (maximized || minimized) {
+            maximized = false;
+            minimized = false;
+            tl_event_fire(TL_EVENT_CODE_WINDOW_RESTORED, NULL);
+            TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_RESTORED");
+          } else {
+            TLEvent event = { 0 };
+            event.data.u32[0] = LOWORD(lParam);
+            event.data.u32[1] = HIWORD(lParam);
+            tl_event_fire(TL_EVENT_CODE_WINDOW_RESIZED, &event);
+            TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_RESIZED {%llu, %llu}", event.data.u32[0], event.data.u32[1]);
+          }
+        } break;
+      }
+    } break;
+    
+    case WM_MOVE: {
+      TLEvent event = { 0 };
+      event.data.i32[0] = (i32)(i16)LOWORD(lParam);
+      event.data.i32[1] = (i32)(i16)HIWORD(lParam);
+      TLTRACE("tl_platform_window_procedure: TL_EVENT_CODE_WINDOW_MOVED {%d, %d}", event.data.i32[0], event.data.i32[1]);
+      tl_event_fire(TL_EVENT_CODE_WINDOW_MOVED, &event);
+    } break;
+
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP: {
+
+    } break;
+
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP: {
+
+    } break;
   }
   return DefWindowProcA(hwnd, msg, wParam, lParam);
 }

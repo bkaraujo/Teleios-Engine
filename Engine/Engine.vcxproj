@@ -86,6 +86,7 @@
     <ClInclude Include="src\teleios\defines.h" />
     <ClInclude Include="src\teleios\engine.h" />
     <ClInclude Include="src\teleios\entry.h" />
+    <ClInclude Include="src\teleios\event\codes.h" />
     <ClInclude Include="src\teleios\event\manager.h" />
     <ClInclude Include="src\teleios\event\publisher.h" />
     <ClInclude Include="src\teleios\event\subcriber.h" />
