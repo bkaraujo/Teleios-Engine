@@ -3,6 +3,6 @@
 
 #include "teleios/types.h"
 
-void tl_platform_stdout(u8 level, const char* message);
+void tl_platform_stdout(const u8 level, const char* message);
 
 #endif // TELEIOS_PLATFORM_MANAGER_H

@@ -74,7 +74,7 @@ static const u8 levels[6] = {
   TL_CONSOLE_MAGENTA
 };
 
-void tl_platform_stdout(u8 level, const char* message) {
+void tl_platform_stdout(const u8 level, const char* message) {
   // Backup console screen buffer info
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   GetConsoleScreenBufferInfo(hconsole, &csbi);
@@ -119,19 +119,19 @@ u64 tl_platform_time_epoch(void) {
   return date.QuadPart;
 }
 
-u64 tl_platform_time_epoch_seconds(void) {
+const u64 tl_platform_time_epoch_seconds(void) {
   return tl_platform_time_epoch() / 10000000;
 }
 
-u64 tl_platform_time_epoch_millis(void) {
+const u64 tl_platform_time_epoch_millis(void) {
   return tl_platform_time_epoch() / 10000;
 }
 
-u64 tl_platform_time_epoch_micros(void) {
+const u64 tl_platform_time_epoch_micros(void) {
   return tl_platform_time_epoch() / 10;
 }
 
-u64 tl_platform_time_epoch_nanos(void) {
+const u64 tl_platform_time_epoch_nanos(void) {
   return tl_platform_time_epoch() * 100;
 }
 
@@ -192,7 +192,7 @@ static HWND hwnd;
 static b8 minimized = false;
 static b8 maximized = false;
 
-b8 tl_platform_window_create(TLSpecification* spec) {
+b8 tl_platform_window_create(const TLSpecification* spec) {
   u32 window_width = spec->window.witdh;
   u32 window_height = spec->window.height;
 
@@ -410,7 +410,7 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 // ##############################################################################################
 #include "teleios/platform/manager.h"
 
-b8 tl_platform_initialize(TLSpecification* spec) {
+b8 tl_platform_initialize(const TLSpecification* spec) {
   QueryPerformanceFrequency(&frequency);
 
   hinstance = GetModuleHandle(NULL);

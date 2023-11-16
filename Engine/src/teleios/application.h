@@ -4,7 +4,7 @@
 #include "teleios/engine.h"
 
 void tl_application_define(TLSpecification* spec);
-b8 tl_application_initialize(TLSpecification* spec);
+b8 tl_application_initialize(const TLSpecification* spec);
 b8 tl_application_terminate();
 
 int main(int argc, char** argv) {

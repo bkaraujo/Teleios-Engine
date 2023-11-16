@@ -10,7 +10,7 @@ static TLList* list[U8MAX];
 #include "teleios/event/subcriber.h"
 #include "teleios/event/codes.h"
 
-b8 tl_event_subscribe(u8 code, PFN_EventHandler handler) {
+b8 tl_event_subscribe(const u8 code, PFN_EventHandler handler) {
   if (code != TL_EVENT_MAXIMUM) {
     if (!tl_list_append(list[code], handler)) {
       TLERROR("tl_event_subscribe: Failed to append handler to event handling list");
@@ -36,10 +36,10 @@ b8 tl_event_subscribe(u8 code, PFN_EventHandler handler) {
 // ##############################################################################################
 #include "teleios/event/publisher.h"
 
-void tl_event_fire(u8 code, TLEvent* event) {
+void tl_event_fire(const u8 code, const TLEvent* event) {
   TLNode* current = list[code]->head;
   while (current != NULL) {
-    PFN_EventHandler handler = current->payload;
+    PFN_EventHandler handler = (PFN_EventHandler) current->payload;
     if (!handler(code, event)) {
       break;
     }

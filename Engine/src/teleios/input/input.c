@@ -35,7 +35,7 @@ TLAPI b8 tl_input_mouse_released(TLMouseButton button) { return previous.button[
 #include "teleios/event/subcriber.h"
 #include "teleios/event/codes.h"
 
-static b8 tl_input_event(u8 code, TLEvent* event) {
+static b8 tl_input_event(const u8 code, const TLEvent* event) {
   switch (code) {
     case TL_EVENT_INPUT_KEY_PRESSED: current.keyboard[event->data.u16[0]] = true; break;
     case TL_EVENT_INPUT_KEY_RELEASED: current.keyboard[event->data.u16[0]] = false; break;

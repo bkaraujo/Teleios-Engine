@@ -12,7 +12,7 @@
 
 static b8 running = true;
 
-TLAPI b8 tl_engine_pre_initialize(TLSpecification* spec) {
+TLAPI b8 tl_engine_pre_initialize(const TLSpecification* spec) {
   if (!tl_platform_initialize(spec)) {
     TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
     return false;
@@ -26,7 +26,7 @@ TLAPI b8 tl_engine_pre_initialize(TLSpecification* spec) {
   return true;
 }
 
-static b8 tl_engine_eventhandler(u8 code, TLEvent* event) {
+static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event) {
   if (code == TL_EVENT_APPLICATION_QUIT) {
     running = false;
   }
@@ -34,7 +34,7 @@ static b8 tl_engine_eventhandler(u8 code, TLEvent* event) {
   return TL_EVENT_CONTINUE;
 }
 
-TLAPI b8 tl_engine_initialize(TLSpecification* spec) {
+TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
   if (!tl_event_initialize()) {
     TLERROR("tl_engine_initialize: Failed to initialize the event manager");
     return false;

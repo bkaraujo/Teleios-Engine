@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-TLAPI u64 tl_string_length(const char* string) {
+TLAPI const u64 tl_string_length(const char* string) {
   return strlen(string);
 }
 

@@ -6,7 +6,7 @@ void tl_application_define(TLSpecification* spec) {
 
 }
 
-b8 tl_application_initialize(TLSpecification* spec) {
+b8 tl_application_initialize(const TLSpecification* spec) {
   g_scene_initialize();
   return true;
 }

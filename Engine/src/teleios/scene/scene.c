@@ -12,18 +12,28 @@
 static TLList* scenes;
 
 typedef struct {
-  TLIdentity identity;
+  const TLIdentity identity;
   const char* name;
   TLList* regions;
 } TLScene;
 
+static const TLScene* active;
 static const SSIZE = sizeof(TLScene);
 
-TLAPI void tl_scene_activate(TLIdentity* sceneid) {
+TLAPI void tl_scene_activate(const TLIdentity* sceneid) {
+  TLNode* current = scenes->head;
+  while (current != NULL) {
+    const TLScene* scene = current->payload;
+    if (tl_identity_compare(sceneid, &scene->identity)) {
+      active = scene;
+      break;
+    }
 
+    current = current->next;
+  }
 }
 
-TLAPI TLIdentity* tl_scene_create(const char* name) {
+TLAPI const TLIdentity* tl_scene_create(const char* name) {
   TLScene* scene = tl_memory_alloc(TL_MEMORY_TYPE_SCENE, SSIZE);
   if (scene == NULL) {
     TLERROR("tl_scene_create: Failed to allocate TLScene");
@@ -40,13 +50,14 @@ TLAPI TLIdentity* tl_scene_create(const char* name) {
     return NULL;
   }
 
+  if (active == NULL) active = scene;
   return &scene->identity;
 }
 
-TLAPI void tl_scene_destroy(TLIdentity* sceneid) {
+TLAPI void tl_scene_destroy(const TLIdentity* sceneid) {
   TLNode* current = scenes->head;
   while (current != NULL) {
-    TLScene* scene = current->payload;
+    const TLScene* scene = current->payload;
     
     if (tl_identity_compare(&scene->identity, sceneid)) {
       if (!tl_list_remove_node(scenes, current)) {
@@ -68,11 +79,11 @@ TLAPI void tl_scene_destroy(TLIdentity* sceneid) {
 // ##############################################################################################
 #include "teleios/scene/region.h"
 
-TLAPI TLIdentity* tl_region_create(TLIdentity* sceneid, const char* name) {
+TLAPI const TLIdentity* tl_region_create(const TLIdentity* sceneid, const char* name) {
   return NULL;
 }
-
-TLAPI void tl_region_destroy(TLIdentity* sceneid, TLIdentity* regionid) {
+               
+TLAPI void tl_region_destroy(const TLIdentity* sceneid, const TLIdentity* regionid) {
 
 }
 
