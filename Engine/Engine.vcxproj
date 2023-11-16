@@ -106,8 +106,9 @@
     <ClInclude Include="src\teleios\platform\time.h" />
     <ClInclude Include="src\teleios\platform\window.h" />
     <ClInclude Include="src\teleios\scene\manager.h" />
-    <ClInclude Include="src\teleios\scene\region.h" />
     <ClInclude Include="src\teleios\scene\scene.h" />
+    <ClInclude Include="src\teleios\scene\stack.h" />
+    <ClInclude Include="src\teleios\scene\structs.h" />
     <ClInclude Include="src\teleios\timer.h" />
     <ClInclude Include="src\teleios\sring.h" />
     <ClInclude Include="src\teleios\types.h" />
@@ -124,6 +125,7 @@
     <ClCompile Include="src\teleios\object\object.c" />
     <ClCompile Include="src\teleios\platform\winapi.c" />
     <ClCompile Include="src\teleios\scene\scene.c" />
+    <ClCompile Include="src\teleios\scene\stack.c" />
     <ClCompile Include="src\teleios\string.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
