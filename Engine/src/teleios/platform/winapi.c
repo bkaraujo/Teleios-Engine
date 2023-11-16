@@ -71,7 +71,7 @@ static const u8 levels[6] = {
   TL_CONSOLE_DARKYELLOW,
   TL_CONSOLE_DARKGRAY,
   TL_CONSOLE_DARKCYAN,
-  TL_CONSOLE_DARKMAGENTA
+  TL_CONSOLE_MAGENTA
 };
 
 void tl_platform_stdout(u8 level, const char* message) {

@@ -13,7 +13,7 @@ static const char* LAYOUT = "%d-%d-%d %d:%d:%d,%d %s - %s\n";
 static char intermediate[1030];
 static char formated[1030];
 
-TLAPI void tl_logger_write(b8 level, const char* message, ...) {
+TLAPI void tl_logger_write(const u8 level, const char* message, ...) {
   tl_platform_memory_set(&intermediate, 0, 1030);
 
   va_list parameters; va_start(parameters, message);

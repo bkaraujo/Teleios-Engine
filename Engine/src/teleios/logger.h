@@ -3,7 +3,7 @@
 #include "teleios/defines.h"
 #include "teleios/types.h"
 
-TLAPI void tl_logger_write(b8 level, const char* message, ...);
+TLAPI void tl_logger_write(const u8 level, const char* message, ...);
 
 #define TLFATAL(msg, ...) tl_logger_write(0, msg, ##__VA_ARGS__);
 #define TLERROR(msg, ...) tl_logger_write(1, msg, ##__VA_ARGS__);
