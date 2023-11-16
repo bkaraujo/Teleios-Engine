@@ -92,7 +92,7 @@ typedef struct {
 } TLTimer;
 
 typedef struct TLNode{
-  void* payload;
+  const void* payload;
   struct TLNode* next;
   struct TLNode* previous;
 } TLNode;
