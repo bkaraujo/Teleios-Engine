@@ -30,9 +30,15 @@ TLAPI TLIdentity* tl_scene_create(const char* name) {
     return NULL;
   }
 
-  tl_list_append(scenes, scene);
-  tl_identity_initialize(&scene->identity);
   scene->name = name;
+  scene->regions = tl_list_create();
+  tl_identity_initialize(&scene->identity);
+
+  if (!tl_list_append(scenes, scene)) {
+    tl_memory_free(scene, TL_MEMORY_TYPE_SCENE, SSIZE);
+    TLERROR("tl_scene_create: Failed to append scene to list");
+    return NULL;
+  }
 
   return &scene->identity;
 }
@@ -41,11 +47,18 @@ TLAPI void tl_scene_destroy(TLIdentity* sceneid) {
   TLNode* current = scenes->head;
   while (current != NULL) {
     TLScene* scene = current->payload;
+    
     if (tl_identity_compare(&scene->identity, sceneid)) {
       if (!tl_list_remove_node(scenes, current)) {
         TLERROR("tl_scene_destroy: Failed to remove scene from list");
       }
+
+      tl_list_destroy(scene->regions);
+      tl_memory_free(scene, TL_MEMORY_TYPE_SCENE, SSIZE);
+      break; 
     }
+
+    current = current->next;
   }
 }
 // ##############################################################################################
@@ -71,9 +84,20 @@ TLAPI void tl_region_destroy(TLIdentity* sceneid, TLIdentity* regionid) {
 #include "teleios/scene/manager.h"
 
 b8 tl_scene_initialize(void) {
+  scenes = tl_list_create();
+  if (scenes == NULL) {
+    TLERROR("tl_scene_initialize: Failed to create scene list");
+    return false;
+  }
+
   return true;
 }
 
 b8 tl_scene_terminate(void) {
-  return true;
+  if (scenes->size > 0) {
+    TLERROR("tl_scene_terminate: Scene list is not empty.");
+    return false;
+  }
+
+  return tl_list_destroy(scenes);
 }

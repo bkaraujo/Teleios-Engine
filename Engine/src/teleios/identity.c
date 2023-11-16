@@ -2,6 +2,7 @@
 #include "teleios/logger.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 static const char UUID[] = "0123456789abcdef";
 
@@ -18,9 +19,8 @@ void tl_identity_initialize(const TLIdentity* identity) {
 }
 
 b8 tl_identity_compare(const TLIdentity* first, const TLIdentity* second) {
-  for (register unsigned i = 0; i < 37; ++i)
-    if (first->identity[i] != second->identity[i])
-      return false;
+  if (strcmp(first->identity, second->identity) != 0)
+    return false;
 
   return true;
 }
