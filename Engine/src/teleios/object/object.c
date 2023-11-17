@@ -50,7 +50,7 @@ TLAPI TLObject* tl_object_create(const char* name, const u64 stride, void (*dest
 //                                     COMPARATOR
 //
 // ################################################################################
-#include "teleios/sring.h"
+#include "teleios/string.h"
 #include "teleios/object/comparator.h"
 
 TLAPI b8 tl_object_equals(const TLObject* first, const TLObject* second) {

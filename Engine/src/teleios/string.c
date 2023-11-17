@@ -1,4 +1,4 @@
-#include "teleios/sring.h"
+#include "teleios/string.h"
 
 #include <string.h>
 

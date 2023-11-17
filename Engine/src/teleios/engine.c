@@ -96,11 +96,10 @@ TLAPI b8 tl_engine_run(void) {
     // One-Per-Second Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     if (timer.current > 10000000) {
-      TLDEBUG("FPS %llu", fps);
-      tl_platform_window_set_title("FPS %llu", fps);
+      tl_platform_window_set_title("FPS: %llu UPS: %llu", fps, ups);
       tl_timer_reset(&timer);
     
-      fps = 0;
+      fps = ups = 0;
     }
   }
 

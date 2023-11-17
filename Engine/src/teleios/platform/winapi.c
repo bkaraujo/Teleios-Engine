@@ -5,6 +5,7 @@
 #include <malloc.h>
 
 #include "teleios/logger.h"
+#include "teleios/string.h"
 
 static HINSTANCE hinstance;
 // ##############################################################################################
@@ -79,17 +80,11 @@ void tl_platform_stdout(const u8 level, const char* message) {
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   GetConsoleScreenBufferInfo(hconsole, &csbi);
 
-  // transforme the ansi to utf8
-  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, message, -1, NULL, 0);
-  u16* utf8 = _malloca(sizeof(u16) * needed);
-  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, message, -1, utf8, needed);
-
   // Apply the console color and print the message
   SetConsoleTextAttribute(hconsole, levels[level]);
-  WriteConsole(hconsole, utf8, needed, NULL, 0);
+  WriteConsole(hconsole, message, (DWORD)tl_string_length(message), NULL, NULL);
 
   // Free and Restore resources
-  _freea(utf8);
   SetConsoleTextAttribute(hconsole, csbi.wAttributes);
 }
 
@@ -191,6 +186,7 @@ u64 tl_timer_micros(TLTimer* timer) {
 static HWND hwnd;
 static b8 minimized = false;
 static b8 maximized = false;
+static const char* prefix;
 
 b8 tl_platform_window_create(const TLSpecification* spec) {
   u32 window_width = spec->window.witdh;
@@ -215,14 +211,10 @@ b8 tl_platform_window_create(const TLSpecification* spec) {
   u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
   u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
 
-  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, -1, NULL, 0);
-  u16* utf8 = _malloca(sizeof(u16) * needed);
-  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, spec->name, -1, utf8, needed);
-
   hwnd = CreateWindowEx(
     window_ex_style, 
     TEXT("teleios_window_class"), 
-    utf8,
+    spec->name,
     window_style, 
     window_x, window_y, 
     window_width, window_height,
@@ -231,9 +223,6 @@ b8 tl_platform_window_create(const TLSpecification* spec) {
     hinstance, 
     0
   );
-
-  // Free and Restore resources
-  _freea(utf8);
 
   if (hwnd == NULL) {
     TLERROR("tl_platform_window_create: Failed to create window 0x%x", GetLastError());
@@ -255,16 +244,16 @@ void tl_platform_window_hide(void) {
 }
 
 static char intermediate[80];
+static char formated[100];
 void tl_platform_window_set_title(const char* title, ...) {
+  tl_platform_memory_set(intermediate, 0, 80);
   va_list parameters; va_start(parameters, title);
   vsnprintf(intermediate, 80, title, parameters);
   va_end(parameters);
 
-  i32 needed = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, intermediate, -1, NULL, 0);
-  u16* utf8 = _malloca(sizeof(u16) * needed);
-  MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, intermediate, -1, utf8, needed);
-  SetWindowText(hwnd, utf8);
-  _freea(utf8);
+  tl_platform_memory_set(formated, 0, 80);
+  sprintf_s(formated, 100, "%s (%s)", prefix, intermediate);
+  SetWindowText(hwnd, formated);
 }
 
 LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
@@ -433,6 +422,7 @@ b8 tl_platform_initialize(const TLSpecification* spec) {
     return false;
   }
 
+  prefix = spec->name;
   return true;
 }
 
