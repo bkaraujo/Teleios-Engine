@@ -15,9 +15,11 @@ TLAPI const TLIdentity* tl_scene_create_region(const TLIdentity* sceneid, const 
     TLERROR("tl_scene_create_region: Scene not found");
     return NULL;
   }
+
   // ===========================================================
   // Create the region
   // ===========================================================
+  TLTRACE("tl_scene_create_region: scene \"%s\" region \"%s\"", scene->name, name);
   TLRegion* region = tl_memory_alloc(TL_MEMORY_TYPE_SCENE_REGION, RSIZE);
 
   region->name = name;
@@ -47,7 +49,7 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
   const TLScene* scene = tl_scene_stack_find(sceneid);
 
   if (scene == NULL) {
-    TLERROR("tl_scene_sestroy_region: Scene not found");
+    TLERROR("tl_scene_destroy_region: Scene not found");
     return;
   }
   // ===========================================================
@@ -66,21 +68,28 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
   }
 
   if (node == NULL) {
-    TLERROR("tl_scene_sestroy_region: Region not found within scene.");
+    TLERROR("tl_scene_destroy_region: Region not found within scene.");
     return;
   }
+  
+  const TLRegion* region = node->payload;
+  TLTRACE("tl_scene_destroy_region: scene \"%s\" region \"%s\"", scene->name, region->name);
   // ===========================================================
   // Dealocate the region
   // ===========================================================
-  const TLRegion* region = node->payload;
+  if (!tl_list_clear(region->entities, tl_container_noop_dealocator)) {
+    TLERROR("tl_scene_destroy_region: Failed to clear region's entities list");
+    return;
+  }
+
   if (!tl_list_destroy(region->entities)) {
-    TLERROR("tl_scene_sestroy_region: Failed to remove entities from region");
+    TLERROR("tl_scene_destroy_region: Failed to destroy region's entities list");
     return;
   }
 
   tl_memory_free(region, TL_MEMORY_TYPE_SCENE_REGION, RSIZE);
   if (!tl_list_remove_node(scene->regions, node)) {
-    TLERROR("tl_scene_sestroy_region: Failed to remove region from scene's region list");
+    TLERROR("tl_scene_destroy_region: Failed to remove region from scene's region list");
     return;
   }
 }

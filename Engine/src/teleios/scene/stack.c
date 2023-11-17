@@ -14,6 +14,8 @@ static TLList* scenes;
 static const SSIZE = sizeof(TLScene);
 
 TLAPI const TLIdentity* tl_scene_stack_create(const char* name){
+  TLTRACE("tl_scene_stack_create: scene \"%s\"", name);
+
   TLScene* scene = tl_memory_alloc(TL_MEMORY_TYPE_SCENE, SSIZE);
   if (scene == NULL) {
     TLERROR("tl_scene_create: Failed to allocate TLScene");
@@ -64,6 +66,7 @@ TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
   // ===========================================================
   // Ensure scene has no region
   // ===========================================================
+  TLTRACE("tl_scene_stack_destroy: scene \"%s\"", scene->name);
   TLNode* current = scene->regions->head;
   while (current != NULL) {
     const TLRegion* region = current->payload;
@@ -94,6 +97,7 @@ TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
 #include "teleios/scene/manager.h"
 
 b8 tl_scene_initialize(void) {
+  TLTRACE("tl_scene_initialize");
   scenes = tl_list_create();
   if (scenes == NULL) {
     TLERROR("tl_scene_initialize: Failed to create scene list");
@@ -104,6 +108,7 @@ b8 tl_scene_initialize(void) {
 }
 
 b8 tl_scene_terminate(void) {
+  TLTRACE("tl_scene_terminate");
   if (scenes->size > 0) {
     TLERROR("tl_scene_terminate: Scene list is not empty.");
     return false;

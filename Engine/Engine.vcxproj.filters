@@ -63,15 +63,6 @@
     <ClInclude Include="src\teleios\platform\window.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\object\reference.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
-    <ClInclude Include="src\teleios\object\comparator.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
-    <ClInclude Include="src\teleios\object\factory.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
     <ClInclude Include="src\teleios\event\publisher.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
@@ -108,6 +99,24 @@
     <ClInclude Include="src\teleios\scene\stack.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\scene\region.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\ecs\manager.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\ecs\entity.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\ecs\component.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\ecs\system.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\ecs\struct.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stb\image.c">
@@ -128,9 +137,6 @@
     <ClCompile Include="src\teleios\platform\winapi.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="src\teleios\object\object.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
     <ClCompile Include="src\teleios\event\event.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
@@ -147,6 +153,12 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\teleios\scene\stack.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\scene\region.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\ecs\ecs.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

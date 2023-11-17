@@ -1,0 +1,16 @@
+#ifndef TELEIOS_ECS_COMPONENT_H
+#define TELEIOS_ECS_COMPONENT_H
+
+#include "teleios/defines.h"
+#include "teleios/types.h"
+
+typedef enum {
+  TL_COMPONENT_TRANSFORM,
+  TL_COMPONENT_MESH,
+  TL_COMPONENT_RIGID_BODY,
+  TL_COMPONENT_SCRIPT,
+
+  TL_COMPONENT_MAXIMUM
+} TL_COMPONENT;
+
+#endif // TELEIOS_ECS_COMPONENT_H

@@ -85,6 +85,11 @@
     <ClInclude Include="src\stb\image.h" />
     <ClInclude Include="src\teleios\container.h" />
     <ClInclude Include="src\teleios\defines.h" />
+    <ClInclude Include="src\teleios\ecs\component.h" />
+    <ClInclude Include="src\teleios\ecs\entity.h" />
+    <ClInclude Include="src\teleios\ecs\manager.h" />
+    <ClInclude Include="src\teleios\ecs\struct.h" />
+    <ClInclude Include="src\teleios\ecs\system.h" />
     <ClInclude Include="src\teleios\engine.h" />
     <ClInclude Include="src\teleios\application.h" />
     <ClInclude Include="src\teleios\event\codes.h" />
@@ -97,9 +102,6 @@
     <ClInclude Include="src\teleios\logger.h" />
     <ClInclude Include="src\teleios\memory\manager.h" />
     <ClInclude Include="src\teleios\memory\allocator.h" />
-    <ClInclude Include="src\teleios\object\reference.h" />
-    <ClInclude Include="src\teleios\object\factory.h" />
-    <ClInclude Include="src\teleios\object\comparator.h" />
     <ClInclude Include="src\teleios\platform\console.h" />
     <ClInclude Include="src\teleios\platform\detector.h" />
     <ClInclude Include="src\teleios\platform\manager.h" />
@@ -107,6 +109,7 @@
     <ClInclude Include="src\teleios\platform\time.h" />
     <ClInclude Include="src\teleios\platform\window.h" />
     <ClInclude Include="src\teleios\scene\manager.h" />
+    <ClInclude Include="src\teleios\scene\region.h" />
     <ClInclude Include="src\teleios\scene\scene.h" />
     <ClInclude Include="src\teleios\scene\stack.h" />
     <ClInclude Include="src\teleios\scene\structs.h" />
@@ -117,14 +120,15 @@
   <ItemGroup>
     <ClCompile Include="src\stb\image.c" />
     <ClCompile Include="src\teleios\container_list.c" />
+    <ClCompile Include="src\teleios\ecs\ecs.c" />
     <ClCompile Include="src\teleios\engine.c" />
     <ClCompile Include="src\teleios\event\event.c" />
     <ClCompile Include="src\teleios\identity.c" />
     <ClCompile Include="src\teleios\input\input.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory\memory.c" />
-    <ClCompile Include="src\teleios\object\object.c" />
     <ClCompile Include="src\teleios\platform\winapi.c" />
+    <ClCompile Include="src\teleios\scene\region.c" />
     <ClCompile Include="src\teleios\scene\scene.c" />
     <ClCompile Include="src\teleios\scene\stack.c" />
     <ClCompile Include="src\teleios\string.c" />

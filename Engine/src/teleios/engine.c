@@ -6,6 +6,7 @@
 #include "teleios/event/codes.h"
 #include "teleios/input/manager.h"
 #include "teleios/scene/manager.h"
+#include "teleios/ecs/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
 #include "teleios/timer.h"
@@ -35,6 +36,7 @@ static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event) {
 }
 
 TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
+  TLDEBUG("tl_engine_initialize");
   if (!tl_event_initialize()) {
     TLERROR("tl_engine_initialize: Failed to initialize the event manager");
     return false;
@@ -60,10 +62,16 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
     return false;
   }
 
+  if (!tl_ecs_initialize()) {
+    TLERROR("tl_engine_initialize: Failed to initialize ecs manager");
+    return false;
+  }
+
   return true;
 }
 
 TLAPI b8 tl_engine_run(void) {
+  TLDEBUG("tl_engine_run");
   TLTimer timer; tl_timer_begin(&timer);
   
   u64 fps = 0;
@@ -108,6 +116,12 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
+  TLDEBUG("tl_engine_terminate");
+  if (!tl_ecs_terminate()) {
+    TLERROR("tl_engine_terminate: Failed to terminate ecs manager");
+    return false;
+  }
+
   if (!tl_scene_terminate()) {
     TLERROR("tl_engine_terminate: Failed to terminate scene manager");
     return false;

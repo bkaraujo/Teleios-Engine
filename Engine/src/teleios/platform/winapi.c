@@ -265,7 +265,6 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 
     case WM_CLOSE: {
       PostQuitMessage(0);
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_APPLICATION_QUIT");
       tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
       return 0;
     } break;
@@ -276,12 +275,10 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
     } break;
 
     case WM_SETFOCUS: {
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_FOCUS_GAINED");
       tl_event_fire(TL_EVENT_WINDOW_FOCUS_GAINED, NULL);
     } break;
     
     case WM_KILLFOCUS: {
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_FOCUS_LOST");
       tl_event_fire(TL_EVENT_WINDOW_FOCUS_LOST, NULL);
     } break;
 
@@ -289,7 +286,6 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
       TLEvent event = { 0 };
       event.data.i32[0] = (i32)(i16)LOWORD(lParam);
       event.data.i32[1] = (i32)(i16)HIWORD(lParam);
-      TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MOVED {%d, %d}", event.data.i32[0], event.data.i32[1]);
       tl_event_fire(TL_EVENT_WINDOW_MOVED, &event);
     } break;
     
@@ -300,14 +296,12 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
           maximized = false;
           minimized = true;
           tl_event_fire(TL_EVENT_WINDOW_MINIMIZED, NULL);
-          TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MINIMIZED");
         } break;
 
         case SIZE_MAXIMIZED: {
           maximized = true;
           minimized = false;
           tl_event_fire(TL_EVENT_WINDOW_MAXIMIZED, NULL);
-          TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_MAXIMIZED");
         } break;
 
         case SIZE_RESTORED: {
@@ -315,13 +309,11 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
             maximized = false;
             minimized = false;
             tl_event_fire(TL_EVENT_WINDOW_RESTORED, NULL);
-            TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_RESTORED");
           } else {
             TLEvent event = { 0 };
             event.data.u32[0] = LOWORD(lParam);
             event.data.u32[1] = HIWORD(lParam);
             tl_event_fire(TL_EVENT_WINDOW_RESIZED, &event);
-            TLTRACE("tl_platform_window_procedure: TL_EVENT_WINDOW_RESIZED {%llu, %llu}", event.data.u32[0], event.data.u32[1]);
           }
         } break;
       }

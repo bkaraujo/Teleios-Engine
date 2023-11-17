@@ -55,6 +55,7 @@ void tl_event_fire(const u8 code, const TLEvent* event) {
 #include "teleios/event/manager.h"
 
 b8 tl_event_initialize(void) {
+  TLTRACE("tl_event_initialize");
   for (unsigned i = 0; i < U8MAX; ++i) {
     list[i] = tl_list_create();
     if (list[i] == NULL) {
@@ -70,6 +71,7 @@ static b8 tl_dealocator(const void* payload) {
 }
 
 b8 tl_event_terminate(void) {
+  TLTRACE("tl_event_terminate");
   for (unsigned i = 0; i < U8MAX; ++i) {
     if (!tl_list_clear(list[i], tl_dealocator)) {
       TLERROR("tl_event_terminate: Failed to dealocat list node payload");
