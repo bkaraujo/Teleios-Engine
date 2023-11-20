@@ -40,6 +40,11 @@ typedef signed char         b8;
 #define MiB(b)              (KiB(b) * 1024)
 #define GiB(b)              (MiB(b) * 1024)
 
+#define NANOSECOND         1000000000
+#define MICROSECOND        1000000
+#define MILISECOND         1000
+#define SECOND             1
+
 typedef enum {
   TL_MEMORY_TYPE_CONTAINER_LIST,
   TL_MEMORY_TYPE_CONTAINER_NODE,
@@ -88,8 +93,8 @@ typedef struct {
 } TLDateTime;
 
 typedef struct {
-  u64 start;
-  u64 current;
+  u64 start;   // Ticks from boot
+  u64 current; // Ticks from 'start'
 } TLTimer;
 
 typedef struct TLNode{

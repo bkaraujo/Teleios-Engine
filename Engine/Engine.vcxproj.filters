@@ -117,6 +117,9 @@
     <ClInclude Include="src\teleios\ecs\struct.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\time.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stb\image.c">
@@ -159,6 +162,9 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\teleios\ecs\ecs.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\time.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

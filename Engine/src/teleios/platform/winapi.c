@@ -152,11 +152,10 @@ void tl_platform_time_now(TLDateTime* dt) {
 #include "teleios/timer.h"
 
 static LARGE_INTEGER frequency;
-
 void tl_timer_begin(TLTimer * timer) {
   LARGE_INTEGER start; QueryPerformanceCounter(&start);
   timer->start = start.QuadPart;
-  timer->current = 0;
+  timer->current = start.QuadPart;
 }
 
 void tl_timer_reset(TLTimer* timer) {
@@ -168,8 +167,16 @@ void tl_timer_update(TLTimer* timer) {
   timer->current = end.QuadPart - timer->start;
 }
 
-u64 tl_timer_micros(TLTimer* timer) {
-  return (timer->current * 1000000) / frequency.QuadPart;
+f64 tl_timer_seconds(TLTimer* timer) {
+  return (timer->current / frequency.QuadPart) * 1.0;
+}
+
+f64 tl_timer_millis(TLTimer* timer) {
+  return (timer->current * 1000 / frequency.QuadPart) * 1.0;
+}
+
+f64 tl_timer_micros(TLTimer* timer) {
+  return (timer->current * 1000000 / frequency.QuadPart) * 1.0;
 }
 // ##############################################################################################
 //

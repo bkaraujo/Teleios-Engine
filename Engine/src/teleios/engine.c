@@ -6,9 +6,11 @@
 #include "teleios/event/codes.h"
 #include "teleios/input/manager.h"
 #include "teleios/scene/manager.h"
+#include "teleios/scene/scene.h"
 #include "teleios/ecs/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
+#include "teleios/time.h"
 #include "teleios/timer.h"
 
 static b8 running = true;
@@ -72,42 +74,53 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 
 TLAPI b8 tl_engine_run(void) {
   TLDEBUG("tl_engine_run");
-  TLTimer timer; tl_timer_begin(&timer);
-  
   u64 fps = 0;
   u64 ups = 0;
+    
+  TLTimer timer; tl_timer_begin(&timer);
+  u64 time_last = tl_time_epoch_micros();
 
+  u64 accumulator = 0;
+  const u64 STEP = MICROSECOND / 165;
+  
   tl_platform_window_show();
   while (running) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame initialization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
+    const u64 time_start = tl_time_epoch_micros();
+    const u64 time_delta = time_start - time_last;
+    time_last = time_start;
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // CPU-bounded Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    ups++;
-    
+    accumulator += time_delta;
+    while (accumulator > STEP) {
+      accumulator -= STEP;
+      tl_scene_update_fixed(STEP);
+      ups++;
+    }
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // GPU-bounded Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    tl_scene_update(time_delta);
+    tl_scene_update_after();
     fps++;
-    
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame finalization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    tl_scene_update_after();
     tl_input_update();
     tl_platform_update();
-    tl_timer_update(&timer);
-
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // One-Per-Second Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    if (timer.current > 10000000) {
-      tl_platform_window_set_title("FPS: %llu UPS: %llu", fps, ups);
-      tl_timer_reset(&timer);
-    
+    tl_timer_update(&timer);
+    if (tl_timer_seconds(&timer) >= SECOND) {
+      TLDEBUG("FPS: %llu UPS: %llu", fps, ups);
+      
       fps = ups = 0;
+      tl_timer_reset(&timer);
     }
   }
 

@@ -93,3 +93,16 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
     return;
   }
 }
+
+
+void tl_scene_update(u64 delta) {
+
+}
+
+void tl_scene_update_fixed(u64 delta) {
+
+}
+
+void tl_scene_update_after(void) {
+
+}

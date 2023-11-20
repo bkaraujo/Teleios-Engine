@@ -41,6 +41,7 @@ TLAPI void tl_ecs_entity_destroy(const TLIdentity* entityid) {
   const TLEntity* entity = tl_list_remove(entities, tl_ecs_entity_comparator, entityid);
   if (entity == NULL) {
     TLERROR("tl_ecs_entity_destroy: Failed remove entity from list");
+    return;
   }
 
   TLTRACE("tl_ecs_entity_destroy: \"%s\"", entity->name);

@@ -6,6 +6,9 @@
 void tl_timer_begin(TLTimer* timer);
 void tl_timer_reset(TLTimer* timer);
 void tl_timer_update(TLTimer* timer);
-u64 tl_timer_micros(TLTimer* timer);
+
+f64 tl_timer_seconds(TLTimer* timer);
+f64 tl_timer_millis(TLTimer* timer);
+f64 tl_timer_micros(TLTimer* timer);
 
 #endif // TELEIOS_TIMER_H
