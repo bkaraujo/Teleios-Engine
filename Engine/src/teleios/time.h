@@ -9,6 +9,5 @@ TLAPI void tl_time_now(TLDateTime* dt);
 TLAPI const u64 tl_time_epoch_seconds(void);
 TLAPI const u64 tl_time_epoch_millis(void);
 TLAPI const u64 tl_time_epoch_micros(void);
-TLAPI const u64 tl_time_epoch_nanos(void);
 
 #endif // TELEIOS_TIME_H

@@ -45,6 +45,8 @@ typedef signed char         b8;
 #define MILISECOND         1000
 #define SECOND             1
 
+#include "cglm/types-struct.h"
+
 typedef enum {
   TL_MEMORY_TYPE_CONTAINER_LIST,
   TL_MEMORY_TYPE_CONTAINER_NODE,

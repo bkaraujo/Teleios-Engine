@@ -12,9 +12,8 @@ typedef struct {
 typedef struct {
   const TLIdentity identity;
   const char* name;
+  const b8 active;
   TLList* entities;
 } TLRegion;
-
-
 
 #endif // TELEIOS_SCENE_SCTRUCTS_H

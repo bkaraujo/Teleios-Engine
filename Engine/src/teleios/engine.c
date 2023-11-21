@@ -6,7 +6,7 @@
 #include "teleios/event/codes.h"
 #include "teleios/input/manager.h"
 #include "teleios/scene/manager.h"
-#include "teleios/scene/scene.h"
+#include "teleios/scene/active.h"
 #include "teleios/ecs/manager.h"
 #include "teleios/engine.h"
 #include "teleios/logger.h"
@@ -91,6 +91,12 @@ TLAPI b8 tl_engine_run(void) {
     const u64 time_start = tl_time_epoch_micros();
     const u64 time_delta = time_start - time_last;
     time_last = time_start;
+    
+    if (!tl_scene_prepare()) {
+      TLERROR("tl_engine_run: Failed to prepare scene");
+      return false;
+    }
+    
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // CPU-bounded Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -103,9 +109,8 @@ TLAPI b8 tl_engine_run(void) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // GPU-bounded Rotines
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    tl_scene_update(time_delta);
-    tl_scene_update_after();
     fps++;
+    tl_scene_update(time_delta);
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Frame finalization
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -130,6 +135,7 @@ TLAPI b8 tl_engine_run(void) {
 
 TLAPI b8 tl_engine_terminate(void) {
   TLDEBUG("tl_engine_terminate");
+
   if (!tl_ecs_terminate()) {
     TLERROR("tl_engine_terminate: Failed to terminate ecs manager");
     return false;
