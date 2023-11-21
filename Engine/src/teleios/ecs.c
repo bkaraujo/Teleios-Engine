@@ -75,8 +75,13 @@ b8 tl_ecs_initialize(void) {
   return true;
 }
 
+b8 tl_dealocator_transform(const void* pointer) {
+  tl_memory_free(pointer, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLTransform));
+  return true;
+}
+
 b8 tl_ecs_terminate(void) {
-  if (!tl_list_clear(transforms, tl_container_noop_dealocator)) {
+  if (!tl_list_clear(transforms, tl_dealocator_transform)) {
     TLERROR("tl_ecs_terminate: Failed to clear transform component list");
     return false;
   }
