@@ -1,5 +1,5 @@
-#include "teleios/platform/memory.h"
 #include "teleios/logger.h"
+#include "teleios/platform/memory.h"
 
 #include <stdlib.h>
 

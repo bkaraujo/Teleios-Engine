@@ -1,5 +1,5 @@
-#include "teleios/time.h"
 #include "teleios/platform/time.h"
+#include "teleios/time.h"
 
 TLAPI void tl_time_now(TLDateTime* dt) {
   tl_platform_time_now(dt);

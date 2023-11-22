@@ -1,9 +1,9 @@
-#include "teleios/logger.h"
 #include "teleios/container.h"
-#include "teleios/identity.h"
-#include "teleios/memory/allocator.h"
 #include "teleios/ecs/component.h"
 #include "teleios/ecs/manager.h"
+#include "teleios/identity.h"
+#include "teleios/logger.h"
+#include "teleios/memory/allocator.h"
 
 typedef struct {
   const TLIdentity entityid;

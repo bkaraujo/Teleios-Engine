@@ -1,6 +1,6 @@
 #include "teleios/container.h"
-#include "teleios/memory/allocator.h"
 #include "teleios/logger.h"
+#include "teleios/memory/allocator.h"
 
 static const LSIZE = sizeof(TLList);
 static const NSIZE = sizeof(TLNode);

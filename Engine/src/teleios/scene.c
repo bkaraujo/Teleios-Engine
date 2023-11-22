@@ -1,13 +1,13 @@
-#include "teleios/logger.h"
-#include "teleios/identity.h"
 #include "teleios/container.h"
+#include "teleios/identity.h"
+#include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 
-#include "teleios/scene/manager.h"
-#include "teleios/scene/stack.h"
 #include "teleios/scene/active.h"
-#include "teleios/scene/scene.h"
+#include "teleios/scene/manager.h"
 #include "teleios/scene/region.h"
+#include "teleios/scene/scene.h"
+#include "teleios/scene/stack.h"
 
 static TLList* scenes;
 static TLList* regions;
