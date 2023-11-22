@@ -48,6 +48,7 @@ typedef signed char         b8;
 #include "cglm/types-struct.h"
 
 typedef enum {
+  TL_MEMORY_TYPE_IDENTITY,
   TL_MEMORY_TYPE_CONTAINER_LIST,
   TL_MEMORY_TYPE_CONTAINER_NODE,
   TL_MEMORY_TYPE_SCENE,

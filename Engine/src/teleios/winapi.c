@@ -17,27 +17,27 @@ static HINSTANCE hinstance;
 static HANDLE heap;
 
 void* tl_platform_memory_alloc(u64 size) {
-  return HeapAlloc(heap, HEAP_ZERO_MEMORY, size);
+    return HeapAlloc(heap, HEAP_ZERO_MEMORY, size);
 }
 
 void tl_platform_memory_free(void* block) {
-  HeapFree(heap, HEAP_NO_SERIALIZE, block);
+    HeapFree(heap, HEAP_NO_SERIALIZE, block);
 }
 
 void tl_platform_memory_copy(const void* source, const void* target, u64 size) {
 #pragma warning( push )
 #pragma warning( disable : 4090)
-  i32 error = memcpy_s(target, size, source, size);
+    i32 error = memcpy_s(target, size, source, size);
 #pragma warning( pop )
-  if (error != 0) {
-    TLFATAL("tl_platform_memory_copy: Failed with platform code: %d", error);
-  }
+    if (error != 0) {
+        TLFATAL("tl_platform_memory_copy: Failed with platform code: %d", error);
+    }
 }
 
 void tl_platform_memory_set(const void* target, i32 value, u64 size) {
 #pragma warning( push )
 #pragma warning( disable : 4090)
-  memset(target, value, size);
+    memset(target, value, size);
 #pragma warning( pop )
 }
 // ##############################################################################################
@@ -76,16 +76,16 @@ static const u8 levels[6] = {
 };
 
 void tl_platform_stdout(const u8 level, const char* message) {
-  // Backup console screen buffer info
-  CONSOLE_SCREEN_BUFFER_INFO csbi;
-  GetConsoleScreenBufferInfo(hconsole, &csbi);
+    // Backup console screen buffer info
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hconsole, &csbi);
 
-  // Apply the console color and print the message
-  SetConsoleTextAttribute(hconsole, levels[level]);
-  WriteConsole(hconsole, message, (DWORD)tl_string_length(message), NULL, NULL);
+    // Apply the console color and print the message
+    SetConsoleTextAttribute(hconsole, levels[level]);
+    WriteConsole(hconsole, message, (DWORD)tl_string_length(message), NULL, NULL);
 
-  // Free and Restore resources
-  SetConsoleTextAttribute(hconsole, csbi.wAttributes);
+    // Free and Restore resources
+    SetConsoleTextAttribute(hconsole, csbi.wAttributes);
 }
 
 // ##############################################################################################
@@ -96,25 +96,25 @@ void tl_platform_stdout(const u8 level, const char* message) {
 #include "teleios/platform/time.h"
 
 u64 tl_platform_time_epoch(void) {
-  // Read the system-time and set it to local-time
-  FILETIME ft; GetSystemTimePreciseAsFileTime(&ft);
-  // FILETIME lft; FileTimeToLocalFileTime(&ft, &lft);
+    // Read the system-time and set it to local-time
+    FILETIME ft; GetSystemTimePreciseAsFileTime(&ft);
+    // FILETIME lft; FileTimeToLocalFileTime(&ft, &lft);
 
-  // takes the last modified date
-  LARGE_INTEGER date;
-  date.HighPart = ft.dwHighDateTime;
-  date.LowPart = ft.dwLowDateTime;
+    // takes the last modified date
+    LARGE_INTEGER date;
+    date.HighPart = ft.dwHighDateTime;
+    date.LowPart = ft.dwLowDateTime;
 
-  // 100-nanoseconds = milliseconds * 10000
-  LARGE_INTEGER adjust;
-  adjust.QuadPart = 11644473600000 * 10000;
+    // 100-nanoseconds = milliseconds * 10000
+    LARGE_INTEGER adjust;
+    adjust.QuadPart = 11644473600000 * 10000;
 
-  // removes the diff between 1970 and 1601
-  return date.QuadPart - adjust.QuadPart;
+    // removes the diff between 1970 and 1601
+    return date.QuadPart - adjust.QuadPart;
 }
 
 const u64 tl_platform_time_epoch_micros(void) {
-  return tl_platform_time_epoch() / 10;
+    return tl_platform_time_epoch() / 10;
 }
 
 //const u64 tl_platform_time_epoch_nanos(void) {
@@ -122,17 +122,17 @@ const u64 tl_platform_time_epoch_micros(void) {
 //}
 
 void tl_platform_time_now(TLDateTime* dt) {
-  SYSTEMTIME st; GetLocalTime(&st);
+    SYSTEMTIME st; GetLocalTime(&st);
 
 #pragma warning( push )
 #pragma warning( disable : 4244)
-  dt->year = st.wYear;
-  dt->month = st.wMonth;
-  dt->day = st.wDay;
-  dt->hour = st.wHour;
-  dt->minute = st.wMinute;
-  dt->second = st.wSecond;
-  dt->milliseconds = st.wMilliseconds;
+    dt->year = st.wYear;
+    dt->month = st.wMonth;
+    dt->day = st.wDay;
+    dt->hour = st.wHour;
+    dt->minute = st.wMinute;
+    dt->second = st.wSecond;
+    dt->milliseconds = st.wMilliseconds;
 #pragma warning( pop ) 
 }
 // ##############################################################################################
@@ -143,31 +143,31 @@ void tl_platform_time_now(TLDateTime* dt) {
 #include "teleios/timer.h"
 
 static LARGE_INTEGER frequency;
-void tl_timer_begin(TLTimer * timer) {
-  LARGE_INTEGER start; QueryPerformanceCounter(&start);
-  timer->start = start.QuadPart;
-  timer->current = start.QuadPart;
+void tl_timer_begin(TLTimer* timer) {
+    LARGE_INTEGER start; QueryPerformanceCounter(&start);
+    timer->start = start.QuadPart;
+    timer->current = start.QuadPart;
 }
 
 void tl_timer_reset(TLTimer* timer) {
-  tl_timer_begin(timer);
+    tl_timer_begin(timer);
 }
 
 void tl_timer_update(TLTimer* timer) {
-  LARGE_INTEGER end; QueryPerformanceCounter(&end);
-  timer->current = end.QuadPart - timer->start;
+    LARGE_INTEGER end; QueryPerformanceCounter(&end);
+    timer->current = end.QuadPart - timer->start;
 }
 
 f64 tl_timer_seconds(TLTimer* timer) {
-  return (timer->current / frequency.QuadPart) * 1.0;
+    return (timer->current / frequency.QuadPart) * 1.0;
 }
 
 f64 tl_timer_millis(TLTimer* timer) {
-  return (timer->current * 1000 / frequency.QuadPart) * 1.0;
+    return (timer->current * 1000 / frequency.QuadPart) * 1.0;
 }
 
 f64 tl_timer_micros(TLTimer* timer) {
-  return (timer->current * 1000000 / frequency.QuadPart) * 1.0;
+    return (timer->current * 1000000 / frequency.QuadPart) * 1.0;
 }
 // ##############################################################################################
 //
@@ -187,200 +187,201 @@ static b8 maximized = false;
 static const char* prefix;
 
 b8 tl_platform_window_create(const TLSpecification* spec) {
-  u32 window_width = spec->window.witdh;
-  u32 window_height = spec->window.height;
+    u32 window_width = spec->window.witdh;
+    u32 window_height = spec->window.height;
 
-  u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
-  u32 window_ex_style = WS_EX_APPWINDOW;
+    u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
+    u32 window_ex_style = WS_EX_APPWINDOW;
 
-  window_style |= WS_MAXIMIZEBOX;
-  window_style |= WS_MINIMIZEBOX;
-  window_style |= WS_THICKFRAME;
+    window_style |= WS_MAXIMIZEBOX;
+    window_style |= WS_MINIMIZEBOX;
+    window_style |= WS_THICKFRAME;
 
-  // Obtain the size of the border.
-  RECT border_rect = { 0, 0, 0, 0 };
-  AdjustWindowRectEx(&border_rect, window_style, false, window_ex_style);
+    // Obtain the size of the border.
+    RECT border_rect = { 0, 0, 0, 0 };
+    AdjustWindowRectEx(&border_rect, window_style, false, window_ex_style);
 
-  // Ensure border doesn't overlap with desired content area
-  window_width += border_rect.right - border_rect.left;
-  window_height += border_rect.bottom - border_rect.top;
+    // Ensure border doesn't overlap with desired content area
+    window_width += border_rect.right - border_rect.left;
+    window_height += border_rect.bottom - border_rect.top;
 
-  // Centralize the window
-  u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
-  u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
+    // Centralize the window
+    u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
+    u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
 
-  hwnd = CreateWindowEx(
-    window_ex_style, 
-    TEXT("teleios_window_class"), 
-    spec->name,
-    window_style, 
-    window_x, window_y, 
-    window_width, window_height,
-    0, 
-    0, 
-    hinstance, 
-    0
-  );
+    hwnd = CreateWindowEx(
+        window_ex_style,
+        TEXT("teleios_window_class"),
+        spec->name,
+        window_style,
+        window_x, window_y,
+        window_width, window_height,
+        0,
+        0,
+        hinstance,
+        0
+    );
 
-  if (hwnd == NULL) {
-    TLERROR("tl_platform_window_create: Failed to create window 0x%x", GetLastError());
-    return false;
-  }
+    if (hwnd == NULL) {
+        TLERROR("tl_platform_window_create: Failed to create window 0x%x", GetLastError());
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 void tl_platform_window_show(void) {
-  if (hwnd == NULL) return;
-  ShowWindow(hwnd, SW_SHOW);
+    if (hwnd == NULL) return;
+    ShowWindow(hwnd, SW_SHOW);
 }
 
 void tl_platform_window_hide(void) {
-  if (hwnd == NULL) return;
-  ShowWindow(hwnd, SW_HIDE);
+    if (hwnd == NULL) return;
+    ShowWindow(hwnd, SW_HIDE);
 
 }
 
 static char intermediate[80];
 static char formated[100];
 void tl_platform_window_set_title(const char* title, ...) {
-  tl_platform_memory_set(intermediate, 0, 80);
-  va_list parameters; va_start(parameters, title);
-  vsnprintf(intermediate, 80, title, parameters);
-  va_end(parameters);
+    tl_platform_memory_set(intermediate, 0, 80);
+    va_list parameters; va_start(parameters, title);
+    vsnprintf(intermediate, 80, title, parameters);
+    va_end(parameters);
 
-  tl_platform_memory_set(formated, 0, 80);
-  sprintf_s(formated, 100, "%s (%s)", prefix, intermediate);
-  SetWindowText(hwnd, formated);
+    tl_platform_memory_set(formated, 0, 80);
+    sprintf_s(formated, 100, "%s (%s)", prefix, intermediate);
+    SetWindowText(hwnd, formated);
 }
 
 LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
-  switch (msg) {
+    switch (msg) {
     case WM_ERASEBKGND: {
-      // Background will be handled by the graphics context
-      return 1;
+        // Background will be handled by the graphics context
+        return 1;
     } break;
 
     case WM_CLOSE: {
-      PostQuitMessage(0);
-      tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
-      return 0;
+        PostQuitMessage(0);
+        tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
+        return 0;
     } break;
 
     case WM_DESTROY: {
-      PostQuitMessage(0);
-      return 0;
+        PostQuitMessage(0);
+        return 0;
     } break;
 
     case WM_SETFOCUS: {
-      tl_event_fire(TL_EVENT_WINDOW_FOCUS_GAINED, NULL);
+        tl_event_fire(TL_EVENT_WINDOW_FOCUS_GAINED, NULL);
     } break;
-    
+
     case WM_KILLFOCUS: {
-      tl_event_fire(TL_EVENT_WINDOW_FOCUS_LOST, NULL);
+        tl_event_fire(TL_EVENT_WINDOW_FOCUS_LOST, NULL);
     } break;
 
     case WM_MOVE: {
-      TLEvent event = { 0 };
-      event.data.i32[0] = (i32)(i16)LOWORD(lParam);
-      event.data.i32[1] = (i32)(i16)HIWORD(lParam);
-      tl_event_fire(TL_EVENT_WINDOW_MOVED, &event);
+        TLEvent event = { 0 };
+        event.data.i32[0] = (i32)(i16)LOWORD(lParam);
+        event.data.i32[1] = (i32)(i16)HIWORD(lParam);
+        tl_event_fire(TL_EVENT_WINDOW_MOVED, &event);
     } break;
-    
+
     case WM_SIZE: {
-      switch (wParam) {
+        switch (wParam) {
 
         case SIZE_MINIMIZED: {
-          maximized = false;
-          minimized = true;
-          tl_event_fire(TL_EVENT_WINDOW_MINIMIZED, NULL);
+            maximized = false;
+            minimized = true;
+            tl_event_fire(TL_EVENT_WINDOW_MINIMIZED, NULL);
         } break;
 
         case SIZE_MAXIMIZED: {
-          maximized = true;
-          minimized = false;
-          tl_event_fire(TL_EVENT_WINDOW_MAXIMIZED, NULL);
+            maximized = true;
+            minimized = false;
+            tl_event_fire(TL_EVENT_WINDOW_MAXIMIZED, NULL);
         } break;
 
         case SIZE_RESTORED: {
-          if (maximized || minimized) {
-            maximized = false;
-            minimized = false;
-            tl_event_fire(TL_EVENT_WINDOW_RESTORED, NULL);
-          } else {
-            TLEvent event = { 0 };
-            event.data.u32[0] = LOWORD(lParam);
-            event.data.u32[1] = HIWORD(lParam);
-            tl_event_fire(TL_EVENT_WINDOW_RESIZED, &event);
-          }
+            if (maximized || minimized) {
+                maximized = false;
+                minimized = false;
+                tl_event_fire(TL_EVENT_WINDOW_RESTORED, NULL);
+            }
+            else {
+                TLEvent event = { 0 };
+                event.data.u32[0] = LOWORD(lParam);
+                event.data.u32[1] = HIWORD(lParam);
+                tl_event_fire(TL_EVENT_WINDOW_RESIZED, &event);
+            }
         } break;
-      }
+        }
     } break;
 
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN: {
-      TLEvent event = { 0 };
-      event.data.u16[0] = (u16)wParam;
+        TLEvent event = { 0 };
+        event.data.u16[0] = (u16)wParam;
 
-      tl_event_fire(TL_EVENT_INPUT_KEY_PRESSED, &event);
+        tl_event_fire(TL_EVENT_INPUT_KEY_PRESSED, &event);
 
-      // Prevent default window behaviour such as context menu, etc.
-      return 0;
+        // Prevent default window behaviour such as context menu, etc.
+        return 0;
     } break;
 
     case WM_KEYUP:
     case WM_SYSKEYUP: {
-      TLEvent event = { 0 };
-      event.data.u16[0] = (u16)wParam;
+        TLEvent event = { 0 };
+        event.data.u16[0] = (u16)wParam;
 
-      tl_event_fire(TL_EVENT_INPUT_KEY_RELEASED, &event);
+        tl_event_fire(TL_EVENT_INPUT_KEY_RELEASED, &event);
     } break;
 
     case WM_MOUSEMOVE: {
-      TLEvent event = { 0 };
-      event.data.i32[0] = GET_X_LPARAM(lParam);
-      event.data.i32[1] = GET_Y_LPARAM(lParam);
-      tl_event_fire(TL_EVENT_INPUT_MOUSE_MOVE, &event);
+        TLEvent event = { 0 };
+        event.data.i32[0] = GET_X_LPARAM(lParam);
+        event.data.i32[1] = GET_Y_LPARAM(lParam);
+        tl_event_fire(TL_EVENT_INPUT_MOUSE_MOVE, &event);
     } break;
 
     case WM_MOUSEWHEEL: {
-      i32 delta = GET_WHEEL_DELTA_WPARAM(wParam);
-      if (delta != 0) {
-        TLEvent event = { 0 };
-        event.data.i8[0] = (delta < 0) ? -1 : 1;
-        tl_event_fire(TL_EVENT_INPUT_MOUSE_WHELL, &event);
-      }
+        i32 delta = GET_WHEEL_DELTA_WPARAM(wParam);
+        if (delta != 0) {
+            TLEvent event = { 0 };
+            event.data.i8[0] = (delta < 0) ? -1 : 1;
+            tl_event_fire(TL_EVENT_INPUT_MOUSE_WHELL, &event);
+        }
     } break;
 
     case WM_LBUTTONUP:
     case WM_RBUTTONUP:
     case WM_MBUTTONUP: {
-      TLEvent event = { 0 };
+        TLEvent event = { 0 };
 
-      switch (msg) {
+        switch (msg) {
         case WM_LBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_LEFT; break;
         case WM_RBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_RIGHT; break;
         case WM_MBUTTONUP: event.data.u8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
-      }
+        }
 
-      tl_event_fire(TL_EVENT_INPUT_MOUSE_RELEASED, &event);
+        tl_event_fire(TL_EVENT_INPUT_MOUSE_RELEASED, &event);
     } break;
 
     case WM_LBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_MBUTTONDOWN: {
-      TLEvent event = { 0 };
+        TLEvent event = { 0 };
 
-      switch (msg) {
-      case WM_LBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_LEFT; break;
-      case WM_RBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_RIGHT; break;
-      case WM_MBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
-      }
+        switch (msg) {
+        case WM_LBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_LEFT; break;
+        case WM_RBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_RIGHT; break;
+        case WM_MBUTTONDOWN: event.data.u8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
+        }
 
-      tl_event_fire(TL_EVENT_INPUT_MOUSE_PRESSED, &event);
+        tl_event_fire(TL_EVENT_INPUT_MOUSE_PRESSED, &event);
     } break;
-  }
-  return DefWindowProcA(hwnd, msg, wParam, lParam);
+    }
+    return DefWindowProcA(hwnd, msg, wParam, lParam);
 }
 // ##############################################################################################
 //
@@ -390,53 +391,53 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 #include "teleios/platform/manager.h"
 
 b8 tl_platform_initialize(const TLSpecification* spec) {
-  QueryPerformanceFrequency(&frequency);
+    QueryPerformanceFrequency(&frequency);
 
-  hinstance = GetModuleHandle(NULL);
-  hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
+    hinstance = GetModuleHandle(NULL);
+    hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
 
-  WNDCLASS wc       = { 0 };
-  wc.style          = CS_DBLCLKS;
-  wc.lpfnWndProc    = tl_platform_window_procedure;
-  wc.cbClsExtra     = 0;
-  wc.cbWndExtra     = 0;
-  wc.hInstance      = hinstance;
-  wc.hIcon          = LoadIcon(hinstance, IDI_APPLICATION);
-  wc.hCursor        = LoadCursor(NULL, IDC_ARROW);  
-  wc.hbrBackground  = NULL;                   
-  wc.lpszClassName  = TEXT("teleios_window_class");
+    WNDCLASS wc = { 0 };
+    wc.style = CS_DBLCLKS;
+    wc.lpfnWndProc = tl_platform_window_procedure;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = hinstance;
+    wc.hIcon = LoadIcon(hinstance, IDI_APPLICATION);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;
+    wc.lpszClassName = TEXT("teleios_window_class");
 
-  if (!RegisterClass(&wc)) {
-    TLERROR("tl_platform_initialize: Failed to RegisterClass 0x%x", GetLastError());
-    return false;
-  }
+    if (!RegisterClass(&wc)) {
+        TLERROR("tl_platform_initialize: Failed to RegisterClass 0x%x", GetLastError());
+        return false;
+    }
 
-  prefix = spec->name;
-  return true;
+    prefix = spec->name;
+    return true;
 }
 
 b8 tl_platform_update(void) {
-  MSG message;
+    MSG message;
 
-  while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
-    TranslateMessage(&message);
-    DispatchMessage(&message);
-  }
+    while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&message);
+        DispatchMessage(&message);
+    }
 
-  return true;
+    return true;
 }
 
 b8 tl_platform_terminate(void) {
 
 
-  if (heap != NULL) {
-    if (!HeapDestroy(heap)) {
-      TLERROR("tl_platform_terminate: Failed to destroy heap 0x%x", GetLastError());
-      return false;
+    if (heap != NULL) {
+        if (!HeapDestroy(heap)) {
+            TLERROR("tl_platform_terminate: Failed to destroy heap 0x%x", GetLastError());
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 #endif // TELEIOS_PLATFORM_WINDOWS

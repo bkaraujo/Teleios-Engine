@@ -14,21 +14,21 @@ static char intermediate[1030];
 static char formated[1030];
 
 TLAPI void tl_logger_write(const u8 level, const char* message, ...) {
-  tl_platform_memory_set(&intermediate, 0, 1030);
+    tl_platform_memory_set(&intermediate, 0, 1030);
 
-  va_list parameters; va_start(parameters, message);
-  vsnprintf(intermediate, 1030, message, parameters);
-  va_end(parameters);
+    va_list parameters; va_start(parameters, message);
+    vsnprintf(intermediate, 1030, message, parameters);
+    va_end(parameters);
 
-  TLDateTime dt; tl_platform_time_now(&dt);
+    TLDateTime dt; tl_platform_time_now(&dt);
 
-  tl_platform_memory_set(&formated, 0, 1030);
-  sprintf_s(formated, 1030, LAYOUT, 
-    dt.year, dt.month, dt.day,
-    dt.hour, dt.minute, dt.second, dt.milliseconds,
-    LITERALS[level], intermediate
-  );
+    tl_platform_memory_set(&formated, 0, 1030);
+    sprintf_s(formated, 1030, LAYOUT,
+        dt.year, dt.month, dt.day,
+        dt.hour, dt.minute, dt.second, dt.milliseconds,
+        LITERALS[level], intermediate
+    );
 
-  tl_platform_stdout(level, formated);
-  if (level == 0) exit(99);
+    tl_platform_stdout(level, formated);
+    if (level == 0) exit(99);
 }

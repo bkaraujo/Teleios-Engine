@@ -4,16 +4,16 @@
 #include "teleios/types.h"
 
 typedef struct {
-  const TLIdentity identity;
-  const char* name;
-  TLList* regions;
+    const TLIdentity identity;
+    const char* name;
+    TLList* regions;
 } TLScene;
 
 typedef struct {
-  const TLIdentity identity;
-  const char* name;
-  const b8 active;
-  TLList* entities;
+    const TLIdentity identity;
+    const char* name;
+    const b8 active;
+    TLList* entities;
 } TLRegion;
 
 #endif // TELEIOS_SCENE_SCTRUCTS_H

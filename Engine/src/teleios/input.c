@@ -1,8 +1,8 @@
 #include "teleios/logger.h"
 
 struct TLRegistry {
-  b8 keyboard[TL_KEYS_MAXIMUM];
-  b8 button[TL_MOUSE_BUTTON_MAXIMUM];
+    b8 keyboard[TL_KEYS_MAXIMUM];
+    b8 button[TL_MOUSE_BUTTON_MAXIMUM];
 };
 
 static i8 scroll;
@@ -36,16 +36,16 @@ TLAPI b8 tl_input_mouse_released(TLMouseButton button) { return previous.button[
 #include "teleios/event/codes.h"
 
 static b8 tl_input_event(const u8 code, const TLEvent* event) {
-  switch (code) {
+    switch (code) {
     case TL_EVENT_INPUT_KEY_PRESSED: current.keyboard[event->data.u16[0]] = true; break;
     case TL_EVENT_INPUT_KEY_RELEASED: current.keyboard[event->data.u16[0]] = false; break;
     case TL_EVENT_INPUT_MOUSE_PRESSED: current.button[event->data.u8[0]] = true; break;
     case TL_EVENT_INPUT_MOUSE_RELEASED: current.button[event->data.u8[0]] = true; break;
     case TL_EVENT_INPUT_MOUSE_WHELL: scroll = event->data.i8[0]; break;
     case TL_EVENT_INPUT_MOUSE_MOVE: mouse_x = event->data.i32[0]; mouse_y = event->data.i32[1]; break;
-  }
+    }
 
-  return TL_EVENT_CONTINUE;
+    return TL_EVENT_CONTINUE;
 }
 
 // ##############################################################################################
@@ -57,49 +57,49 @@ static b8 tl_input_event(const u8 code, const TLEvent* event) {
 #include "teleios/memory/allocator.h"
 
 b8 tl_input_initialize(void) {
-  TLTRACE("tl_input_initialize");
-  mouse_y = mouse_x = 0;
-  tl_memory_set(&previous, 0, sizeof(struct TLRegistry));
-  tl_memory_set(&current, 0, sizeof(struct TLRegistry));
+    TLTRACE("tl_input_initialize");
+    mouse_y = mouse_x = 0;
+    tl_memory_set(&previous, 0, sizeof(struct TLRegistry));
+    tl_memory_set(&current, 0, sizeof(struct TLRegistry));
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_KEY_PRESSED, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_KEY_PRESSED");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_KEY_PRESSED, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_KEY_PRESSED");
+        return false;
+    }
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_KEY_RELEASED, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_KEY_RELEASED");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_KEY_RELEASED, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_KEY_RELEASED");
+        return false;
+    }
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_MOVE, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_MOVE");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_MOVE, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_MOVE");
+        return false;
+    }
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_WHELL, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_WHELL");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_WHELL, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_WHELL");
+        return false;
+    }
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_PRESSED, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_PRESSED");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_PRESSED, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_PRESSED");
+        return false;
+    }
 
-  if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_RELEASED, tl_input_event)) {
-    TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_RELEASED");
-    return false;
-  }
+    if (!tl_event_subscribe(TL_EVENT_INPUT_MOUSE_RELEASED, tl_input_event)) {
+        TLERROR("tl_input_initialize: Failed to subscribe for TL_EVENT_INPUT_MOUSE_RELEASED");
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 void tl_input_update(void) {
-  tl_memory_copy(&current, &previous, sizeof(struct TLRegistry));
+    tl_memory_copy(&current, &previous, sizeof(struct TLRegistry));
 }
 
 b8 tl_input_terminate(void) {
-  TLTRACE("tl_input_terminate");
-  return true;
+    TLTRACE("tl_input_terminate");
+    return true;
 }
