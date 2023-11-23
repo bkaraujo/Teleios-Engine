@@ -337,6 +337,7 @@ b8 tl_scene_terminate(void) {
 //                                        ACTIVE
 //
 // ##############################################################################################
+#include "teleios/ecs/system.h"
 b8 tl_scene_prepare(void) {
     if (active_regions == NULL || active_regions->size == 0) {
         TLERROR("tl_scene_prepare: No region active");
@@ -346,16 +347,16 @@ b8 tl_scene_prepare(void) {
     return true;
 }
 
-void tl_scene_update_fixed(u64 delta) {
-
+b8 tl_scene_update_fixed(u64 delta) {
+    return tl_ecs_system_process_time_fixed(delta);
 }
 
-void tl_scene_update(u64 delta) {
-
+b8 tl_scene_update(u64 delta) {
+    return tl_ecs_system_process_time_delta(delta);
 }
 
-void tl_scene_update_after(void) {
-
+b8 tl_scene_update_after(void) {
+    return tl_ecs_system_process();
 }
 // ##############################################################################################
 //

@@ -1,4 +1,5 @@
 #include "teleios/ecs/manager.h"
+#include "teleios/ecs/system.h"
 #include "teleios/engine.h"
 #include "teleios/event/codes.h"
 #include "teleios/event/manager.h"
@@ -103,18 +104,27 @@ TLAPI b8 tl_engine_run(void) {
         accumulator += time_delta;
         while (accumulator > STEP) {
             accumulator -= STEP;
-            tl_scene_update_fixed(STEP);
+            if (!tl_scene_update_fixed(STEP)) {
+                TLERROR("tl_engine_run: Failed to tl_scene_update_fixed");
+                return false;
+            }
             ups++;
         }
         // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         // GPU-bounded Rotines
         // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         fps++;
-        tl_scene_update(time_delta);
+        if (!tl_scene_update(time_delta)) {
+            TLERROR("tl_engine_run: Failed to tl_scene_update");
+            return false;
+        }
         // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         // Frame finalization
         // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        tl_scene_update_after();
+        if (!tl_scene_update_after()) {
+            TLERROR("tl_engine_run: Failed to tl_scene_update_after");
+            return false;
+        }
         tl_input_update();
         tl_platform_update();
         // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

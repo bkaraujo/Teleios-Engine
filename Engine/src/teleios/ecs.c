@@ -1,26 +1,20 @@
 #include "teleios/container.h"
 #include "teleios/ecs/component.h"
+#include "teleios/ecs/components.h"
 #include "teleios/ecs/entity.h"
 #include "teleios/ecs/manager.h"
 #include "teleios/identity.h"
 #include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 
+static TLList* names;
 static TLList* transforms;
-typedef struct {
-    const TLIdentity* entityid;
-} TLComponentTransform;
 
 b8 tl_dealocator_transform(const void* pointer) {
     tl_memory_free(pointer, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
     return true;
 }
 
-static TLList* names;
-typedef struct {
-    const TLIdentity* entityid;
-    const char* name;
-} TLComponentName;
 
 b8 tl_dealocator_name(const void* pointer) {
     tl_memory_free(pointer, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName));
@@ -200,6 +194,68 @@ TLAPI b8 tl_ecs_entity_destroy(const TLIdentity* entityid) {
 
     return false;
 }
+
+// ##############################################################################################
+//
+//                                        SYSTEM
+//
+// ##############################################################################################
+#include "teleios/ecs/system.h"
+static TLList* system_fixed;
+static TLList* system_veriable;
+static TLList* system_untimed;
+
+TLAPI b8 tl_ecs_system_register_untimed(PFN_SYSTEM_UNTIEMD system) {
+    return tl_list_append(system_untimed, system);
+}
+
+TLAPI b8 tl_ecs_system_register(b8 time_fixed, PFN_SYSTEM_TIMED system) {
+    return tl_list_append(time_fixed ? system_fixed : system_veriable, system);
+}
+
+TLAPI b8 tl_ecs_system_unregister(b8 time_fixed, PFN_SYSTEM_TIMED system) {
+    return tl_list_remove_payload(time_fixed ? system_fixed : system_veriable, system);
+}
+
+b8 tl_ecs_system_process_time_fixed(const u64 delta) {
+    TLNode* current = system_fixed->head;
+    while (current != NULL) {
+        if (!((PFN_SYSTEM_TIMED)current->payload)(delta)) {
+            TLERROR("tl_ecs_system_process_time_fixed: System return false");
+            return false;
+        }
+        current = current->next;
+    }
+
+    return true;
+}
+
+b8 tl_ecs_system_process_time_delta(const u64 delta) {
+    TLNode* current = system_veriable->head;
+    while (current != NULL) {
+        if (!((PFN_SYSTEM_TIMED)current->payload)(delta)) {
+            TLERROR("tl_ecs_system_process_time_delta: System return false");
+            return false;
+        }
+        current = current->next;
+    }
+
+    return true;
+}
+
+b8 tl_ecs_system_process(void) {
+    TLNode* current = system_untimed->head;
+    while (current != NULL) {
+        if (!((PFN_SYSTEM_UNTIEMD)current->payload)()) {
+            TLERROR("tl_ecs_system_process: System return false");
+            return false;
+        }
+        current = current->next;
+    }
+
+    return true;
+}
+
 // ##############################################################################################
 //
 //                                        MANAGER
@@ -226,18 +282,38 @@ b8 tl_ecs_initialize(void) {
         return false;
     }
 
+    system_fixed = tl_list_create();
+    if (system_fixed == NULL) {
+        TLERROR("tl_ecs_initialize: Failed to create system_fixed list");
+        return false;
+    }
+
+    system_veriable = tl_list_create();
+    if (system_veriable == NULL) {
+        TLERROR("tl_ecs_initialize: Failed to create system_veriable list");
+        return false;
+    }
+
+    system_untimed = tl_list_create();
+    if (system_untimed == NULL) {
+        TLERROR("tl_ecs_initialize: Failed to create system_untimed list");
+        return false;
+    }
+
     return true;
 }
 
 b8 tl_ecs_terminate(void) {
-    TLNode* current = entities->head;
-    while (current != NULL) {
-        const TLIdentity* entityid = current->payload;
-        current = current->next;
+    if (entities->size > 0) {
+        TLNode* current = entities->head;
+        while (current != NULL) {
+            const TLIdentity* entityid = current->payload;
+            current = current->next;
 
-        TLWARN("tl_ecs_terminate: Removing entity %s. Please remove it yourself at tl_application_terminate(void)", entityid->identity);
-        if (!tl_ecs_entity_destroy(entityid)) {
-            TLERROR("tl_ecs_terminate: Failed to destroy entity.");
+            TLWARN("tl_ecs_terminate: Removing entity %s. Please remove it yourself at tl_application_terminate(void)", entityid->identity);
+            if (!tl_ecs_entity_destroy(entityid)) {
+                TLERROR("tl_ecs_terminate: Failed to destroy entity.");
+            }
         }
     }
 
@@ -245,6 +321,7 @@ b8 tl_ecs_terminate(void) {
         TLERROR("tl_ecs_terminate: Failed to destroy identities pool list");
         return false;
     }
+
     if (!tl_list_destroy(names)) {
         TLERROR("tl_ecs_terminate: Failed to destroy names component list");
         return false;
@@ -252,6 +329,45 @@ b8 tl_ecs_terminate(void) {
 
     if (!tl_list_destroy(transforms)) {
         TLERROR("tl_ecs_terminate: Failed to destroy transform component list");
+        return false;
+    }
+
+    if (system_fixed->size > 0) {
+        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
+        if (!tl_list_clear(system_fixed, tl_container_noop_dealocator)) {
+            TLERROR("tl_ecs_terminate: Failed to clear system_fixed list");
+            return false;
+        }
+    }
+
+    if (!tl_list_destroy(system_fixed)) {
+        TLERROR("tl_ecs_terminate: Failed to destroy system_fixed list");
+        return false;
+    }
+
+    if (system_veriable->size > 0) {
+        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
+        if (!tl_list_clear(system_veriable, tl_container_noop_dealocator)) {
+            TLERROR("tl_ecs_terminate: Failed to clear system_veriable list");
+            return false;
+        }
+    }
+
+    if (!tl_list_destroy(system_veriable)) {
+        TLERROR("tl_ecs_terminate: Failed to destroy system_veriable list");
+        return false;
+    }
+
+    if (system_untimed->size > 0) {
+        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
+        if (!tl_list_clear(system_untimed, tl_container_noop_dealocator)) {
+            TLERROR("tl_ecs_terminate: Failed to clear system_untimed list");
+            return false;
+        }
+    }
+
+    if (!tl_list_destroy(system_untimed)) {
+        TLERROR("tl_ecs_terminate: Failed to destroy system_untimed list");
         return false;
     }
 
