@@ -284,9 +284,10 @@
     <ClInclude Include="src\teleios\scene\scene.h" />
     <ClInclude Include="src\teleios\scene\stack.h" />
     <ClInclude Include="src\teleios\scene\structs.h" />
-    <ClInclude Include="src\teleios\time.h" />
-    <ClInclude Include="src\teleios\timer.h" />
+    <ClInclude Include="src\teleios\time\epoch.h" />
+    <ClInclude Include="src\teleios\time\timer.h" />
     <ClInclude Include="src\teleios\string.h" />
+    <ClInclude Include="src\teleios\time\wallclock.h" />
     <ClInclude Include="src\teleios\types.h" />
   </ItemGroup>
   <ItemGroup>

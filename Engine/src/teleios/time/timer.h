@@ -1,5 +1,5 @@
-#ifndef TELEIOS_TIMER_H
-#define TELEIOS_TIMER_H
+#ifndef TELEIOS_TIME_TIMER_H
+#define TELEIOS_TIME_TIMER_H
 
 #include "teleios/types.h"
 
@@ -11,4 +11,4 @@ f64 tl_timer_seconds(TLTimer* timer);
 f64 tl_timer_millis(TLTimer* timer);
 f64 tl_timer_micros(TLTimer* timer);
 
-#endif // TELEIOS_TIMER_H
+#endif // TELEIOS_TIME_TIMER_H

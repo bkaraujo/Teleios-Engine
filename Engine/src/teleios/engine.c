@@ -10,8 +10,8 @@
 #include "teleios/platform/window.h"
 #include "teleios/scene/active.h"
 #include "teleios/scene/manager.h"
-#include "teleios/time.h"
-#include "teleios/timer.h"
+#include "teleios/time/epoch.h"
+#include "teleios/time/timer.h"
 
 static b8 running = true;
 

@@ -51,7 +51,7 @@
     <ClInclude Include="src\teleios\platform\time.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\timer.h">
+    <ClInclude Include="src\teleios\time\timer.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\memory\allocator.h">
@@ -102,7 +102,7 @@
     <ClInclude Include="src\teleios\scene\region.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\time.h">
+    <ClInclude Include="src\teleios\time\epoch.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\scene\active.h">
@@ -634,6 +634,9 @@
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\ecs\entity.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\time\wallclock.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
