@@ -155,6 +155,38 @@ TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, cons
     return NULL;
 }
 
+TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
+    if (list == NULL) {
+        TLWARN("tl_list_contains: list is null");
+        return false;
+    }
+
+    if (payload == NULL) {
+        TLWARN("tl_list_contains: payload is null");
+        return false;
+    }
+
+    switch (list->size) {
+    case 0:
+        TLWARN("tl_list_contains: List is empty");
+        return false;
+
+    case 1:
+        return comparator(list->head->payload, payload);
+
+    default:
+        TLNode* current = list->head;
+        while (current != NULL) {
+            if (comparator(current->payload, payload)) {
+                return true;
+            }
+            current = current->next;
+        }
+    }
+
+    return false;
+}
+
 static b8 tl_list_address_comparator(const void* first, const void* second) {
     return first == second;
 }

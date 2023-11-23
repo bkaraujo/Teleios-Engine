@@ -7,8 +7,7 @@
 #include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 
-static TLList* names;
-static TLList* transforms;
+static TLList* components[TL_COMPONENT_MAXIMUM];
 
 b8 tl_dealocator_transform(const void* pointer) {
     tl_memory_free(pointer, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
@@ -32,7 +31,7 @@ b8 tl_dealocator_identity(const void* pointer) {
 //
 // ##############################################################################################
 
-static b8 tl_ecs_component_contains(TLList* list, const TLIdentity* entityid) {
+static b8 tl_ecs_component_contains(const TLList* list, const TLIdentity* entityid) {
     TLIdentity identity;
     TLNode* current = list->head;
     while (current != NULL) {
@@ -47,22 +46,22 @@ static b8 tl_ecs_component_contains(TLList* list, const TLIdentity* entityid) {
     return false;
 }
 
-TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, TL_COMPONENT_TYPE type) {
+TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONENT_TYPE type) {
     if (entityid == NULL) {
         TLERROR("tl_ecs_component_attach: entityid is null");
         return false;
     }
 
+    if (tl_ecs_component_contains(components[type], entityid)) {
+        TLWARN("tl_ecs_component_attach: Entity %s already have component XXXXXX", entityid->identity);
+        return NULL;
+    }
+
     switch (type) {
     case TL_COMPONENT_TRANSFORM: {
-        if (tl_ecs_component_contains(transforms, entityid)) {
-            TLWARN("tl_ecs_component_attach: Entity %s already have component TL_COMPONENT_TRANSFORM", entityid->identity);
-            return NULL;
-        }
-
         TLComponentTransform* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
         component->entityid = entityid;
-        if (!tl_list_append(transforms, component)) {
+        if (!tl_list_append(components[type], component)) {
             TLERROR("tl_ecs_component_attach: Failed to create TL_COMPONENT_TRANSFORM");
             return NULL;
         }
@@ -71,14 +70,9 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, TL_COMPONENT_TYP
     } break;
 
     case TL_COMPONENT_NAME: {
-        if (tl_ecs_component_contains(names, entityid)) {
-            TLWARN("tl_ecs_component_attach: Entity %s already have component TL_COMPONENT_NAME", entityid->identity);
-            return NULL;
-        }
-
         TLComponentName* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName));
         component->entityid = entityid;
-        if (!tl_list_append(names, component)) {
+        if (!tl_list_append(components[type], component)) {
             TLERROR("tl_ecs_component_attach: Failed to create TL_COMPONENT_TRANSFORM");
             return NULL;
         }
@@ -95,7 +89,7 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, TL_COMPONENT_TYP
     return NULL;
 }
 
-TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, TL_COMPONENT_TYPE type) {
+TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, const TL_COMPONENT_TYPE type) {
     if (entityid == NULL) {
         TLERROR("tl_ecs_component_remove: entityid is null");
         return;
@@ -103,11 +97,11 @@ TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, TL_COMPONENT_TYPE
 
     switch (type) {
     case TL_COMPONENT_NAME: {
-        TLNode* current = names->head;
+        TLNode* current = components[type]->head;
         while (current != NULL) {
             const TLComponentName* component = current->payload;
             if (tl_identity_equals(entityid, component->entityid)) {
-                if (!tl_list_remove_node(names, current)) {
+                if (!tl_list_remove_node(components[type], current)) {
                     TLERROR("tl_ecs_component_remove: Failed to remove component TLComponentName from entity %s ", entityid->identity);
                     return;
                 }
@@ -119,11 +113,11 @@ TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, TL_COMPONENT_TYPE
         }
     }break;
     case TL_COMPONENT_TRANSFORM: {
-        TLNode* current = transforms->head;
+        TLNode* current = components[type]->head;
         while (current != NULL) {
             const TLComponentTransform* component = current->payload;
             if (tl_identity_equals(entityid, component->entityid)) {
-                if (!tl_list_remove_node(transforms, current)) {
+                if (!tl_list_remove_node(components[type], current)) {
                     TLERROR("tl_ecs_component_remove: Failed to remove component TLComponentTransform from entity %s ", entityid->identity);
                     return;
                 }
@@ -201,24 +195,32 @@ TLAPI b8 tl_ecs_entity_destroy(const TLIdentity* entityid) {
 //
 // ##############################################################################################
 #include "teleios/ecs/system.h"
-static TLList* system_fixed;
-static TLList* system_veriable;
-static TLList* system_untimed;
 
-TLAPI b8 tl_ecs_system_register_untimed(PFN_SYSTEM_UNTIEMD system) {
-    return tl_list_append(system_untimed, system);
+typedef enum {
+    TL_SYSTEM_TYPE_UNTIMED,
+    TL_SYSTEM_TYPE_FIXED,
+    TL_SYSTEM_TYPE_VARIABLE,
+    TL_SYSTEM_TYPE_MAXIMUM
+} TL_SYSTEM_TYPE;
+
+static TLList* system[3];
+
+TLAPI b8 tl_ecs_system_register_untimed(PFN_SYSTEM_UNTIEMD pfn) {
+    return tl_list_append(system[TL_SYSTEM_TYPE_UNTIMED], pfn);
 }
 
-TLAPI b8 tl_ecs_system_register(b8 time_fixed, PFN_SYSTEM_TIMED system) {
-    return tl_list_append(time_fixed ? system_fixed : system_veriable, system);
+TLAPI b8 tl_ecs_system_register_timed(b8 time_fixed, PFN_SYSTEM_TIMED pfn) {
+    return tl_list_append(time_fixed ? system[TL_SYSTEM_TYPE_FIXED] : system[TL_SYSTEM_TYPE_VARIABLE], pfn);
 }
 
-TLAPI b8 tl_ecs_system_unregister(b8 time_fixed, PFN_SYSTEM_TIMED system) {
-    return tl_list_remove_payload(time_fixed ? system_fixed : system_veriable, system);
+TLAPI b8 tl_ecs_system_unregister(PFN_SYSTEM_TIMED pfn) {
+    if (tl_list_remove_payload(system[TL_SYSTEM_TYPE_VARIABLE], pfn)) return true;
+    if (tl_list_remove_payload(system[TL_SYSTEM_TYPE_FIXED], pfn)) return true;
+    return tl_list_remove_payload(system[TL_SYSTEM_TYPE_UNTIMED], pfn);
 }
 
 b8 tl_ecs_system_process_time_fixed(const u64 delta) {
-    TLNode* current = system_fixed->head;
+    TLNode* current = system[TL_SYSTEM_TYPE_FIXED]->head;
     while (current != NULL) {
         if (!((PFN_SYSTEM_TIMED)current->payload)(delta)) {
             TLERROR("tl_ecs_system_process_time_fixed: System return false");
@@ -231,7 +233,7 @@ b8 tl_ecs_system_process_time_fixed(const u64 delta) {
 }
 
 b8 tl_ecs_system_process_time_delta(const u64 delta) {
-    TLNode* current = system_veriable->head;
+    TLNode* current = system[TL_SYSTEM_TYPE_VARIABLE]->head;
     while (current != NULL) {
         if (!((PFN_SYSTEM_TIMED)current->payload)(delta)) {
             TLERROR("tl_ecs_system_process_time_delta: System return false");
@@ -244,7 +246,7 @@ b8 tl_ecs_system_process_time_delta(const u64 delta) {
 }
 
 b8 tl_ecs_system_process(void) {
-    TLNode* current = system_untimed->head;
+    TLNode* current = system[TL_SYSTEM_TYPE_UNTIMED]->head;
     while (current != NULL) {
         if (!((PFN_SYSTEM_UNTIEMD)current->payload)()) {
             TLERROR("tl_ecs_system_process: System return false");
@@ -255,7 +257,56 @@ b8 tl_ecs_system_process(void) {
 
     return true;
 }
+// ##############################################################################################
+//
+//                                        SEARCH
+//
+// ##############################################################################################
+static b8 tl_ecs_compare_component_name(const void* first, const void* second) {
+    const TLComponentName* name = first;
+    return tl_identity_equals(name->entityid, second);
+}
 
+TLAPI const TLList* tl_ecs_search_for(const u32 mask) {
+    TLList* result = tl_list_create();
+
+    if (mask & BIT(TL_COMPONENT_TRANSFORM)) {
+        TLNode* current = components[TL_COMPONENT_TRANSFORM]->head;
+        while (current != NULL) {
+            const TLComponentTransform* component = current->payload;
+            if (!tl_list_append(result, component->entityid)) {
+                TLERROR("tl_ecs_search: Failed to append to result");
+                tl_list_clear(result, tl_container_noop_dealocator);
+                tl_list_destroy(result);
+                return NULL;
+            }
+            current = current->next;
+        }
+    }
+
+    if (mask & BIT(TL_COMPONENT_NAME)) {
+        TLNode* current = result->head;
+        while (current != NULL) {
+            const TLIdentity* entityid = current->payload;
+            if (!tl_list_contains(components[TL_COMPONENT_NAME], tl_ecs_compare_component_name, entityid)) {
+                if (!tl_list_remove_payload(result, entityid)) {
+                    TLERROR("tl_ecs_search_for: Failed to remove entity from result");
+                    tl_list_clear(result, tl_container_noop_dealocator);
+                    tl_list_destroy(result);
+                    return NULL;
+                }
+            }
+            current = current->next;
+        }
+    }
+
+    return result;
+}
+
+TLAPI void tl_ecs_search_release(TLList* search) {
+    tl_list_clear(search, tl_container_noop_dealocator);
+    tl_list_destroy(search);
+}
 // ##############################################################################################
 //
 //                                        MANAGER
@@ -270,34 +321,20 @@ b8 tl_ecs_initialize(void) {
         return false;
     }
 
-    names = tl_list_create();
-    if (names == NULL) {
-        TLERROR("tl_ecs_initialize: Failed to create names component list");
-        return false;
+    for (unsigned i = 0; i < TL_COMPONENT_MAXIMUM; ++i) {
+        components[i] = tl_list_create();
+        if (components[i] == NULL) {
+            TLERROR("tl_ecs_initialize: Failed to create component %u list", i);
+            return false;
+        }
     }
 
-    transforms = tl_list_create();
-    if (transforms == NULL) {
-        TLERROR("tl_ecs_initialize: Failed to create transform component list");
-        return false;
-    }
-
-    system_fixed = tl_list_create();
-    if (system_fixed == NULL) {
-        TLERROR("tl_ecs_initialize: Failed to create system_fixed list");
-        return false;
-    }
-
-    system_veriable = tl_list_create();
-    if (system_veriable == NULL) {
-        TLERROR("tl_ecs_initialize: Failed to create system_veriable list");
-        return false;
-    }
-
-    system_untimed = tl_list_create();
-    if (system_untimed == NULL) {
-        TLERROR("tl_ecs_initialize: Failed to create system_untimed list");
-        return false;
+    for (unsigned i = 0; i < TL_SYSTEM_TYPE_MAXIMUM; ++i) {
+        system[i] = tl_list_create();
+        if (system[i] == NULL) {
+            TLERROR("tl_ecs_initialize: Failed to create system list");
+            return false;
+        }
     }
 
     return true;
@@ -321,54 +358,26 @@ b8 tl_ecs_terminate(void) {
         TLERROR("tl_ecs_terminate: Failed to destroy identities pool list");
         return false;
     }
-
-    if (!tl_list_destroy(names)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy names component list");
-        return false;
-    }
-
-    if (!tl_list_destroy(transforms)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy transform component list");
-        return false;
-    }
-
-    if (system_fixed->size > 0) {
-        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
-        if (!tl_list_clear(system_fixed, tl_container_noop_dealocator)) {
-            TLERROR("tl_ecs_terminate: Failed to clear system_fixed list");
+    for (unsigned i = 0; i < TL_COMPONENT_MAXIMUM; ++i) {
+        if (!tl_list_destroy(components[i])) {
+            TLERROR("tl_ecs_terminate: Failed to destroy %u component list", i);
             return false;
         }
     }
 
-    if (!tl_list_destroy(system_fixed)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy system_fixed list");
-        return false;
-    }
+    for (unsigned i = 0; i < TL_SYSTEM_TYPE_MAXIMUM; ++i) {
+        if (system[i]->size > 0) {
+            TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
+            if (!tl_list_clear(system[i], tl_container_noop_dealocator)) {
+                TLERROR("tl_ecs_terminate: Failed to clear system list");
+                return false;
+            }
+        }
 
-    if (system_veriable->size > 0) {
-        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
-        if (!tl_list_clear(system_veriable, tl_container_noop_dealocator)) {
-            TLERROR("tl_ecs_terminate: Failed to clear system_veriable list");
+        if (!tl_list_destroy(system[i])) {
+            TLERROR("tl_ecs_terminate: Failed to destroy system list");
             return false;
         }
-    }
-
-    if (!tl_list_destroy(system_veriable)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy system_veriable list");
-        return false;
-    }
-
-    if (system_untimed->size > 0) {
-        TLWARN("tl_ecs_terminate: Removing unregistered systems. Please remove it yourself at tl_application_terminate(void)");
-        if (!tl_list_clear(system_untimed, tl_container_noop_dealocator)) {
-            TLERROR("tl_ecs_terminate: Failed to clear system_untimed list");
-            return false;
-        }
-    }
-
-    if (!tl_list_destroy(system_untimed)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy system_untimed list");
-        return false;
     }
 
     return true;

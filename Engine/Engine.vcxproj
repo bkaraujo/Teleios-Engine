@@ -261,6 +261,7 @@
     <ClInclude Include="src\teleios\ecs\components.h" />
     <ClInclude Include="src\teleios\ecs\entity.h" />
     <ClInclude Include="src\teleios\ecs\manager.h" />
+    <ClInclude Include="src\teleios\ecs\search.h" />
     <ClInclude Include="src\teleios\ecs\system.h" />
     <ClInclude Include="src\teleios\engine.h" />
     <ClInclude Include="src\teleios\application.h" />
