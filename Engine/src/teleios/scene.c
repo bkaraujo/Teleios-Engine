@@ -10,8 +10,8 @@
 #include "teleios/scene/stack.h"
 
 static TLList* scenes;
-static TLList* regions;
-static const TLScene* active;
+static TLList* active_regions;
+static const TLScene* active_scene;
 
 static const SSIZE = sizeof(TLScene);
 static const RSIZE = sizeof(TLRegion);
@@ -82,7 +82,7 @@ TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
 }
 
 void tl_scene_stack_activate(const TLIdentity* sceneid) {
-    if (active != NULL && tl_identity_equals(&active->identity, sceneid)) {
+    if (active_scene != NULL && tl_identity_equals(&active_scene->identity, sceneid)) {
         TLWARN("tl_scene_stack_activate: Scene already active");
         return;
     }
@@ -93,7 +93,7 @@ void tl_scene_stack_activate(const TLIdentity* sceneid) {
         return;
     }
 
-    active = scene;
+    active_scene = scene;
 }
 // ##############################################################################################
 //
@@ -268,12 +268,12 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
 }
 
 void tl_scene_activate_region(const TLIdentity* regionid) {
-    TLNode* current = active->regions->head;
+    TLNode* current = active_scene->regions->head;
     while (current != NULL) {
         const TLRegion* candidate = current->payload;
         if (tl_identity_equals(regionid, &candidate->identity)) {
             *((b8*)&candidate->active) = true;
-            tl_list_append(regions, candidate);
+            tl_list_append(active_regions, candidate);
             break;
         }
 
@@ -293,8 +293,8 @@ b8 tl_scene_initialize(void) {
         return false;
     }
 
-    regions = tl_list_create();
-    if (regions == NULL) {
+    active_regions = tl_list_create();
+    if (active_regions == NULL) {
         TLERROR("tl_scene_initialize: Failed to create regions list");
         return false;
     }
@@ -304,9 +304,15 @@ b8 tl_scene_initialize(void) {
 
 b8 tl_scene_terminate(void) {
     TLTRACE("tl_scene_terminate");
-    if (scenes->size > 0) {
-        TLERROR("tl_scene_terminate: Scene list is not empty.");
-        return false;
+
+    TLNode* current = scenes->head;
+    while (current != NULL) {
+        const TLScene* scene = current->payload;
+        TLNode* next = current->next;
+        TLWARN("tl_scene_terminate: Removing scene %s. Please remove it yourself at tl_application_terminate(void)", scene->identity.identity);
+
+        tl_scene_stack_destroy(&scene->identity);
+        current = next;
     }
 
     if (!tl_list_destroy(scenes)) {
@@ -314,12 +320,12 @@ b8 tl_scene_terminate(void) {
         return false;
     }
 
-    if (!tl_list_clear(regions, tl_container_noop_dealocator)) {
+    if (!tl_list_clear(active_regions, tl_container_noop_dealocator)) {
         TLERROR("tl_scene_terminate: Failed to clear regions list");
         return false;
     }
 
-    if (!tl_list_destroy(regions)) {
+    if (!tl_list_destroy(active_regions)) {
         TLERROR("tl_scene_terminate: Failed to destroy regions list");
         return false;
     }
@@ -332,7 +338,7 @@ b8 tl_scene_terminate(void) {
 //
 // ##############################################################################################
 b8 tl_scene_prepare(void) {
-    if (regions == NULL || regions->size == 0) {
+    if (active_regions == NULL || active_regions->size == 0) {
         TLERROR("tl_scene_prepare: No region active");
         return false;
     }

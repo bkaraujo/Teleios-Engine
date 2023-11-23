@@ -58,7 +58,7 @@ TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     }
 
     if (node == NULL) {
-        TLERROR("tl_list_remove_node: payload is null");
+        TLERROR("tl_list_remove_node: node is null");
         return false;
     }
 
@@ -79,7 +79,7 @@ TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     }
 
     list->size--;
-    node->previous->next = node->next;
+    if (node->previous != NULL) node->previous->next = node->next;
     tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
 
     return true;

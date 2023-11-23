@@ -32,5 +32,5 @@ void g_scene_initialize(void) {
 }
 
 void g_scene_terminate(void) {
-    tl_scene_stack_destroy(sceneid);
+    // tl_scene_stack_destroy(sceneid);
 }
