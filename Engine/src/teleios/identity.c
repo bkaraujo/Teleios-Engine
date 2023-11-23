@@ -29,6 +29,6 @@ b8 tl_identity_empty(const TLIdentity* identity) {
     return tl_string_equals(identity->identity, UUID_ZERO);
 }
 
-b8 tl_identity_compare(const TLIdentity* first, const TLIdentity* second) {
+b8 tl_identity_equals(const TLIdentity* first, const TLIdentity* second) {
     return tl_string_equals(first->identity, second->identity);
 }

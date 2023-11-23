@@ -82,7 +82,7 @@ TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
 }
 
 void tl_scene_stack_activate(const TLIdentity* sceneid) {
-    if (active != NULL && tl_identity_compare(&active->identity, sceneid)) {
+    if (active != NULL && tl_identity_equals(&active->identity, sceneid)) {
         TLWARN("tl_scene_stack_activate: Scene already active");
         return;
     }
@@ -97,31 +97,6 @@ void tl_scene_stack_activate(const TLIdentity* sceneid) {
 }
 // ##############################################################################################
 //
-//                                        ACTIVE
-//
-// ##############################################################################################
-b8 tl_scene_prepare(void) {
-    if (regions == NULL || regions->size == 0) {
-        TLERROR("tl_scene_prepare: No region active");
-        return false;
-    }
-
-    return true;
-}
-
-void tl_scene_update_fixed(u64 delta) {
-
-}
-
-void tl_scene_update(u64 delta) {
-
-}
-
-void tl_scene_update_after(void) {
-
-}
-// ##############################################################################################
-//
 //                                        REGION
 //
 // ##############################################################################################
@@ -129,7 +104,7 @@ static const TLRegion* tl_region_find(const TLScene* scene, const TLIdentity* re
     TLNode* current = scene->regions->head;
     while (current != NULL) {
         const TLRegion* candidate = current->payload;
-        if (tl_identity_compare(regionid, &candidate->identity)) {
+        if (tl_identity_equals(regionid, &candidate->identity)) {
             return candidate;
         }
 
@@ -155,7 +130,7 @@ TLAPI b8 tl_region_entity_attach(const TLIdentity* sceneid, const TLIdentity* re
     TLNode* current = region->entities->head;
     while (current != NULL) {
         const TLIdentity* entity = current->payload;
-        if (tl_identity_compare(entityid, entity)) {
+        if (tl_identity_equals(entityid, entity)) {
             TLWARN("tl_region_entity_attach: Entity already attached to the region");
             return false;
         }
@@ -185,7 +160,7 @@ TLAPI b8 tl_region_entity_detach(const TLIdentity* sceneid, const TLIdentity* re
     TLNode* current = region->entities->head;
     while (current != NULL) {
         const TLIdentity* entity = current->payload;
-        if (tl_identity_compare(entityid, entity)) {
+        if (tl_identity_equals(entityid, entity)) {
             if (!tl_list_remove_node(region->entities, current)) {
                 TLERROR("tl_region_entity_detach: Failed to detach entity from region");
                 return false;
@@ -257,7 +232,7 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
     TLNode* current = scene->regions->head;
     while (current != NULL) {
         const TLRegion* candidate = current->payload;
-        if (tl_identity_compare(regionid, &candidate->identity)) {
+        if (tl_identity_equals(regionid, &candidate->identity)) {
             node = current;
             break;
         }
@@ -296,7 +271,7 @@ void tl_scene_activate_region(const TLIdentity* regionid) {
     TLNode* current = active->regions->head;
     while (current != NULL) {
         const TLRegion* candidate = current->payload;
-        if (tl_identity_compare(regionid, &candidate->identity)) {
+        if (tl_identity_equals(regionid, &candidate->identity)) {
             *((b8*)&candidate->active) = true;
             tl_list_append(regions, candidate);
             break;
@@ -353,6 +328,31 @@ b8 tl_scene_terminate(void) {
 }
 // ##############################################################################################
 //
+//                                        ACTIVE
+//
+// ##############################################################################################
+b8 tl_scene_prepare(void) {
+    if (regions == NULL || regions->size == 0) {
+        TLERROR("tl_scene_prepare: No region active");
+        return false;
+    }
+
+    return true;
+}
+
+void tl_scene_update_fixed(u64 delta) {
+
+}
+
+void tl_scene_update(u64 delta) {
+
+}
+
+void tl_scene_update_after(void) {
+
+}
+// ##############################################################################################
+//
 //                                        HELPERS
 //
 // ##############################################################################################
@@ -363,14 +363,14 @@ static const TLScene* tl_scene_find(const TLIdentity* sceneid) {
         return NULL;
     }
 
-    if (found != NULL && tl_identity_compare(&found->identity, sceneid)) {
+    if (found != NULL && tl_identity_equals(&found->identity, sceneid)) {
         return found;
     }
 
     TLNode* current = scenes->head;
     while (current != NULL) {
         const TLScene* canditate = current->payload;
-        if (tl_identity_compare(&canditate->identity, sceneid)) {
+        if (tl_identity_equals(&canditate->identity, sceneid)) {
             found = canditate;
             break;
         }

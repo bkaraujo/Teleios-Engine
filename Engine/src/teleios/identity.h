@@ -5,6 +5,6 @@
 
 void tl_identity_initialize(const TLIdentity* identity);
 b8 tl_identity_empty(const TLIdentity* identity);
-b8 tl_identity_compare(const TLIdentity* first, const TLIdentity* second);
+b8 tl_identity_equals(const TLIdentity* first, const TLIdentity* second);
 
 #endif // TELEIOS_IDENTITY_H
