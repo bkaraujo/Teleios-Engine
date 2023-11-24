@@ -6,7 +6,7 @@
 // ##############################################################################################
 #include "teleios/time/wallclock.h"
 
-TLAPI void tl_time_now(TLDateTime* dt) {
+TLAPI void tl_time_wallclock(TLDateTime* dt) {
     tl_platform_time_now(dt);
 }
 // ##############################################################################################

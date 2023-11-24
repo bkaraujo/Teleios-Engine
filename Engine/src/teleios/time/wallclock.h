@@ -4,6 +4,6 @@
 #include "teleios/defines.h"
 #include "teleios/types.h"
 
-TLAPI void tl_time_now(TLDateTime* dt);
+TLAPI void tl_time_wallclock(TLDateTime* dt);
 
 #endif // TELEIOS_TIME_WALLCLOCK_H
