@@ -1,7 +1,6 @@
 #include "scene.h"
 
 #include <teleios/ecs/entity.h>
-#include <teleios/identity.h>
 #include <teleios/logger.h>
 #include <teleios/scene/region.h>
 #include <teleios/scene/scene.h>

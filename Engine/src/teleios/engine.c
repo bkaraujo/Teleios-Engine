@@ -4,6 +4,7 @@
 #include "teleios/event/codes.h"
 #include "teleios/event/manager.h"
 #include "teleios/event/subcriber.h"
+#include "teleios/identity/manager.h"
 #include "teleios/input/manager.h"
 #include "teleios/logger.h"
 #include "teleios/memory/manager.h"
@@ -24,6 +25,11 @@ TLAPI b8 tl_engine_pre_initialize(const TLSpecification* spec) {
 
     if (!tl_memory_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
+        return false;
+    }
+
+    if (!tl_identity_initialize()) {
+        TLERROR("tl_engine_pre_initialize: Failed to initialize the idedntity manager");
         return false;
     }
 
@@ -163,6 +169,11 @@ TLAPI b8 tl_engine_terminate(void) {
 
     if (!tl_event_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate the event manager");
+        return false;
+    }
+
+    if (!tl_identity_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate the identity manager");
         return false;
     }
 

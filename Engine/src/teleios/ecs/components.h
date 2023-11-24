@@ -5,10 +5,16 @@
 
 typedef struct {
     const TLIdentity* entityid;
+} TLComponent;
+
+typedef struct {
+    TLComponent owner;
+    ivec3s scale;
+    ivec3s position;
 } TLComponentTransform;
 
 typedef struct {
-    const TLIdentity* entityid;
+    TLComponent owner;
     const char* name;
 } TLComponentName;
 

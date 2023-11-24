@@ -46,6 +46,7 @@ typedef signed char         b8;
 #define SECOND             1
 
 #define BIT(x)             (1 << x)
+#define BITVALUE(x, n)     (((x) >> (n)) & 0x1)
 
 #include "cglm/types-struct.h"
 

@@ -1,5 +1,5 @@
 #include "teleios/container.h"
-#include "teleios/identity.h"
+#include "teleios/identity/generator.h"
 #include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 
@@ -34,7 +34,7 @@ TLAPI const TLIdentity* tl_scene_stack_create(const char* name) {
 
     scene->name = name;
     scene->regions = tl_list_create();
-    tl_identity_initialize(&scene->identity);
+    tl_identity_generate(&scene->identity);
 
     if (!tl_list_append(scenes, scene)) {
         tl_memory_free(scene, TL_MEMORY_TYPE_SCENE, SSIZE);
@@ -58,11 +58,9 @@ TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
     // Ensure scene has no region
     // ===========================================================
     TLTRACE("tl_scene_stack_destroy: scene \"%s\"", scene->name);
-    TLNode* current = scene->regions->head;
-    while (current != NULL) {
-        const TLRegion* region = current->payload;
+    while (scene->regions->head != NULL) {
+        const TLRegion* region = scene->regions->head->payload;
         tl_scene_destroy_region(sceneid, &region->identity);
-        current = current->next;
     }
 
     if (scene->regions->size > 0) {
@@ -198,7 +196,7 @@ TLAPI const TLIdentity* tl_scene_create_region(const TLIdentity* sceneid, const 
 
     region->name = name;
     region->entities = tl_list_create();
-    tl_identity_initialize(&region->identity);
+    tl_identity_generate(&region->identity);
     // ===========================================================
     // Associate the Region with the Scene
     // ===========================================================
@@ -304,30 +302,38 @@ b8 tl_scene_initialize(void) {
 
 b8 tl_scene_terminate(void) {
     TLTRACE("tl_scene_terminate");
+    active_scene = NULL;
 
-    TLNode* current = scenes->head;
-    while (current != NULL) {
-        const TLScene* scene = current->payload;
-        TLNode* next = current->next;
-        TLWARN("tl_scene_terminate: Removing scene %s. Please remove it yourself at tl_application_terminate(void)", scene->identity.identity);
+    {
+        TLNode* current = scenes->head;
+        while (current != NULL) {
+            const TLScene* scene = current->payload;
+            TLNode* next = current->next;
+            TLWARN("tl_scene_terminate: Removing scene %s. Please remove it yourself at tl_application_terminate(void)", scene->identity.identity);
 
-        tl_scene_stack_destroy(&scene->identity);
-        current = next;
+            tl_scene_stack_destroy(&scene->identity);
+            current = next;
+        }
+
+        if (!tl_list_destroy(scenes)) {
+            TLERROR("tl_scene_terminate: Failed to destroy scenes list");
+            return false;
+        }
+        scenes = NULL;
     }
 
-    if (!tl_list_destroy(scenes)) {
-        TLERROR("tl_scene_terminate: Failed to destroy scenes list");
-        return false;
-    }
+    {
+        if (!tl_list_clear(active_regions, tl_container_noop_dealocator)) {
+            TLERROR("tl_scene_terminate: Failed to clear regions list");
+            return false;
+        }
 
-    if (!tl_list_clear(active_regions, tl_container_noop_dealocator)) {
-        TLERROR("tl_scene_terminate: Failed to clear regions list");
-        return false;
-    }
+        if (!tl_list_destroy(active_regions)) {
+            TLERROR("tl_scene_terminate: Failed to destroy regions list");
+            return false;
+        }
 
-    if (!tl_list_destroy(active_regions)) {
-        TLERROR("tl_scene_terminate: Failed to destroy regions list");
-        return false;
+        active_regions = NULL;
     }
 
     return true;

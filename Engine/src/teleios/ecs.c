@@ -3,7 +3,7 @@
 #include "teleios/ecs/components.h"
 #include "teleios/ecs/entity.h"
 #include "teleios/ecs/manager.h"
-#include "teleios/identity.h"
+#include "teleios/identity/generator.h"
 #include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 
@@ -25,6 +25,19 @@ b8 tl_dealocator_identity(const void* pointer) {
     return true;
 }
 
+static const char* tl_ecs_component_name(const TL_COMPONENT_TYPE type) {
+    switch (type) {
+    case TL_COMPONENT_TRANSFORM: return "TL_COMPONENT_TRANSFORM";
+    case TL_COMPONENT_NAME: return "TL_COMPONENT_NAME";
+    case TL_COMPONENT_VELOCITY: return "TL_COMPONENT_VELOCITY";
+    case TL_COMPONENT_MASS: return "TL_COMPONENT_MASS";
+    case TL_COMPONENT_RIGIDBODY: return "TL_COMPONENT_RIGIDBODY";
+    case TL_COMPONENT_SPRITE: return "TL_COMPONENT_SPRITE";
+    case TL_COMPONENT_MESH: return "TL_COMPONENT_MESH";
+    case TL_COMPONENT_MAXIMUM: return "TL_COMPONENT_MAXIMUM";
+    }
+    return "tl_ecs_component_name: ? ? ?";
+}
 // ##############################################################################################
 //
 //                                       COMPONENT
@@ -32,11 +45,10 @@ b8 tl_dealocator_identity(const void* pointer) {
 // ##############################################################################################
 
 static b8 tl_ecs_component_contains(const TLList* list, const TLIdentity* entityid) {
-    TLIdentity identity;
     TLNode* current = list->head;
     while (current != NULL) {
-        tl_memory_copy(current->payload, &identity.identity, sizeof(TLIdentity));
-        if (tl_identity_equals(entityid, &identity)) {
+        const TLComponent* component = current->payload;
+        if (tl_identity_equals(entityid, component->entityid)) {
             return true;
         }
 
@@ -53,16 +65,16 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONE
     }
 
     if (tl_ecs_component_contains(components[type], entityid)) {
-        TLWARN("tl_ecs_component_attach: Entity %s already have component XXXXXX", entityid->identity);
+        TLWARN("tl_ecs_component_attach: Entity %s already have component %s", entityid->identity, tl_ecs_component_name(type));
         return NULL;
     }
 
     switch (type) {
     case TL_COMPONENT_TRANSFORM: {
         TLComponentTransform* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
-        component->entityid = entityid;
+        component->owner.entityid = entityid;
         if (!tl_list_append(components[type], component)) {
-            TLERROR("tl_ecs_component_attach: Failed to create TL_COMPONENT_TRANSFORM");
+            TLERROR("tl_ecs_component_attach: Failed to create %s", tl_ecs_component_name(type));
             return NULL;
         }
 
@@ -71,9 +83,9 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONE
 
     case TL_COMPONENT_NAME: {
         TLComponentName* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName));
-        component->entityid = entityid;
+        component->owner.entityid = entityid;
         if (!tl_list_append(components[type], component)) {
-            TLERROR("tl_ecs_component_attach: Failed to create TL_COMPONENT_TRANSFORM");
+            TLERROR("tl_ecs_component_attach: Failed to create %s", tl_ecs_component_name(type));
             return NULL;
         }
 
@@ -95,42 +107,44 @@ TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, const TL_COMPONEN
         return;
     }
 
-    switch (type) {
-    case TL_COMPONENT_NAME: {
-        TLNode* current = components[type]->head;
-        while (current != NULL) {
-            const TLComponentName* component = current->payload;
-            if (tl_identity_equals(entityid, component->entityid)) {
-                if (!tl_list_remove_node(components[type], current)) {
-                    TLERROR("tl_ecs_component_remove: Failed to remove component TLComponentName from entity %s ", entityid->identity);
-                    return;
-                }
-
-                tl_memory_free(component, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName));
-                return;
-            }
-            current = current->next;
-        }
-    }break;
-    case TL_COMPONENT_TRANSFORM: {
-        TLNode* current = components[type]->head;
-        while (current != NULL) {
-            const TLComponentTransform* component = current->payload;
-            if (tl_identity_equals(entityid, component->entityid)) {
-                if (!tl_list_remove_node(components[type], current)) {
-                    TLERROR("tl_ecs_component_remove: Failed to remove component TLComponentTransform from entity %s ", entityid->identity);
-                    return;
-                }
-
-                tl_memory_free(component, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
+    TLNode* current = components[type]->head;
+    while (current != NULL) {
+        TLNode* next = current->next;
+        const TLComponent* component = current->payload;
+        if (tl_identity_equals(entityid, component->entityid)) {
+            if (!tl_list_remove_node(components[type], current)) {
+                TLERROR("tl_ecs_component_remove: Failed to remove component %s from entity %s ", tl_ecs_component_name(type), entityid->identity);
                 return;
             }
 
-            current = current->next;
+            switch (type) {
+            case TL_COMPONENT_NAME: tl_memory_free(component, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName)); break;
+            case TL_COMPONENT_TRANSFORM: tl_memory_free(component, TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform)); break;
+            default: TLERROR("tl_ecs_component_remove: unexpected tl_identity_equals %lu", type); break;
+                return;
+            }
         }
-    } break;
-    default: TLERROR("tl_ecs_component_remove: unexpected tl_identity_equals %lu", type); break;
+
+        current = next;
     }
+}
+
+TLAPI const void* tl_ecs_component_get(const TLIdentity* entityid, const TL_COMPONENT_TYPE type) {
+    if (entityid == NULL) {
+        TLERROR("tl_ecs_component_get: entityid is null");
+        return NULL;
+    }
+
+    TLNode* current = components[type]->head;
+    while (current != NULL) {
+        const TLComponent* component = current->payload;
+        if (tl_identity_equals(entityid, component->entityid)) {
+            return component;
+        }
+        current = current->next;
+    }
+
+    return NULL;
 }
 // ##############################################################################################
 //
@@ -141,7 +155,7 @@ static TLList* entities;
 
 TLAPI const TLIdentity* tl_ecs_entity_create(const char* name) {
     TLIdentity* identity = tl_memory_alloc(TL_MEMORY_TYPE_IDENTITY, sizeof(TLIdentity));
-    tl_identity_initialize(identity);
+    tl_identity_generate(identity);
 
     if (tl_ecs_component_attach(identity, TL_COMPONENT_TRANSFORM) == NULL) {
         TLERROR("tl_ecs_entity_create: Failed to attach TL_COMPONENT_TRANSFORM");
@@ -262,19 +276,19 @@ b8 tl_ecs_system_process(void) {
 //                                        SEARCH
 //
 // ##############################################################################################
-static b8 tl_ecs_compare_component_name(const void* first, const void* second) {
-    const TLComponentName* name = first;
-    return tl_identity_equals(name->entityid, second);
+static b8 tl_ecs_compare_component(const void* first, const void* second) {
+    const TLComponent* component = first;
+    return tl_identity_equals(component->entityid, second);
 }
 
 TLAPI const TLList* tl_ecs_search_for(const u32 mask) {
     TLList* result = tl_list_create();
 
-    if (mask & BIT(TL_COMPONENT_TRANSFORM)) {
+    {
         TLNode* current = components[TL_COMPONENT_TRANSFORM]->head;
         while (current != NULL) {
             const TLComponentTransform* component = current->payload;
-            if (!tl_list_append(result, component->entityid)) {
+            if (!tl_list_append(result, component->owner.entityid)) {
                 TLERROR("tl_ecs_search: Failed to append to result");
                 tl_list_clear(result, tl_container_noop_dealocator);
                 tl_list_destroy(result);
@@ -284,11 +298,11 @@ TLAPI const TLList* tl_ecs_search_for(const u32 mask) {
         }
     }
 
-    if (mask & BIT(TL_COMPONENT_NAME)) {
+    {
         TLNode* current = result->head;
         while (current != NULL) {
             const TLIdentity* entityid = current->payload;
-            if (!tl_list_contains(components[TL_COMPONENT_NAME], tl_ecs_compare_component_name, entityid)) {
+            if (!tl_list_contains(components[TL_COMPONENT_NAME], tl_ecs_compare_component, entityid)) {
                 if (!tl_list_remove_payload(result, entityid)) {
                     TLERROR("tl_ecs_search_for: Failed to remove entity from result");
                     tl_list_clear(result, tl_container_noop_dealocator);
@@ -341,28 +355,35 @@ b8 tl_ecs_initialize(void) {
 }
 
 b8 tl_ecs_terminate(void) {
-    if (entities->size > 0) {
-        TLNode* current = entities->head;
-        while (current != NULL) {
-            const TLIdentity* entityid = current->payload;
-            current = current->next;
+    {
+        if (entities->size > 0) {
+            TLNode* current = entities->head;
+            while (current != NULL) {
+                const TLIdentity* entityid = current->payload;
+                current = current->next;
 
-            TLWARN("tl_ecs_terminate: Removing entity %s. Please remove it yourself at tl_application_terminate(void)", entityid->identity);
-            if (!tl_ecs_entity_destroy(entityid)) {
-                TLERROR("tl_ecs_terminate: Failed to destroy entity.");
+                TLWARN("tl_ecs_terminate: Removing entity %s. Please remove it yourself at tl_application_terminate(void)", entityid->identity);
+                if (!tl_ecs_entity_destroy(entityid)) {
+                    TLERROR("tl_ecs_terminate: Failed to destroy entity.");
+                }
             }
         }
+
+        if (!tl_list_destroy(entities)) {
+            TLERROR("tl_ecs_terminate: Failed to destroy identities pool list");
+            return false;
+        }
+
+        entities = NULL;
     }
 
-    if (!tl_list_destroy(entities)) {
-        TLERROR("tl_ecs_terminate: Failed to destroy identities pool list");
-        return false;
-    }
     for (unsigned i = 0; i < TL_COMPONENT_MAXIMUM; ++i) {
         if (!tl_list_destroy(components[i])) {
             TLERROR("tl_ecs_terminate: Failed to destroy %u component list", i);
             return false;
         }
+
+        components[i] = NULL;
     }
 
     for (unsigned i = 0; i < TL_SYSTEM_TYPE_MAXIMUM; ++i) {
@@ -378,6 +399,8 @@ b8 tl_ecs_terminate(void) {
             TLERROR("tl_ecs_terminate: Failed to destroy system list");
             return false;
         }
+
+        system[i] = NULL;
     }
 
     return true;

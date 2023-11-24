@@ -16,5 +16,6 @@ typedef enum {
 
 TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONENT_TYPE type);
 TLAPI void  tl_ecs_component_detach(const TLIdentity* entityid, const TL_COMPONENT_TYPE type);
+TLAPI const void* tl_ecs_component_get(const TLIdentity* entityid, const TL_COMPONENT_TYPE type);
 
 #endif // TELEIOS_ECS_COMPONENT_H
