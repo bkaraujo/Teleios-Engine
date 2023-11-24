@@ -24,6 +24,18 @@ void tl_platform_memory_free(void* block) {
     HeapFree(heap, HEAP_NO_SERIALIZE, block);
 }
 
+void* tl_platform_memory_stack_alloc(const u64 size) {
+    void* block = _malloca(size);
+    if (block == NULL) {
+        TLERROR("tl_platform_memory_stack_alloc: Failed to allocate %llu bytes. 0x%x", size, GetLastError());
+    }
+    return block;
+}
+
+void tl_platform_memory_stack_free(void* block) {
+    _freea(block);
+}
+
 void tl_platform_memory_copy(const void* source, const void* target, u64 size) {
 #pragma warning( push )
 #pragma warning( disable : 4090)
