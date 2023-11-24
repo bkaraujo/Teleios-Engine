@@ -51,6 +51,33 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload) {
     return true;
 }
 
+TLAPI TLList* tl_list_clone(TLList* list) {
+    if (list == NULL) {
+        TLERROR("tl_list_append: list is null");
+        return NULL;
+    }
+
+    if (list->size == 0) {
+        TLWARN("tl_list_clone: Cloning an empty list");
+        return tl_list_create();
+    }
+
+    TLList* target = tl_list_create();
+    TLNode* current = list->head;
+    while (current != NULL) {
+        if (!tl_list_append(target, current->payload)) {
+            TLERROR("");
+            tl_list_clear(target, tl_container_noop_dealocator);
+            tl_list_destroy(target);
+
+            return NULL;
+        }
+        current = current->next;
+    }
+
+    return target;
+}
+
 TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     if (list == NULL) {
         TLERROR("tl_list_remove_node: list is null");
