@@ -42,6 +42,7 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload) {
         node->previous = list->head;
         break;
     default:
+        list->tail->next = node;
         node->previous = list->tail;
 
     }
