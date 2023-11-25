@@ -362,7 +362,7 @@ b8 tl_ecs_terminate(void) {
                 const TLIdentity* entityid = current->payload;
                 current = current->next;
 
-                TLWARN("tl_ecs_terminate: Removing entity %s. Please remove it yourself at tl_application_terminate(void)", entityid->identity);
+                TLWARN("tl_ecs_terminate: Removing entity %s. %s", entityid->identity, MSG_PLEASE_DO_IT_YOURSELF);
                 if (!tl_ecs_entity_destroy(entityid)) {
                     TLERROR("tl_ecs_terminate: Failed to destroy entity.");
                 }

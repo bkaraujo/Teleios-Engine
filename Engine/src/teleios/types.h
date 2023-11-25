@@ -48,6 +48,8 @@ typedef signed char         b8;
 #define BIT(x)             (1 << x)
 #define BITVALUE(x, n)     (((x) >> (n)) & 0x1)
 
+#define MSG_PLEASE_DO_IT_YOURSELF "Please do it yourself at tl_application_terminate(void)"
+
 #include "cglm/types-struct.h"
 
 typedef enum {

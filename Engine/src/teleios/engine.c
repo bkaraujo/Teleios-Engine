@@ -61,6 +61,16 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         return false;
     }
 
+    if (!tl_scene_initialize()) {
+        TLERROR("tl_engine_initialize: Failed to initialize scene manager");
+        return false;
+    }
+
+    if (!tl_ecs_initialize()) {
+        TLERROR("tl_engine_initialize: Failed to initialize ecs manager");
+        return false;
+    }
+
     return true;
 }
 
@@ -69,16 +79,6 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 
     if (!tl_platform_window_create(spec)) {
         TLERROR("tl_engine_initialize: Failed create window");
-        return false;
-    }
-
-    if (!tl_scene_initialize()) {
-        TLERROR("tl_engine_initialize: Failed to initialize scene manager");
-        return false;
-    }
-
-    if (!tl_ecs_initialize()) {
-        TLERROR("tl_engine_initialize: Failed to initialize ecs manager");
         return false;
     }
 
@@ -177,6 +177,7 @@ TLAPI b8 tl_engine_terminate(void) {
 
     while (layers->head != NULL) {
         const TLLayer* layer = layers->head->payload;
+        TLWARN("tl_engine_terminate: Destroying layer \"%s\". %s", layer->name, MSG_PLEASE_DO_IT_YOURSELF);
         tl_layer_stack_destroy(layer->identity);
     }
 

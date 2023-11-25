@@ -309,7 +309,7 @@ b8 tl_scene_terminate(void) {
         while (current != NULL) {
             const TLScene* scene = current->payload;
             TLNode* next = current->next;
-            TLWARN("tl_scene_terminate: Removing scene %s. Please remove it yourself at tl_application_terminate(void)", scene->identity.identity);
+            TLWARN("tl_scene_terminate: Removing scene %s. %s", scene->identity.identity, MSG_PLEASE_DO_IT_YOURSELF);
 
             tl_scene_stack_destroy(&scene->identity);
             current = next;

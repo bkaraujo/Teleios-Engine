@@ -31,7 +31,7 @@ void flappy_scene_world_initialize(void) {
 }
 
 void flappy_scene_world_terminate(void) {
-    tl_ecs_entity_destroy(birdid);
-    tl_ecs_entity_destroy(pipeid);
-    tl_scene_stack_destroy(sceneid);
+    //tl_ecs_entity_destroy(birdid);
+    //tl_ecs_entity_destroy(pipeid);
+    //tl_scene_stack_destroy(sceneid);
 }
