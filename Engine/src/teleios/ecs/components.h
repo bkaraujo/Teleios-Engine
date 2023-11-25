@@ -4,7 +4,7 @@
 #include "teleios/types.h"
 
 typedef struct {
-    const TLIdentity* entityid;
+    const TLIdentity* identity;
 } TLComponent;
 
 typedef struct {

@@ -48,7 +48,7 @@ static b8 tl_ecs_component_contains(const TLList* list, const TLIdentity* entity
     TLNode* current = list->head;
     while (current != NULL) {
         const TLComponent* component = current->payload;
-        if (tl_identity_equals(entityid, component->entityid)) {
+        if (tl_identity_equals(entityid, component->identity)) {
             return true;
         }
 
@@ -72,7 +72,7 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONE
     switch (type) {
     case TL_COMPONENT_TRANSFORM: {
         TLComponentTransform* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentTransform));
-        component->owner.entityid = entityid;
+        component->owner.identity = entityid;
         if (!tl_list_append(components[type], component)) {
             TLERROR("tl_ecs_component_attach: Failed to create %s", tl_ecs_component_name(type));
             return NULL;
@@ -83,7 +83,7 @@ TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONE
 
     case TL_COMPONENT_NAME: {
         TLComponentName* component = tl_memory_alloc(TL_MEMORY_TYPE_ECS_COMPONENT, sizeof(TLComponentName));
-        component->owner.entityid = entityid;
+        component->owner.identity = entityid;
         if (!tl_list_append(components[type], component)) {
             TLERROR("tl_ecs_component_attach: Failed to create %s", tl_ecs_component_name(type));
             return NULL;
@@ -111,7 +111,7 @@ TLAPI void tl_ecs_component_detach(const TLIdentity* entityid, const TL_COMPONEN
     while (current != NULL) {
         TLNode* next = current->next;
         const TLComponent* component = current->payload;
-        if (tl_identity_equals(entityid, component->entityid)) {
+        if (tl_identity_equals(entityid, component->identity)) {
             if (!tl_list_remove_node(components[type], current)) {
                 TLERROR("tl_ecs_component_remove: Failed to remove component %s from entity %s ", tl_ecs_component_name(type), entityid->identity);
                 return;
@@ -138,7 +138,7 @@ TLAPI const void* tl_ecs_component_get(const TLIdentity* entityid, const TL_COMP
     TLNode* current = components[type]->head;
     while (current != NULL) {
         const TLComponent* component = current->payload;
-        if (tl_identity_equals(entityid, component->entityid)) {
+        if (tl_identity_equals(entityid, component->identity)) {
             return component;
         }
         current = current->next;
@@ -278,7 +278,7 @@ b8 tl_ecs_system_process(void) {
 // ##############################################################################################
 static b8 tl_ecs_compare_component(const void* first, const void* second) {
     const TLComponent* component = first;
-    return tl_identity_equals(component->entityid, second);
+    return tl_identity_equals(component->identity, second);
 }
 
 TLAPI const TLList* tl_ecs_search_for(const u32 mask) {
@@ -288,7 +288,7 @@ TLAPI const TLList* tl_ecs_search_for(const u32 mask) {
         TLNode* current = components[TL_COMPONENT_TRANSFORM]->head;
         while (current != NULL) {
             const TLComponentTransform* component = current->payload;
-            if (!tl_list_append(result, component->owner.entityid)) {
+            if (!tl_list_append(result, component->owner.identity)) {
                 TLERROR("tl_ecs_search: Failed to append to result");
                 tl_list_clear(result, tl_container_noop_dealocator);
                 tl_list_destroy(result);
