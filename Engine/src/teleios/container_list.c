@@ -93,6 +93,11 @@ TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     if (node == list->head) {
         list->size--;
         list->head = node->next;
+
+        if (list->head != NULL) {
+            list->head->previous = NULL;
+        }
+
         tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
 
         return true;
@@ -101,6 +106,12 @@ TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     if (node == list->tail) {
         list->size--;
         list->tail = node->previous;
+
+
+        if (list->head->next == node) {
+            list->head->next = NULL;
+        }
+
         tl_memory_free(node, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
 
         return true;
@@ -184,21 +195,11 @@ TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, cons
 }
 
 TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
-    if (list == NULL) {
-        TLWARN("tl_list_contains: list is null");
-        return false;
-    }
-
-    if (payload == NULL) {
-        TLWARN("tl_list_contains: payload is null");
-        return false;
-    }
+    if (list == NULL) return false;
+    if (payload == NULL) return false;
 
     switch (list->size) {
-    case 0:
-        TLWARN("tl_list_contains: List is empty");
-        return false;
-
+    case 0: return false;
     case 1:
         return comparator(list->head->payload, payload);
 
