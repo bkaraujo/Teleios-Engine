@@ -1,3 +1,5 @@
+#include "editor/layer/gui.h"
+#include "editor/layer/player.h"
 #include <teleios/application.h>
 #include <teleios/layer/stack.h>
 #include <teleios/logger.h>
@@ -7,17 +9,18 @@ void tl_application_define(TLSpecification* spec) {
 
 }
 
-static b8 ed_gui_on_attach(void);
-static b8 ed_gui_on_detach(void);
-static b8 ed_gui_update_variable(const u64 delta);
-static b8 ed_gui_update_fixed(const u64 delta);
-static b8 ed_gui_update_after(void);
-
-static TLIdentity* layerid;
+static TLIdentity* lGuiid;
+static TLIdentity* lPlayerid;
 b8 tl_application_initialize(const TLSpecification* spec) {
-    layerid = tl_layer_stack_create("Editor GUI", ed_gui_on_attach, ed_gui_on_detach, ed_gui_update_variable, ed_gui_update_fixed, ed_gui_update_after);
-    if (layerid == NULL) {
+    lGuiid = tl_layer_stack_create("GUI", editor_gui_on_attach, editor_gui_on_detach, editor_gui_update_variable, editor_gui_update_fixed, editor_gui_update_after);
+    if (lGuiid == NULL) {
         TLERROR("tl_application_initialize: Failed to create layer \"Editor GUI\"");
+        return false;
+    }
+
+    lPlayerid = tl_layer_stack_create("Player", editor_player_on_attach, editor_player_on_detach, editor_player_update_variable, editor_player_update_fixed, editor_player_update_after);
+    if (lPlayerid == NULL) {
+        TLERROR("tl_application_initialize: Failed to create layer \"Editor Player\"");
         return false;
     }
 
@@ -25,29 +28,17 @@ b8 tl_application_initialize(const TLSpecification* spec) {
 }
 
 b8 tl_application_terminate() {
-    if (!tl_layer_stack_destroy(layerid)) {
+    if (!tl_layer_stack_destroy(lPlayerid)) {
+        TLERROR("tl_application_terminate: Failed to destroy layer  \"Editor Player\"");
+        return false;
+    }
+    lPlayerid = NULL;
+
+    if (!tl_layer_stack_destroy(lGuiid)) {
         TLERROR("tl_application_terminate: Failed to destroy layer  \"Editor GUI\"");
         return false;
     }
-    return true;
-}
+    lGuiid = NULL;
 
-static b8 ed_gui_on_attach(void) {
-    return true;
-}
-
-static b8 ed_gui_on_detach(void) {
-    return true;
-}
-
-static b8 ed_gui_update_variable(const u64 delta) {
-    return true;
-}
-
-static b8 ed_gui_update_fixed(const u64 delta) {
-    return true;
-}
-
-static b8 ed_gui_update_after(void) {
     return true;
 }
