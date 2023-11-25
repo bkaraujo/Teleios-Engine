@@ -56,13 +56,13 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)flappy\src\;$(SolutionDir)engine\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include\;$(SolutionDir)flappy\src\;$(SolutionDir)engine\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DYNAMICBASE $(SolutionDir)build\bin\Debug\Engine\teleios.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/DYNAMICBASE "$(SolutionDir)build\bin\Debug\Engine\teleios.lib" "$(VULKAN_SDK)\Lib\vulkan-1.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
       <Command>Copy-Item -Path $(SolutionDir)buid\bin\Engine\Engine.dll -Destination $(SolutionDir)buid\bin\Flappy</Command>

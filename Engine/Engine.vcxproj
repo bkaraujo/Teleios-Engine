@@ -56,7 +56,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include\;$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -270,6 +270,9 @@
     <ClInclude Include="src\teleios\event\manager.h" />
     <ClInclude Include="src\teleios\event\publisher.h" />
     <ClInclude Include="src\teleios\event\subcriber.h" />
+    <ClInclude Include="src\teleios\graphics\context.h" />
+    <ClInclude Include="src\teleios\graphics\manager.h" />
+    <ClInclude Include="src\teleios\graphics\primitive.h" />
     <ClInclude Include="src\teleios\identity\generator.h" />
     <ClInclude Include="src\teleios\identity\manager.h" />
     <ClInclude Include="src\teleios\input\manager.h" />
@@ -348,6 +351,7 @@
     <ClCompile Include="src\teleios\ecs.c" />
     <ClCompile Include="src\teleios\engine.c" />
     <ClCompile Include="src\teleios\event.c" />
+    <ClCompile Include="src\teleios\graphics.c" />
     <ClCompile Include="src\teleios\identity.c" />
     <ClCompile Include="src\teleios\input.c" />
     <ClCompile Include="src\teleios\layerstack.c" />

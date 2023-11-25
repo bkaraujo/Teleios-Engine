@@ -55,12 +55,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)editor\src\;$(SolutionDir)engine\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;$(solutionDir)editor/src/;$(solutionDir)engine/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>/DYNAMICBASE $(SolutionDir)build\bin\Debug\Engine\teleios.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/DYNAMICBASE "$(SolutionDir)build\bin\Debug\Engine\teleios.lib" "$(VULKAN_SDK)\Lib\vulkan-1.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

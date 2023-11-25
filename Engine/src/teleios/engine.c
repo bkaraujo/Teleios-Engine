@@ -5,6 +5,7 @@
 #include "teleios/event/codes.h"
 #include "teleios/event/manager.h"
 #include "teleios/event/subcriber.h"
+#include "teleios/graphics/manager.h"
 #include "teleios/identity/manager.h"
 #include "teleios/input/manager.h"
 #include "teleios/layer/manager.h"
@@ -79,6 +80,11 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 
     if (!tl_platform_window_create(spec)) {
         TLERROR("tl_engine_initialize: Failed create window");
+        return false;
+    }
+
+    if (!tl_graphics_initialize(spec)) {
+        TLERROR("tl_engine_initialize: Failed to initialize graphics manager");
         return false;
     }
 
@@ -174,6 +180,11 @@ TLAPI b8 tl_engine_run(void) {
 
 TLAPI b8 tl_engine_terminate(void) {
     TLDEBUG("tl_engine_terminate");
+
+    if (!tl_graphics_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate graphic manager");
+        return false;
+    }
 
     while (layers->head != NULL) {
         const TLLayer* layer = layers->head->payload;
