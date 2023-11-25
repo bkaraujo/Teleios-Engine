@@ -1,3 +1,4 @@
+#include "teleios/container.h"
 #include "teleios/ecs/manager.h"
 #include "teleios/ecs/system.h"
 #include "teleios/engine.h"
@@ -6,46 +7,45 @@
 #include "teleios/event/subcriber.h"
 #include "teleios/identity/manager.h"
 #include "teleios/input/manager.h"
+#include "teleios/layer/manager.h"
+#include "teleios/layer/stack.h"
 #include "teleios/logger.h"
 #include "teleios/memory/manager.h"
 #include "teleios/platform/manager.h"
 #include "teleios/platform/window.h"
-#include "teleios/scene/active.h"
 #include "teleios/scene/manager.h"
 #include "teleios/time/epoch.h"
 #include "teleios/time/timer.h"
 
 static b8 running = true;
+static TLList* layers;
 
-TLAPI b8 tl_engine_pre_initialize(const TLSpecification* spec) {
-    if (!tl_platform_initialize(spec)) {
+static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event);
+
+TLAPI b8 tl_engine_pre_initialize(void) {
+    if (!tl_platform_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
         return false;
     }
+    TLDEBUG("tl_engine_pre_initialize");
 
     if (!tl_memory_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
         return false;
     }
 
+    layers = tl_list_create();
+    if (layers == NULL) {
+        TLERROR("tl_engine_pre_initialize: Failed to allocate layer stack");
+        return false;
+    }
+    tl_layer_stack_set(layers);
+
     if (!tl_identity_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the idedntity manager");
         return false;
     }
 
-    return true;
-}
-
-static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event) {
-    if (code == TL_EVENT_APPLICATION_QUIT) {
-        running = false;
-    }
-
-    return TL_EVENT_CONTINUE;
-}
-
-TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
-    TLDEBUG("tl_engine_initialize");
     if (!tl_event_initialize()) {
         TLERROR("tl_engine_initialize: Failed to initialize the event manager");
         return false;
@@ -56,13 +56,19 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
         return false;
     }
 
-    if (!tl_platform_window_create(spec)) {
-        TLERROR("tl_engine_initialize: Failed create window");
+    if (!tl_input_initialize()) {
+        TLERROR("tl_engine_initialize: Failed to initialize input manager");
         return false;
     }
 
-    if (!tl_input_initialize()) {
-        TLERROR("tl_engine_initialize: Failed to initialize input manager");
+    return true;
+}
+
+TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
+    TLDEBUG("tl_engine_initialize");
+
+    if (!tl_platform_window_create(spec)) {
+        TLERROR("tl_engine_initialize: Failed create window");
         return false;
     }
 
@@ -92,51 +98,68 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_show();
     while (running) {
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // Frame initialization
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         const u64 time_start = tl_time_epoch_micros();
         const u64 time_delta = time_start - time_last;
         time_last = time_start;
 
-        if (!tl_scene_prepare()) {
-            TLERROR("tl_engine_run: Failed to prepare scene");
-            return false;
+        // ============================================
+        // Fixed time step processing
+        // ============================================
+        {
+            // Compute needed fixed time steps
+            u8 step = 0;
+            accumulator += time_delta;
+            while (accumulator > STEP) {
+                ups++;
+                step++;
+                accumulator -= STEP;
+            }
+
+            // Perform the fixed time steps
+            for (unsigned i = 0; i < step; ++i) {
+                TLNode* current = layers->head;
+                while (current != NULL) {
+                    const TLLayer* layer = current->payload;
+                    if (!layer->update_fixed(STEP)) {
+                        TLERROR("tl_engine_run: Failed to layer->update_fixed");
+                        return false;
+                    }
+                    current = current->next;
+                }
+            }
         }
 
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // CPU-bounded Rotines
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        accumulator += time_delta;
-        while (accumulator > STEP) {
-            accumulator -= STEP;
-            if (!tl_scene_update_fixed(STEP)) {
-                TLERROR("tl_engine_run: Failed to tl_scene_update_fixed");
-                return false;
+        // ============================================
+        // Variable time step processing
+        // ============================================
+        {
+            fps++;
+            TLNode* current = layers->head;
+            while (current != NULL) {
+                const TLLayer* layer = current->payload;
+                if (!layer->update_variable(time_delta)) {
+                    TLERROR("tl_engine_run: Failed to layer->update_variable");
+                    return false;
+                }
+
+                if (!layer->update_after()) {
+                    TLERROR("tl_engine_run: Failed to layer->update_after");
+                    return false;
+                }
+                current = current->next;
             }
-            ups++;
         }
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // GPU-bounded Rotines
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        fps++;
-        if (!tl_scene_update(time_delta)) {
-            TLERROR("tl_engine_run: Failed to tl_scene_update");
-            return false;
-        }
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // Frame finalization
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        if (!tl_scene_update_after()) {
-            TLERROR("tl_engine_run: Failed to tl_scene_update_after");
-            return false;
-        }
+
+        // ============================================
+        // Frame finalization rotines
+        // ============================================
         tl_input_update();
         tl_platform_update();
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // One-Per-Second Rotines
-        // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         tl_timer_update(&timer);
+
+        // ============================================
+        // Once Per-Second rotines
+        // ============================================
         if (tl_timer_seconds(&timer) >= SECOND) {
             TLDEBUG("FPS: %llu UPS: %llu", fps, ups);
 
@@ -151,6 +174,16 @@ TLAPI b8 tl_engine_run(void) {
 
 TLAPI b8 tl_engine_terminate(void) {
     TLDEBUG("tl_engine_terminate");
+
+    while (layers->head != NULL) {
+        const TLLayer* layer = layers->head->payload;
+        tl_layer_stack_destroy(layer->identity);
+    }
+
+    if (!tl_list_destroy(layers)) {
+        TLERROR("tl_engine_terminate: Failed to destroy layers list");
+        return false;
+    }
 
     if (!tl_ecs_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate ecs manager");
@@ -188,4 +221,12 @@ TLAPI b8 tl_engine_terminate(void) {
     }
 
     return true;
+}
+
+static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event) {
+    if (code == TL_EVENT_APPLICATION_QUIT) {
+        running = false;
+    }
+
+    return TL_EVENT_CONTINUE;
 }

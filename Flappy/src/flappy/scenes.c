@@ -1,4 +1,4 @@
-#include "scene.h"
+#include "flappy/scene/world.h"
 
 #include <teleios/ecs/entity.h>
 #include <teleios/logger.h>
@@ -11,7 +11,7 @@ static const TLIdentity* regionid;
 static const TLIdentity* birdid;
 static const TLIdentity* pipeid;
 
-void g_scene_initialize(void) {
+void flappy_scene_world_initialize(void) {
     sceneid = tl_scene_stack_create("Main");
     if (sceneid == NULL) TLFATAL("g_scene_initialize: Failed to create scene");
 
@@ -30,6 +30,8 @@ void g_scene_initialize(void) {
     tl_scene_activate_region(regionid);
 }
 
-void g_scene_terminate(void) {
-    // tl_scene_stack_destroy(sceneid);
+void flappy_scene_world_terminate(void) {
+    tl_ecs_entity_destroy(birdid);
+    tl_ecs_entity_destroy(pipeid);
+    tl_scene_stack_destroy(sceneid);
 }

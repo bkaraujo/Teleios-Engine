@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Flappy", "Flappy\Flappy.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Editor\Editor.vcxproj", "{A2D4BBB8-BA8B-4A03-BC26-76772AF216B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC} = {A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -24,6 +29,10 @@ Global
 		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Debug|x64.Build.0 = Debug|x64
 		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Release|x64.ActiveCfg = Release|x64
 		{A5E3CCCB-379F-4BA4-8253-853A3F4EB6FC}.Release|x64.Build.0 = Release|x64
+		{A2D4BBB8-BA8B-4A03-BC26-76772AF216B0}.Debug|x64.ActiveCfg = Debug|x64
+		{A2D4BBB8-BA8B-4A03-BC26-76772AF216B0}.Debug|x64.Build.0 = Debug|x64
+		{A2D4BBB8-BA8B-4A03-BC26-76772AF216B0}.Release|x64.ActiveCfg = Release|x64
+		{A2D4BBB8-BA8B-4A03-BC26-76772AF216B0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

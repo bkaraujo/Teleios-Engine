@@ -274,6 +274,8 @@
     <ClInclude Include="src\teleios\identity\manager.h" />
     <ClInclude Include="src\teleios\input\manager.h" />
     <ClInclude Include="src\teleios\input\pool.h" />
+    <ClInclude Include="src\teleios\layer\manager.h" />
+    <ClInclude Include="src\teleios\layer\stack.h" />
     <ClInclude Include="src\teleios\logger.h" />
     <ClInclude Include="src\teleios\memory\manager.h" />
     <ClInclude Include="src\teleios\memory\allocator.h" />
@@ -348,6 +350,7 @@
     <ClCompile Include="src\teleios\event.c" />
     <ClCompile Include="src\teleios\identity.c" />
     <ClCompile Include="src\teleios\input.c" />
+    <ClCompile Include="src\teleios\layerstack.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
     <ClCompile Include="src\teleios\winapi.c" />

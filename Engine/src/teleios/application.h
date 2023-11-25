@@ -15,8 +15,9 @@ int main(int argc, char** argv) {
     spec.window.witdh = 640;
     spec.window.height = 480;
 
+    if (!tl_engine_pre_initialize()) return -1;
+
     tl_application_define(&spec);
-    if (!tl_engine_pre_initialize(&spec)) return -1;
     if (!tl_engine_initialize(&spec)) return -1;
     TLDEBUG("tl_application_initialize");
     if (!tl_application_initialize(&spec)) return -99;

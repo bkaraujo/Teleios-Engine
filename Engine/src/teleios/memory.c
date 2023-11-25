@@ -63,6 +63,7 @@ b8 tl_memory_initialize(void) {
 static const char* tl_memory_type(TLEMemoryType type) {
     switch (type) {
     case TL_MEMORY_TYPE_IDENTITY:       return "TL_MEMORY_TYPE_IDENTITY      ";
+    case TL_MEMORY_TYPE_LAYER:          return "TL_MEMORY_TYPE_LAYER         ";
     case TL_MEMORY_TYPE_CONTAINER_LIST: return "TL_MEMORY_TYPE_CONTAINER_LIST";
     case TL_MEMORY_TYPE_CONTAINER_NODE: return "TL_MEMORY_TYPE_CONTAINER_NODE";
     case TL_MEMORY_TYPE_SCENE:          return "TL_MEMORY_TYPE_SCENE         ";

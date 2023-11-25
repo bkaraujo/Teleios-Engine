@@ -52,6 +52,7 @@ typedef signed char         b8;
 
 typedef enum {
     TL_MEMORY_TYPE_IDENTITY,
+    TL_MEMORY_TYPE_LAYER,
     TL_MEMORY_TYPE_CONTAINER_LIST,
     TL_MEMORY_TYPE_CONTAINER_NODE,
     TL_MEMORY_TYPE_SCENE,
@@ -118,6 +119,19 @@ typedef struct {
 typedef struct {
     const char identity[38];
 } TLIdentity;
+
+
+typedef struct {
+    TLIdentity* identity;
+    const char* name;
+
+    b8(*on_attach)(void);
+    b8(*on_detach)(void);
+
+    b8(*update_variable)(const u64 delta);
+    b8(*update_fixed)(const u64 delta);
+    b8(*update_after)(void);
+} TLLayer;
 
 typedef struct {
     /* General Data */

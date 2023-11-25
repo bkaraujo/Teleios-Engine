@@ -239,6 +239,7 @@ b8 tl_platform_window_create(const TLSpecification* spec) {
         return false;
     }
 
+    prefix = spec->name;
     return true;
 }
 
@@ -402,7 +403,7 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 // ##############################################################################################
 #include "teleios/platform/manager.h"
 
-b8 tl_platform_initialize(const TLSpecification* spec) {
+b8 tl_platform_initialize(void) {
     QueryPerformanceFrequency(&frequency);
 
     hinstance = GetModuleHandle(NULL);
@@ -425,7 +426,6 @@ b8 tl_platform_initialize(const TLSpecification* spec) {
         return false;
     }
 
-    prefix = spec->name;
     return true;
 }
 
