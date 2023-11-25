@@ -254,7 +254,7 @@
     <ClInclude Include="src\cglm\vec4-ext.h" />
     <ClInclude Include="src\cglm\vec4.h" />
     <ClInclude Include="src\cglm\version.h" />
-    <ClInclude Include="src\nuklear\nukelar.h" />
+    <ClInclude Include="src\nuklear\nuklear.h" />
     <ClInclude Include="src\stb\image.h" />
     <ClInclude Include="src\teleios\container.h" />
     <ClInclude Include="src\teleios\defines.h" />

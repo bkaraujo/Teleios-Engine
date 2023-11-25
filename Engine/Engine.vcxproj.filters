@@ -651,7 +651,7 @@
     <ClInclude Include="src\teleios\identity\manager.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\nuklear\nukelar.h">
+    <ClInclude Include="src\nuklear\nuklear.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\layer\stack.h">
