@@ -5,8 +5,11 @@
 #include "teleios/scene/structs.h"
 #include "teleios/types.h"
 
-void tl_scene_stack_activate(const TLIdentity* sceneid);
+b8 tl_scene_stack_initialize(void);
+b8 tl_scene_stack_terminate(void);
+
 TLAPI const TLIdentity* tl_scene_stack_create(const char* name);
-TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid);
+TLAPI b8 tl_scene_stack_destroy(const TLIdentity* sceneid);
+const TLScene* tl_scene_stack_get(const TLIdentity* sceneid);
 
 #endif // TELEIOS_SCENE_STACK_H

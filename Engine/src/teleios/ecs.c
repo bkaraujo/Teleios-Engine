@@ -1,6 +1,5 @@
 #include "teleios/container.h"
 #include "teleios/ecs/component.h"
-#include "teleios/ecs/components.h"
 #include "teleios/ecs/entity.h"
 #include "teleios/ecs/manager.h"
 #include "teleios/identity/generator.h"

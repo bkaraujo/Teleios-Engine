@@ -9,90 +9,11 @@
 #include "teleios/scene/scene.h"
 #include "teleios/scene/stack.h"
 
-static TLList* scenes;
 static TLList* active_regions;
 static const TLScene* active_scene;
 
-static const SSIZE = sizeof(TLScene);
 static const RSIZE = sizeof(TLRegion);
 
-static const TLScene* tl_scene_find(const TLIdentity* sceneid);
-
-// ##############################################################################################
-//
-//                                        STACK
-//
-// ##############################################################################################
-TLAPI const TLIdentity* tl_scene_stack_create(const char* name) {
-    TLTRACE("tl_scene_stack_create: scene \"%s\"", name);
-
-    TLScene* scene = tl_memory_alloc(TL_MEMORY_TYPE_SCENE, SSIZE);
-    if (scene == NULL) {
-        TLERROR("tl_scene_create: Failed to allocate TLScene");
-        return NULL;
-    }
-
-    scene->name = name;
-    scene->regions = tl_list_create();
-    tl_identity_generate(&scene->identity);
-
-    if (!tl_list_append(scenes, scene)) {
-        tl_memory_free(scene, TL_MEMORY_TYPE_SCENE, SSIZE);
-        TLERROR("tl_scene_create: Failed to append scene to list");
-        return NULL;
-    }
-
-    return &scene->identity;
-}
-
-TLAPI void tl_scene_stack_destroy(const TLIdentity* sceneid) {
-    // ===========================================================
-    // Ensure scene
-    // ===========================================================
-    const TLScene* scene = tl_scene_find(sceneid);
-    if (scene == NULL) {
-        TLERROR("tl_scene_destroy: Scene not found");
-        return;
-    }
-    // ===========================================================
-    // Ensure scene has no region
-    // ===========================================================
-    TLTRACE("tl_scene_stack_destroy: scene \"%s\"", scene->name);
-    while (scene->regions->head != NULL) {
-        const TLRegion* region = scene->regions->head->payload;
-        tl_scene_destroy_region(sceneid, &region->identity);
-    }
-
-    if (scene->regions->size > 0) {
-        TLERROR("tl_scene_destroy: Failed to destroy scene's regions");
-        return;
-    }
-    // ===========================================================
-    // Dealocate scene
-    // ===========================================================
-    if (!tl_list_remove_payload(scenes, scene)) {
-        TLERROR("tl_scene_destroy: Failed to remove scene from scenes list");
-        return;
-    }
-
-    tl_list_destroy(scene->regions);
-    tl_memory_free(scene, TL_MEMORY_TYPE_SCENE, SSIZE);
-}
-
-void tl_scene_stack_activate(const TLIdentity* sceneid) {
-    if (active_scene != NULL && tl_identity_equals(&active_scene->identity, sceneid)) {
-        TLWARN("tl_scene_stack_activate: Scene already active");
-        return;
-    }
-
-    const TLScene* scene = tl_scene_find(sceneid);
-    if (scene == NULL) {
-        TLERROR("tl_region_entity_attach: Scene not found");
-        return;
-    }
-
-    active_scene = scene;
-}
 // ##############################################################################################
 //
 //                                        REGION
@@ -113,7 +34,7 @@ static const TLRegion* tl_region_find(const TLScene* scene, const TLIdentity* re
 }
 
 TLAPI b8 tl_region_entity_attach(const TLIdentity* sceneid, const TLIdentity* regionid, const TLIdentity* entityid) {
-    const TLScene* scene = tl_scene_find(sceneid);
+    const TLScene* scene = tl_scene_stack_get(sceneid);
     if (scene == NULL) {
         TLERROR("tl_region_entity_attach: Scene not found");
         return false;
@@ -136,12 +57,11 @@ TLAPI b8 tl_region_entity_attach(const TLIdentity* sceneid, const TLIdentity* re
         current = current->next;
     }
 
-    TLTRACE("tl_region_entity_attach: Scene \"%s\" Region \"%s\" Entity \"%s\"", scene->name, region->name, entityid->identity);
     return tl_list_append(region->entities, entityid);
 }
 
 TLAPI b8 tl_region_entity_detach(const TLIdentity* sceneid, const TLIdentity* regionid, const TLIdentity* entityid) {
-    const TLScene* scene = tl_scene_find(sceneid);
+    const TLScene* scene = tl_scene_stack_get(sceneid);
     if (scene == NULL) {
         TLERROR("tl_region_entity_detach: Scene not found");
         return false;
@@ -152,8 +72,6 @@ TLAPI b8 tl_region_entity_detach(const TLIdentity* sceneid, const TLIdentity* re
         TLERROR("tl_region_entity_detach: Region not found");
         return false;
     }
-
-    TLTRACE("tl_region_entity_detach: Scene \"%s\" Region \"%s\" Entity \"%s\"", scene->name, region->name, entityid->identity);
 
     TLNode* current = region->entities->head;
     while (current != NULL) {
@@ -182,7 +100,7 @@ TLAPI const TLIdentity* tl_scene_create_region(const TLIdentity* sceneid, const 
     // ===========================================================
     // Ensure hosting scene
     // ===========================================================
-    const TLScene* scene = tl_scene_find(sceneid);
+    const TLScene* scene = tl_scene_stack_get(sceneid);
     if (scene == NULL) {
         TLERROR("tl_scene_create_region: Scene not found");
         return NULL;
@@ -191,7 +109,6 @@ TLAPI const TLIdentity* tl_scene_create_region(const TLIdentity* sceneid, const 
     // ===========================================================
     // Create the region
     // ===========================================================
-    TLTRACE("tl_scene_create_region: scene \"%s\" region \"%s\"", scene->name, name);
     TLRegion* region = tl_memory_alloc(TL_MEMORY_TYPE_SCENE_REGION, RSIZE);
 
     region->name = name;
@@ -218,7 +135,7 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
     // ===========================================================
     // Ensure hosting scene
     // ===========================================================
-    const TLScene* scene = tl_scene_find(sceneid);
+    const TLScene* scene = tl_scene_stack_get(sceneid);
     if (scene == NULL) {
         TLERROR("tl_scene_destroy_region: Scene not found");
         return;
@@ -244,7 +161,6 @@ TLAPI void tl_scene_destroy_region(const TLIdentity* sceneid, const TLIdentity* 
     }
 
     const TLRegion* region = node->payload;
-    TLTRACE("tl_scene_destroy_region: scene \"%s\" region \"%s\"", scene->name, region->name);
     // ===========================================================
     // Dealocate the region
     // ===========================================================
@@ -284,10 +200,7 @@ void tl_scene_activate_region(const TLIdentity* regionid) {
 //
 // ##############################################################################################
 b8 tl_scene_initialize(void) {
-    TLTRACE("tl_scene_initialize");
-    scenes = tl_list_create();
-    if (scenes == NULL) {
-        TLERROR("tl_scene_initialize: Failed to create scene list");
+    if (!tl_scene_stack_initialize()) {
         return false;
     }
 
@@ -301,25 +214,10 @@ b8 tl_scene_initialize(void) {
 }
 
 b8 tl_scene_terminate(void) {
-    TLTRACE("tl_scene_terminate");
     active_scene = NULL;
 
-    {
-        TLNode* current = scenes->head;
-        while (current != NULL) {
-            const TLScene* scene = current->payload;
-            TLNode* next = current->next;
-            TLWARN("tl_scene_terminate: Removing scene %s. %s", scene->identity.identity, MSG_PLEASE_DO_IT_YOURSELF);
-
-            tl_scene_stack_destroy(&scene->identity);
-            current = next;
-        }
-
-        if (!tl_list_destroy(scenes)) {
-            TLERROR("tl_scene_terminate: Failed to destroy scenes list");
-            return false;
-        }
-        scenes = NULL;
+    if (!tl_scene_stack_terminate()) {
+        return false;
     }
 
     {
@@ -344,6 +242,22 @@ b8 tl_scene_terminate(void) {
 //
 // ##############################################################################################
 #include "teleios/ecs/system.h"
+
+TLAPI void tl_scene_activate(const TLIdentity* sceneid) {
+    if (active_scene != NULL && tl_identity_equals(&active_scene->identity, sceneid)) {
+        TLWARN("tl_scene_stack_activate: Scene already active");
+        return;
+    }
+
+    const TLScene* scene = tl_scene_stack_get(sceneid);
+    if (scene == NULL) {
+        TLERROR("tl_region_entity_attach: Scene not found");
+        return;
+    }
+
+    active_scene = scene;
+}
+
 b8 tl_scene_prepare(void) {
     if (active_regions == NULL || active_regions->size == 0) {
         TLERROR("tl_scene_prepare: No region active");
@@ -363,33 +277,4 @@ b8 tl_scene_update(u64 delta) {
 
 b8 tl_scene_update_after(void) {
     return tl_ecs_system_process();
-}
-// ##############################################################################################
-//
-//                                        HELPERS
-//
-// ##############################################################################################
-static const TLScene* found;
-static const TLScene* tl_scene_find(const TLIdentity* sceneid) {
-    if (sceneid == NULL) {
-        TLERROR("tl_scene_find: sceneid is null");
-        return NULL;
-    }
-
-    if (found != NULL && tl_identity_equals(&found->identity, sceneid)) {
-        return found;
-    }
-
-    TLNode* current = scenes->head;
-    while (current != NULL) {
-        const TLScene* canditate = current->payload;
-        if (tl_identity_equals(&canditate->identity, sceneid)) {
-            found = canditate;
-            break;
-        }
-
-        current = current->next;
-    }
-
-    return found;
 }

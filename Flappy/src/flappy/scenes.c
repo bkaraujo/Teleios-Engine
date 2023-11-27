@@ -2,6 +2,7 @@
 
 #include <teleios/ecs/entity.h>
 #include <teleios/logger.h>
+#include <teleios/scene/active.h>
 #include <teleios/scene/region.h>
 #include <teleios/scene/scene.h>
 #include <teleios/scene/stack.h>
@@ -26,7 +27,7 @@ void flappy_scene_world_initialize(void) {
     if (pipeid == NULL) TLFATAL("g_scene_initialize: Failed to create entity");
     if (!tl_region_entity_attach(sceneid, regionid, pipeid)) TLFATAL("g_scene_initialize: Failed to attach entity");
 
-    tl_scene_stack_activate(sceneid);
+    tl_scene_activate(sceneid);
     tl_scene_activate_region(regionid);
 }
 

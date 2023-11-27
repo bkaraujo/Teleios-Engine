@@ -56,7 +56,6 @@ TLAPI void tl_memory_copy(const void* source, const void* target, u64 size) {
 // ################################################################################
 #include "teleios/memory/manager.h"
 b8 tl_memory_initialize(void) {
-    TLTRACE("tl_memory_initialize");
     return true;
 }
 
@@ -71,6 +70,7 @@ static const char* tl_memory_type(TLEMemoryType type) {
     case TL_MEMORY_TYPE_ECS_ENTITY:     return "TL_MEMORY_TYPE_ECS_ENTITY    ";
     case TL_MEMORY_TYPE_ECS_SYSTEM:     return "TL_MEMORY_TYPE_ECS_SYSTEM    ";
     case TL_MEMORY_TYPE_ECS_COMPONENT:  return "TL_MEMORY_TYPE_ECS_COMPONENT ";
+    case TL_MEMORY_TYPE_GRAPHICS:       return "TL_MEMORY_TYPE_GRAPHICS      ";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";
     }
 
@@ -78,7 +78,6 @@ static const char* tl_memory_type(TLEMemoryType type) {
 }
 
 b8 tl_memory_terminate(void) {
-    TLTRACE("tl_memory_terminate");
     if (registry.allocated == 0) return true;
 
     for (unsigned i = 0; i < TL_MEMORY_TYPE_MAXIMUM; ++i)

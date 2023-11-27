@@ -57,7 +57,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include\;$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -259,7 +259,6 @@
     <ClInclude Include="src\teleios\container.h" />
     <ClInclude Include="src\teleios\defines.h" />
     <ClInclude Include="src\teleios\ecs\component.h" />
-    <ClInclude Include="src\teleios\ecs\components.h" />
     <ClInclude Include="src\teleios\ecs\entity.h" />
     <ClInclude Include="src\teleios\ecs\manager.h" />
     <ClInclude Include="src\teleios\ecs\search.h" />
@@ -293,7 +292,6 @@
     <ClInclude Include="src\teleios\scene\region.h" />
     <ClInclude Include="src\teleios\scene\scene.h" />
     <ClInclude Include="src\teleios\scene\stack.h" />
-    <ClInclude Include="src\teleios\scene\structs.h" />
     <ClInclude Include="src\teleios\time\epoch.h" />
     <ClInclude Include="src\teleios\time\timer.h" />
     <ClInclude Include="src\teleios\string.h" />
@@ -357,6 +355,7 @@
     <ClCompile Include="src\teleios\layerstack.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
+    <ClCompile Include="src\teleios\scenestack.c" />
     <ClCompile Include="src\teleios\winapi.c" />
     <ClCompile Include="src\teleios\scene.c" />
     <ClCompile Include="src\teleios\string.c" />

@@ -62,6 +62,7 @@ typedef enum {
     TL_MEMORY_TYPE_ECS_ENTITY,
     TL_MEMORY_TYPE_ECS_SYSTEM,
     TL_MEMORY_TYPE_ECS_COMPONENT,
+    TL_MEMORY_TYPE_GRAPHICS,
     TL_MEMORY_TYPE_MAXIMUM
 } TLEMemoryType;
 
@@ -131,6 +132,20 @@ typedef struct {
     const char identity[38];
 } TLIdentity;
 
+typedef struct {
+    const TLIdentity* identity;
+} TLComponent;
+
+typedef struct {
+    TLComponent owner;
+    ivec3s scale;
+    ivec3s position;
+} TLComponentTransform;
+
+typedef struct {
+    TLComponent owner;
+    const char* name;
+} TLComponentName;
 
 typedef struct {
     TLIdentity* identity;

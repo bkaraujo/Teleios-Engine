@@ -47,7 +47,6 @@ b8 tl_identity_equals(const TLIdentity* first, const TLIdentity* second) {
 //
 // ##############################################################################################
 b8 tl_identity_initialize(void) {
-    TLTRACE("tl_identity_initialize");
     known = tl_list_create();
     if (known == NULL) {
         TLERROR("tl_identity_initialize: Failed to initialize known list");
@@ -58,7 +57,6 @@ b8 tl_identity_initialize(void) {
 }
 
 b8 tl_identity_terminate(void) {
-    TLTRACE("tl_identity_terminate");
     if (!tl_list_clear(known, tl_container_noop_dealocator)) {
         TLERROR("tl_identity_terminate: Failed to clear the known list");
         return false;

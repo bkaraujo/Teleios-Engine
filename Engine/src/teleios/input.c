@@ -57,7 +57,6 @@ static TLEventStatus tl_input_event(const u8 code, const TLEvent* event) {
 #include "teleios/memory/allocator.h"
 
 b8 tl_input_initialize(void) {
-    TLTRACE("tl_input_initialize");
     mouse_y = mouse_x = 0;
     tl_memory_set(&previous, 0, sizeof(struct TLRegistry));
     tl_memory_set(&current, 0, sizeof(struct TLRegistry));
@@ -100,6 +99,5 @@ void tl_input_update(void) {
 }
 
 b8 tl_input_terminate(void) {
-    TLTRACE("tl_input_terminate");
     return true;
 }

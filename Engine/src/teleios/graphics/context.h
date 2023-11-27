@@ -7,9 +7,13 @@
 
 typedef struct {
     VkInstance instance;
+    VkAllocationCallbacks* allocator;
+    TLList* extentions;
+    TLList* layers;
     VkSurfaceKHR surface;
     struct {
         VkPhysicalDevice ph;
+        TLList* extentions;
         VkDevice handle;
     } device;
     VkSwapchainKHR swapchain;

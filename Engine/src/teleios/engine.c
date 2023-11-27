@@ -28,7 +28,6 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
         return false;
     }
-    TLDEBUG("tl_engine_pre_initialize");
 
     if (!tl_memory_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
@@ -76,8 +75,6 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 }
 
 TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
-    TLDEBUG("tl_engine_initialize");
-
     if (!tl_platform_window_create(spec)) {
         TLERROR("tl_engine_initialize: Failed create window");
         return false;
@@ -92,7 +89,6 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 }
 
 TLAPI b8 tl_engine_run(void) {
-    TLDEBUG("tl_engine_run");
     u64 fps = 0;
     u64 ups = 0;
 
@@ -179,8 +175,6 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
-    TLDEBUG("tl_engine_terminate");
-
     if (!tl_graphics_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate graphic manager");
         return false;
