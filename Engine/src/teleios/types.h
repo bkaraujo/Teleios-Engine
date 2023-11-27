@@ -65,8 +65,17 @@ typedef enum {
     TL_MEMORY_TYPE_MAXIMUM
 } TLEMemoryType;
 
-#define TL_EVENT_STOP false
-#define TL_EVENT_CONTINUE true
+typedef enum {
+    /// <summary>
+    /// The event should keep walking the event chain.
+    /// </summary>
+    TL_EVENT_STATUS_CONTUNE,
+
+    /// <summary>
+    /// The event should be consumed and stop walkin the event chain.
+    /// </summary>
+    TL_EVENT_STATUS_STOP
+} TLEventStatus;
 
 typedef struct {
     // 128 bytes

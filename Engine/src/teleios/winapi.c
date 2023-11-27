@@ -170,15 +170,15 @@ void tl_timer_update(TLTimer* timer) {
     timer->current = end.QuadPart - timer->start;
 }
 
-f64 tl_timer_seconds(TLTimer* timer) {
+f64 tl_timer_seconds(const TLTimer* timer) {
     return (timer->current / frequency.QuadPart) * 1.0;
 }
 
-f64 tl_timer_millis(TLTimer* timer) {
+f64 tl_timer_millis(const TLTimer* timer) {
     return (timer->current * 1000 / frequency.QuadPart) * 1.0;
 }
 
-f64 tl_timer_micros(TLTimer* timer) {
+f64 tl_timer_micros(const TLTimer* timer) {
     return (timer->current * 1000000 / frequency.QuadPart) * 1.0;
 }
 // ##############################################################################################

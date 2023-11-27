@@ -61,7 +61,7 @@ static b8 tl_ecs_component_contains(const TLList* list, const TLIdentity* entity
 TLAPI void* tl_ecs_component_attach(const TLIdentity* entityid, const TL_COMPONENT_TYPE type) {
     if (entityid == NULL) {
         TLERROR("tl_ecs_component_attach: entityid is null");
-        return false;
+        return NULL;
     }
 
     if (tl_ecs_component_contains(components[type], entityid)) {

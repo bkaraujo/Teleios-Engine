@@ -3,7 +3,7 @@
 
 #include "teleios/types.h"
 
-typedef b8 (*PFN_EventHandler)(const u8, const TLEvent*);
+typedef TLEventStatus(*PFN_EventHandler)(const u8, const TLEvent*);
 
 /// <summary>
 /// Subscribe to an event for handling.

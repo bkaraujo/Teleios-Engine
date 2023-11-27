@@ -40,7 +40,7 @@ void tl_event_fire(const u8 code, const TLEvent* event) {
     TLNode* current = list[code]->head;
     while (current != NULL) {
         PFN_EventHandler handler = (PFN_EventHandler)current->payload;
-        if (!handler(code, event)) {
+        if (handler(code, event) == TL_EVENT_STATUS_STOP) {
             break;
         }
 

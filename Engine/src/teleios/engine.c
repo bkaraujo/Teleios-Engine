@@ -21,7 +21,7 @@
 static b8 running = true;
 static TLList* layers;
 
-static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event);
+static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
 
 TLAPI b8 tl_engine_pre_initialize(void) {
     if (!tl_platform_initialize()) {
@@ -235,10 +235,10 @@ TLAPI b8 tl_engine_terminate(void) {
     return true;
 }
 
-static b8 tl_engine_eventhandler(const u8 code, const TLEvent* event) {
+static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event) {
     if (code == TL_EVENT_APPLICATION_QUIT) {
         running = false;
     }
 
-    return TL_EVENT_CONTINUE;
+    return TL_EVENT_STATUS_CONTUNE;
 }
