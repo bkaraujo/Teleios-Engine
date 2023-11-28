@@ -319,15 +319,22 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
     }
 
     VkPhysicalDevice* devices = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkPhysicalDevice));
-    VKCHECK("vkEnumeratePhysicalDevices", vkEnumeratePhysicalDevices(context.instance, &avaliable, devices));
-
-    context.device.physical = devices[0];
-    vkGetPhysicalDeviceMemoryProperties(context.device.physical, &context.device.memory);
+    VkResult result = vkEnumeratePhysicalDevices(context.instance, &avaliable, devices);
+    if (result != VK_SUCCESS) {
+        TLERROR("vkEnumerateDeviceExtensionProperties: Failed with: %s", vkresult(result));
+        tl_memory_free(devices, TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkPhysicalDevice));
+        return false;
+    }
+    // =================================================
+    // Select the device with most memory
+    // =================================================
+    context.device.ph.handle = devices[0];
+    vkGetPhysicalDeviceMemoryProperties(context.device.ph.handle, &context.device.ph.memory);
 
     f64 local_memory = 0;
-    for (unsigned j = 0; j < context.device.memory.memoryHeapCount; ++j) {
-        if (context.device.memory.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
-            local_memory = GiB(context.device.memory.memoryHeaps[j].size);
+    for (unsigned j = 0; j < context.device.ph.memory.memoryHeapCount; ++j) {
+        if (context.device.ph.memory.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+            local_memory = GiB(context.device.ph.memory.memoryHeaps[j].size);
             break;
         }
     }
@@ -341,8 +348,8 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
             if (memory.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
                 if (GiB(memory.memoryHeaps[j].size) > local_memory) {
 
-                    context.device.physical = devices[i];
-                    context.device.memory = memory;
+                    context.device.ph.handle = devices[i];
+                    context.device.ph.memory = memory;
                     break;
                 }
             }
@@ -350,6 +357,41 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
     }
 
     tl_memory_free(devices, TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkPhysicalDevice));
+    // =================================================
+    // Load the selected device's properties
+    // =================================================
+    VkPhysicalDeviceProperties2 properties2 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
+    VkPhysicalDeviceDriverProperties driverProperties = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES };
+    properties2.pNext = &driverProperties;
+    vkGetPhysicalDeviceProperties2(context.device.ph.handle, &properties2);
+    tl_memory_copy(&properties2.properties, &context.device.ph.properties, sizeof(VkPhysicalDeviceProperties));
+    tl_memory_copy(&driverProperties, &context.device.ph.driver_properties, sizeof(VkPhysicalDeviceDriverProperties));
+    // =================================================
+    // Load the selected device's features
+    // =================================================
+    vkGetPhysicalDeviceFeatures(context.device.ph.handle, &context.device.ph.features);
+    // =================================================
+    // Load the selected device's supported extentions
+    // =================================================
+    avaliable = 0;
+    VKCHECK("vkEnumerateDeviceExtensionProperties", vkEnumerateDeviceExtensionProperties(context.device.ph.handle, NULL, &avaliable, NULL));
+    VkExtensionProperties* extension_properties = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkExtensionProperties));
+    result = vkEnumerateDeviceExtensionProperties(context.device.ph.handle, NULL, &avaliable, extension_properties);
+    if (result != VK_SUCCESS) {
+        TLERROR("vkEnumerateDeviceExtensionProperties: Failed with: %s", vkresult(result));
+        tl_memory_free(extension_properties, TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkExtensionProperties));
+        return false;
+    }
+
+    context.device.ph.extentions = tl_list_create();
+    for (unsigned i = 0; i < avaliable; ++i) {
+        tl_list_append(context.device.ph.extentions, extension_properties[i].extensionName);
+    }
+
+    tl_memory_free(extension_properties, TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkExtensionProperties));
+    // =================================================
+    // Load the selected device's queue details
+    // =================================================
 
     return true;
 }
@@ -359,6 +401,14 @@ static b8 vkdevice_logical_create(const TLSpecification* spec) {
 }
 
 static b8 vkdevice_terminate(void) {
+    if (context.device.ph.extentions != NULL) {
+        tl_list_clear(context.device.ph.extentions, tl_container_noop_dealocator);
+        tl_list_destroy(context.device.ph.extentions);
+        context.device.ph.extentions = NULL;
+    }
+
+    tl_memory_zero(&context.device.ph, sizeof(context.device.ph));
+
     return true;
 }
 

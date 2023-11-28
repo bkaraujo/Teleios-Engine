@@ -12,10 +12,17 @@ typedef struct {
     TLList* layers;
     VkSurfaceKHR surface;
     struct {
-        VkPhysicalDevice physical;
-        VkPhysicalDeviceMemoryProperties memory;
-        TLList* extentions;
-        VkDevice handle;
+        struct {
+            VkPhysicalDevice handle;
+            VkPhysicalDeviceMemoryProperties memory;
+            VkPhysicalDeviceFeatures features;
+            VkPhysicalDeviceDriverProperties driver_properties;
+            VkPhysicalDeviceProperties properties;
+            TLList* extentions;
+        } ph;
+        struct {
+            VkDevice handle;
+        } lo;
     } device;
     VkSwapchainKHR swapchain;
 } VKContext;
