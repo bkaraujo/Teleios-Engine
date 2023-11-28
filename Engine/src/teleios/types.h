@@ -36,9 +36,9 @@ typedef signed char         b8;
 #define true                1
 #define false               0
 
-#define KiB(b)              (b * 1024)
-#define MiB(b)              (KiB(b) * 1024)
-#define GiB(b)              (MiB(b) * 1024)
+#define KiB(b)              ((f64)(b / 1024.0))
+#define MiB(b)              ((f64)(KiB(b) / 1024.0))
+#define GiB(b)              ((f64)(MiB(b) / 1024.0))
 
 #define NANOSECOND         1000000000
 #define MICROSECOND        1000000

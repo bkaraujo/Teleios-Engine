@@ -12,7 +12,8 @@ typedef struct {
     TLList* layers;
     VkSurfaceKHR surface;
     struct {
-        VkPhysicalDevice ph;
+        VkPhysicalDevice physical;
+        VkPhysicalDeviceMemoryProperties memory;
         TLList* extentions;
         VkDevice handle;
     } device;

@@ -294,7 +294,67 @@ static b8 vksurface_terminate(void) {
 //                                        VULKAN DEVICE
 //
 // ##############################################################################################
+static b8 vkdevice_physical_select(const TLSpecification* spec);
+static b8 vkdevice_logical_create(const TLSpecification* spec);
 static b8 vkdevice_initialize(const TLSpecification* spec) {
+    if (!vkdevice_physical_select(spec)) {
+        TLERROR("vkdevice_initialize: Failed to select VkPhysicalDevice");
+        return false;
+    }
+
+    if (!vkdevice_logical_create(spec)) {
+        TLERROR("vkdevice_initialize: Failed to create VkDevice");
+        return false;
+    }
+
+    return true;
+}
+
+static b8 vkdevice_physical_select(const TLSpecification* spec) {
+    u32 avaliable = 0;
+    VKCHECK("vkEnumeratePhysicalDevices", vkEnumeratePhysicalDevices(context.instance, &avaliable, NULL));
+    if (avaliable == 0) {
+        TLERROR("vkdevice_physical_select: No VkPhysicalDevice found");
+        return false;
+    }
+
+    VkPhysicalDevice* devices = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkPhysicalDevice));
+    VKCHECK("vkEnumeratePhysicalDevices", vkEnumeratePhysicalDevices(context.instance, &avaliable, devices));
+
+    context.device.physical = devices[0];
+    vkGetPhysicalDeviceMemoryProperties(context.device.physical, &context.device.memory);
+
+    f64 local_memory = 0;
+    for (unsigned j = 0; j < context.device.memory.memoryHeapCount; ++j) {
+        if (context.device.memory.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+            local_memory = GiB(context.device.memory.memoryHeaps[j].size);
+            break;
+        }
+    }
+
+    for (unsigned i = 1; i < avaliable; ++i) {
+        VkPhysicalDevice device = devices[i];
+        VkPhysicalDeviceMemoryProperties memory = { 0 };
+        vkGetPhysicalDeviceMemoryProperties(device, &memory);
+
+        for (unsigned j = 0; j < memory.memoryHeapCount; ++j) {
+            if (memory.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+                if (GiB(memory.memoryHeaps[j].size) > local_memory) {
+
+                    context.device.physical = devices[i];
+                    context.device.memory = memory;
+                    break;
+                }
+            }
+        }
+    }
+
+    tl_memory_free(devices, TL_MEMORY_TYPE_GRAPHICS, avaliable * sizeof(VkPhysicalDevice));
+
+    return true;
+}
+
+static b8 vkdevice_logical_create(const TLSpecification* spec) {
     return true;
 }
 
