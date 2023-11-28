@@ -283,6 +283,7 @@
     <ClInclude Include="src\teleios\memory\allocator.h" />
     <ClInclude Include="src\teleios\platform\console.h" />
     <ClInclude Include="src\teleios\platform\detector.h" />
+    <ClInclude Include="src\teleios\platform\info.h" />
     <ClInclude Include="src\teleios\platform\manager.h" />
     <ClInclude Include="src\teleios\platform\memory.h" />
     <ClInclude Include="src\teleios\platform\time.h" />
