@@ -52,6 +52,30 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload) {
     return true;
 }
 
+TLAPI b8 tl_list_append_all(const TLList* source, TLList* target) {
+    if (source == NULL) {
+        TLERROR("tl_list_append: source is null");
+        return false;
+    }
+
+    if (source->size == 0) {
+        return true;
+    }
+
+    u64 index = 0;
+    TLNode* current = source->head;
+    while (current != NULL) {
+        if (!tl_list_append(target, current->payload)) {
+            TLERROR("tl_list_append_all: Failed to append element %llu of the source list", index);
+            return false;
+        }
+        index++;
+        current = current->next;
+    }
+
+    return true;
+}
+
 TLAPI TLList* tl_list_clone(TLList* list) {
     if (list == NULL) {
         TLERROR("tl_list_append: list is null");

@@ -28,18 +28,18 @@ static VKContext context = { 0 };
 // ##############################################################################################
 #include "teleios/graphics/manager.h"
 
-static b8 vkinstance_initialize(void);
-static b8 vksurface_initialize(void);
-static b8 vkdevice_initialize(void);
-static b8 vkswapchain_initialize(void);
+static b8 vkinstance_initialize(const TLSpecification* spec);
+static b8 vksurface_initialize(const TLSpecification* spec);
+static b8 vkdevice_initialize(const TLSpecification* spec);
+static b8 vkswapchain_initialize(const TLSpecification* spec);
 
 b8 tl_graphics_initialize(const TLSpecification* spec) {
     tl_memory_zero(&context, sizeof(VKContext));
 
-    if (!vkinstance_initialize()) return false;
-    if (!vksurface_initialize()) return false;
-    if (!vkdevice_initialize()) return false;
-    if (!vkswapchain_initialize()) return false;
+    if (!vkinstance_initialize(spec)) return false;
+    if (!vksurface_initialize(spec)) return false;
+    if (!vkdevice_initialize(spec)) return false;
+    if (!vkswapchain_initialize(spec)) return false;
 
     return true;
 }
@@ -76,7 +76,7 @@ b8 tl_graphics_terminate(void) {
 #include <vulkan/vulkan_win32.h>
 #endif
 
-static b8 vkinstance_initialize(void) {
+static b8 vkinstance_initialize(const TLSpecification* spec) {
     u32 api_version = 0;
     VKCHECK("vkEnumerateInstanceVersion", vkEnumerateInstanceVersion(&api_version));
 
@@ -104,6 +104,11 @@ static b8 vkinstance_initialize(void) {
 #ifdef TELEIOS_PLATFORM_WINDOWS
         tl_list_append(context.extentions, VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 #endif
+
+        if (!tl_list_append_all(context.extentions, spec->vulkan.instance.extentions)) {
+            TLERROR("vkinstance_initialize: Failed to merge spec into final required instance extentions");
+            return false;
+        }
 
         u32 available = 0;
         VKCHECK("vkEnumerateInstanceExtensionProperties", vkEnumerateInstanceExtensionProperties(0, &available, 0));
@@ -154,6 +159,11 @@ static b8 vkinstance_initialize(void) {
 #if defined(TELEIOS_DEBUG) || defined(TELEIOS_DEBUG_GRAPHICS)
         tl_list_append(context.layers, "VK_LAYER_KHRONOS_validation");
 #endif
+
+        if (!tl_list_append_all(context.layers, spec->vulkan.instance.layers)) {
+            TLERROR("vkinstance_initialize: Failed to merge spec into final required instance layers");
+            return false;
+        }
 
         if (context.layers->size > 0) {
             create_info.enabledLayerCount = context.layers->size;
@@ -256,11 +266,26 @@ static b8 vkinstance_terminate(void) {
 //                                        VULKAN SURFACE
 //
 // ##############################################################################################
-static b8 vksurface_initialize(void) {
+#ifdef TELEIOS_PLATFORM_WINDOWS
+#include "teleios/platform/info.h"
+#endif
+
+static b8 vksurface_initialize(const TLSpecification* spec) {
+
+#ifdef TELEIOS_PLATFORM_WINDOWS
+    VkWin32SurfaceCreateInfoKHR create_info = { VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR };
+    create_info.hwnd = *((HWND*)tl_platform_window_handle());
+    create_info.hinstance = *((HINSTANCE*)tl_platform_handle());
+    VKCHECK("vkCreateWin32SurfaceKHR", vkCreateWin32SurfaceKHR(context.instance, &create_info, context.allocator, &context.surface));
+#endif
     return true;
 }
 
 static b8 vksurface_terminate(void) {
+    if (context.surface != VK_NULL_HANDLE) {
+        vkDestroySurfaceKHR(context.instance, context.surface, context.allocator);
+    }
+
     return true;
 }
 
@@ -269,7 +294,7 @@ static b8 vksurface_terminate(void) {
 //                                        VULKAN DEVICE
 //
 // ##############################################################################################
-static b8 vkdevice_initialize(void) {
+static b8 vkdevice_initialize(const TLSpecification* spec) {
     return true;
 }
 
@@ -282,7 +307,7 @@ static b8 vkdevice_terminate(void) {
 //                                        VULKAN SWAPCHAIN
 //
 // ##############################################################################################
-static b8 vkswapchain_initialize(void) {
+static b8 vkswapchain_initialize(const TLSpecification* spec) {
     return true;
 }
 

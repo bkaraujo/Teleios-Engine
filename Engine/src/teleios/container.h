@@ -12,6 +12,7 @@ TLAPI b8 tl_list_destroy(TLList* list);
 TLAPI TLList* tl_list_clone(TLList* list);
 TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*), const void* payload);
 TLAPI b8 tl_list_append(TLList* list, const void* payload);
+TLAPI b8 tl_list_append_all(const TLList* soource, TLList* target);
 TLAPI b8 tl_list_remove_payload(TLList* list, const void* payload);
 TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node);
 TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void*), const void* payload);
