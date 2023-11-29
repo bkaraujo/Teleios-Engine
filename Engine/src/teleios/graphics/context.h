@@ -7,24 +7,53 @@
 
 typedef struct {
     VkInstance instance;
+#ifdef TELEIOS_DEBUG
+    PFN_vkCreateDebugUtilsMessengerEXT messenger;
+#endif
     VkAllocationCallbacks* allocator;
     TLList* extentions;
     TLList* layers;
-    VkSurfaceKHR surface;
+    struct {
+        VkSurfaceKHR handle;
+        VkSurfaceCapabilitiesKHR capabilities;
+        u32 format_count;
+        VkSurfaceFormatKHR* formats;
+        u32 present_mode_count;
+        VkPresentModeKHR* present_modes;
+    } surface;
     struct {
         struct {
             VkPhysicalDevice handle;
+
             VkPhysicalDeviceMemoryProperties memory;
             VkPhysicalDeviceFeatures features;
             VkPhysicalDeviceDriverProperties driver_properties;
             VkPhysicalDeviceProperties properties;
             TLList* extentions;
+
+            u8 q_video;
+            u8 q_compute;
+            u8 q_graphics;
+            u8 q_transfer;
+            u8 q_present;
         } ph;
         struct {
             VkDevice handle;
+
+            VkQueue q_video;
+            VkQueue q_compute;
+            VkQueue q_graphics;
+            VkQueue q_transfer;
+            VkQueue q_present;
         } lo;
     } device;
-    VkSwapchainKHR swapchain;
+    struct {
+        VkSwapchainKHR handle;
+        VkSurfaceFormatKHR format;
+        VkPresentModeKHR present_mode;
+        VkExtent2D image_extent;
+        u32 frames_in_flight;
+    } swapchain;
 } VKContext;
 
 extern VKContext context;

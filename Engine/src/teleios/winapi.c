@@ -24,17 +24,13 @@ void tl_platform_memory_free(void* block) {
     HeapFree(heap, HEAP_NO_SERIALIZE, block);
 }
 
-void* tl_platform_memory_stack_alloc(const u64 size) {
-    void* block = _malloca(size);
-    if (block == NULL) {
-        TLERROR("tl_platform_memory_stack_alloc: Failed to allocate %llu bytes. 0x%x", size, GetLastError());
-    }
-    return block;
-}
+//void* tl_platform_memory_stack_alloc(const u64 size) {
+//    return _malloca(size);
+//}
 
-void tl_platform_memory_stack_free(void* block) {
-    _freea(block);
-}
+//void tl_platform_memory_stack_free(void* block) {
+//    _freea(block);
+//}
 
 void tl_platform_memory_copy(const void* source, const void* target, u64 size) {
 #pragma warning( push )
@@ -252,7 +248,6 @@ void tl_platform_window_show(void) {
 void tl_platform_window_hide(void) {
     if (hwnd == NULL) return;
     ShowWindow(hwnd, SW_HIDE);
-
 }
 
 static char intermediate[80];
@@ -450,7 +445,7 @@ b8 tl_platform_initialize(void) {
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hinstance;
-    wc.hIcon = LoadIcon(hinstance, IDI_APPLICATION);
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
     wc.lpszClassName = TEXT("teleios_window_class");
@@ -465,7 +460,6 @@ b8 tl_platform_initialize(void) {
 
 b8 tl_platform_update(void) {
     MSG message;
-
     while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&message);
         DispatchMessage(&message);
@@ -475,14 +469,13 @@ b8 tl_platform_update(void) {
 }
 
 b8 tl_platform_terminate(void) {
-
-
     if (heap != NULL) {
         if (!HeapDestroy(heap)) {
             TLERROR("tl_platform_terminate: Failed to destroy heap 0x%x", GetLastError());
             return false;
         }
     }
+
     return true;
 }
 
