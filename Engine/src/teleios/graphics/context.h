@@ -8,7 +8,7 @@
 typedef struct {
     VkInstance instance;
 #ifdef TELEIOS_DEBUG
-    PFN_vkCreateDebugUtilsMessengerEXT messenger;
+    VkDebugUtilsMessengerEXT messenger;
 #endif
     VkAllocationCallbacks* allocator;
     TLList* extentions;
