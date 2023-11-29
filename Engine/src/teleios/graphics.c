@@ -728,18 +728,18 @@ static b8 vkswapchain_initialize(const TLSpecification* spec) {
         context.surface.formats = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.surface.format_count * sizeof(VkSurfaceFormatKHR));
         VKCHECK("vkGetPhysicalDeviceSurfaceFormatsKHR", vkGetPhysicalDeviceSurfaceFormatsKHR(context.device.ph.handle, context.surface.handle, &context.surface.format_count, context.surface.formats));
 
-        context.swapchain.format.format = VK_FORMAT_UNDEFINED;
-        context.swapchain.format.colorSpace = VK_COLOR_SPACE_MAX_ENUM_KHR;
+        context.swapchain.image_format.format = VK_FORMAT_UNDEFINED;
+        context.swapchain.image_format.colorSpace = VK_COLOR_SPACE_MAX_ENUM_KHR;
 
         for (unsigned i = 0; i < context.surface.format_count; ++i) {
             VkSurfaceFormatKHR format = context.surface.formats[i];
             if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                context.swapchain.format = format;
+                context.swapchain.image_format = format;
                 break;
             }
         }
 
-        if (context.swapchain.format.format == VK_FORMAT_UNDEFINED) {
+        if (context.swapchain.image_format.format == VK_FORMAT_UNDEFINED) {
             TLERROR("vkswapchain_initialize: Unsupported format VK_FORMAT_B8G8R8A8_UNORM + VK_COLOR_SPACE_SRGB_NONLINEAR_KHR");
             return false;
         }
@@ -773,25 +773,67 @@ static b8 vkswapchain_initialize(const TLSpecification* spec) {
     // Image Count
     // =================================================
     {
-        u32 image_count = context.surface.capabilities.minImageCount + 1;
-        if (context.surface.capabilities.maxImageCount > 0 && image_count > context.surface.capabilities.maxImageCount) {
-            image_count = context.surface.capabilities.maxImageCount;
+        context.swapchain.image_count = context.surface.capabilities.minImageCount + 1;
+        if (context.surface.capabilities.maxImageCount > 0 && context.swapchain.image_count > context.surface.capabilities.maxImageCount) {
+            context.swapchain.image_count = context.surface.capabilities.maxImageCount;
         }
 
-        context.swapchain.frames_in_flight = image_count - 1;
+        context.swapchain.frames_in_flight = context.swapchain.image_count - 1;
     }
     // =================================================
     // Create the Swapchain
     // =================================================
-    // TODO: Create the Swapchain
+    VkSwapchainCreateInfoKHR swapchain_create_info = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+    swapchain_create_info.surface = context.surface.handle;
+    swapchain_create_info.minImageCount = context.swapchain.image_count;
+    swapchain_create_info.imageFormat = context.swapchain.image_format.format;
+    swapchain_create_info.imageColorSpace = context.swapchain.image_format.colorSpace;
+    swapchain_create_info.imageExtent = context.swapchain.image_extent;
+    swapchain_create_info.imageArrayLayers = 1;
+    swapchain_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    swapchain_create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    if (context.device.ph.q_graphics != context.device.ph.q_present) {
+        u32 indexes[2] = { context.device.ph.q_graphics, context.device.ph.q_present };
+        swapchain_create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        swapchain_create_info.queueFamilyIndexCount = 2;
+        swapchain_create_info.pQueueFamilyIndices = indexes;
+    }
+
+    swapchain_create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    swapchain_create_info.preTransform = context.surface.capabilities.currentTransform;
+    swapchain_create_info.presentMode = context.swapchain.present_mode;
+    swapchain_create_info.clipped = VK_TRUE;
+    swapchain_create_info.oldSwapchain = VK_NULL_HANDLE;
+
+    VKCHECK("vkCreateSwapchainKHR", vkCreateSwapchainKHR(context.device.lo.handle, &swapchain_create_info, context.allocator, &context.swapchain.handle));
     // =================================================
     // Acquire Swapchain Images
     // =================================================
-    // TODO: Acquire Swapchain Images
+    VKCHECK("vkGetSwapchainImagesKHR", vkGetSwapchainImagesKHR(context.device.lo.handle, context.swapchain.handle, &context.swapchain.images_count, NULL));
+    context.swapchain.images = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.swapchain.images_count * sizeof(VkImage));
+    VKCHECK("vkGetSwapchainImagesKHR", vkGetSwapchainImagesKHR(context.device.lo.handle, context.swapchain.handle, &context.swapchain.images_count, context.swapchain.images));
     // =================================================
     // Create Swapchain Image Views
     // =================================================
-    // TODO: Create Swapchain Image Views
+    context.swapchain.images_view = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.swapchain.images_count * sizeof(VkImageView));
+    for (unsigned i = 0; i < context.swapchain.images_count; ++i) {
+        VkImageViewCreateInfo image_view_create_info = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
+        image_view_create_info.image = context.swapchain.images[i];
+        image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        image_view_create_info.format = context.swapchain.image_format.format;
+        image_view_create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+        image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        image_view_create_info.subresourceRange.baseMipLevel = 0;
+        image_view_create_info.subresourceRange.levelCount = 1;
+        image_view_create_info.subresourceRange.baseArrayLayer = 0;
+        image_view_create_info.subresourceRange.layerCount = 1;
+        VKCHECK("vkCreateImageView", vkCreateImageView(context.device.lo.handle, &image_view_create_info, context.allocator, &context.swapchain.images_view[i]));
+    }
     return true;
 }
 
@@ -807,6 +849,28 @@ static b8 vkswapchain_terminate(void) {
         context.surface.present_modes = NULL;
         context.surface.present_mode_count = 0;
     }
+
+    if (context.swapchain.images_view != NULL) {
+        for (unsigned i = 0; i < context.swapchain.images_count; ++i) {
+            if (context.swapchain.images_view[i] != VK_NULL_HANDLE) {
+                vkDestroyImageView(context.device.lo.handle, context.swapchain.images_view[i], context.allocator);
+            }
+        }
+
+        tl_memory_free(context.swapchain.images_view, TL_MEMORY_TYPE_GRAPHICS, context.swapchain.images_count * sizeof(VkImageView));
+        context.swapchain.images_view = NULL;
+    }
+
+    if (context.swapchain.images != NULL) {
+        tl_memory_free(context.swapchain.images, TL_MEMORY_TYPE_GRAPHICS, context.swapchain.images_count * sizeof(VkImage));
+        context.swapchain.images = NULL;
+        context.swapchain.images_count = 0;
+    }
+
+    if (context.swapchain.handle != VK_NULL_HANDLE) {
+        vkDestroySwapchainKHR(context.device.lo.handle, context.swapchain.handle, context.allocator);
+    }
+
     return true;
 }
 

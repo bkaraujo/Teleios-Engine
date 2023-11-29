@@ -49,10 +49,15 @@ typedef struct {
     } device;
     struct {
         VkSwapchainKHR handle;
-        VkSurfaceFormatKHR format;
         VkPresentModeKHR present_mode;
+        VkSurfaceFormatKHR image_format;
         VkExtent2D image_extent;
+        u32 image_count;
         u32 frames_in_flight;
+
+        u32 images_count;
+        VkImage* images;
+        VkImageView* images_view;
     } swapchain;
 } VKContext;
 
