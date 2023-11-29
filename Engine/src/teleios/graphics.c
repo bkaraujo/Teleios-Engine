@@ -94,10 +94,20 @@ static const char* vkpresent(VkPresentModeKHR mode);
 // ##############################################################################################
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
-vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+vkdebug(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
     VkDebugUtilsMessageTypeFlagsEXT message_types,
-    const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data);
+    const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data)
+{
+    switch (message_severity) {
+    default:
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: TLERROR("%s", callback_data->pMessage); break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: TLWARN("%s", callback_data->pMessage); break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: TLINFO("%s", callback_data->pMessage); break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: TLTRACE("%s", callback_data->pMessage); break;
+    }
 
+    return VK_FALSE;
+}
 static b8 vkinstance_initialize(const TLSpecification* spec) {
     VkInstanceCreateInfo create_info = { VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
     VkApplicationInfo app_info = { VK_STRUCTURE_TYPE_APPLICATION_INFO };
@@ -254,7 +264,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
     {
 #ifdef TELEIOS_DEBUG
         VkDebugUtilsMessengerCreateInfoEXT debug_create_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
-        debug_create_info.pfnUserCallback = vk_debug_callback;
+        debug_create_info.pfnUserCallback = vkdebug;
         debug_create_info.messageSeverity =
             VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
             VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
@@ -272,29 +282,6 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
     }
 
     return true;
-}
-
-VKAPI_ATTR VkBool32 VKAPI_CALL
-vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_types,
-    const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data)
-{
-    switch (message_severity) {
-    default:
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        TLERROR("%s", callback_data->pMessage);
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        TLWARN("%s", callback_data->pMessage);
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        TLINFO("%s", callback_data->pMessage);
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        TLTRACE("%s", callback_data->pMessage);
-        break;
-    }
-    return VK_FALSE;
 }
 
 static b8 vkinstance_terminate(void) {
@@ -324,6 +311,10 @@ static b8 vkinstance_terminate(void) {
         context.layers = NULL;
     }
 
+#ifdef TELEIOS_DEBUG
+    PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(context.instance, "vkDestroyDebugUtilsMessengerEXT");
+    func(context.instance, context.messenger, context.allocator);
+#endif
     if (context.instance != VK_NULL_HANDLE)
         vkDestroyInstance(context.instance, context.allocator);
 
@@ -603,12 +594,10 @@ static b8 vkdevice_logical_create(const TLSpecification* spec) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             queue_create_infos[index].queueFamilyIndex = context.device.ph.q_transfer;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
+            queue_create_infos[index].queueCount = 1;
             if (context.device.ph.q_transfer == context.device.ph.q_present) {
                 if (props[context.device.ph.q_transfer].queueCount > 1) {
                     queue_create_infos[index].queueCount = 2;
-                }
-                else {
-                    queue_create_infos[index].queueCount = 1;
                 }
             }
             index++;
@@ -618,12 +607,10 @@ static b8 vkdevice_logical_create(const TLSpecification* spec) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             queue_create_infos[index].queueFamilyIndex = context.device.ph.q_compute;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
+            queue_create_infos[index].queueCount = 1;
             if (context.device.ph.q_compute == context.device.ph.q_present) {
                 if (props[context.device.ph.q_compute].queueCount > 1) {
                     queue_create_infos[index].queueCount = 2;
-                }
-                else {
-                    queue_create_infos[index].queueCount = 1;
                 }
             }
         }
