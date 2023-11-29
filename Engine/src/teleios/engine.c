@@ -14,13 +14,14 @@
 #include "teleios/memory/manager.h"
 #include "teleios/platform/manager.h"
 #include "teleios/platform/window.h"
+#include "teleios/renderer/manager.h"
 #include "teleios/scene/manager.h"
 #include "teleios/time/epoch.h"
 #include "teleios/time/timer.h"
 
 static b8 running = true;
 static TLList* layers;
-
+static u64 STEP = 0;
 static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
 
 TLAPI b8 tl_engine_pre_initialize(void) {
@@ -85,6 +86,12 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
         return false;
     }
 
+    if (!tl_renderer_initialize(spec)) {
+        TLERROR("tl_engine_initialize: Failed to initialize renderer manager");
+        return false;
+    }
+
+    STEP = MICROSECOND / spec->simulation.per_second;
     return true;
 }
 
@@ -96,7 +103,6 @@ TLAPI b8 tl_engine_run(void) {
     u64 time_last = tl_time_epoch_micros();
 
     u64 accumulator = 0;
-    const u64 STEP = MICROSECOND / 165;
 
     tl_platform_window_show();
     while (running) {
@@ -175,6 +181,10 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
+    if (!tl_renderer_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate renderer manager");
+        return false;
+    }
     if (!tl_graphics_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate graphic manager");
         return false;

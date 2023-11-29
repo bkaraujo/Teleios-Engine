@@ -333,7 +333,9 @@ typedef enum {
 
 typedef struct {
     const char* name;
-
+    struct {
+        u8 per_second;
+    } simulation;
     struct {
         u32 witdh;
         u32 height;

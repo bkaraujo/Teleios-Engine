@@ -288,6 +288,7 @@
     <ClInclude Include="src\teleios\platform\memory.h" />
     <ClInclude Include="src\teleios\platform\time.h" />
     <ClInclude Include="src\teleios\platform\window.h" />
+    <ClInclude Include="src\teleios\renderer\manager.h" />
     <ClInclude Include="src\teleios\scene\active.h" />
     <ClInclude Include="src\teleios\scene\manager.h" />
     <ClInclude Include="src\teleios\scene\region.h" />
@@ -356,6 +357,7 @@
     <ClCompile Include="src\teleios\layerstack.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
+    <ClCompile Include="src\teleios\renderer.c" />
     <ClCompile Include="src\teleios\scenestack.c" />
     <ClCompile Include="src\teleios\winapi.c" />
     <ClCompile Include="src\teleios\scene.c" />

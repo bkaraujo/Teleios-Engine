@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
     spec.vulkan.device.extentions = tl_list_create();
     spec.vulkan.instance.layers = tl_list_create();
     spec.vulkan.instance.extentions = tl_list_create();
+    spec.simulation.per_second = 75;
 
     tl_application_define(&spec);
     if (!tl_engine_initialize(&spec)) return -1;
