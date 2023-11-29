@@ -150,7 +150,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
         VKCHECK("vkEnumerateInstanceExtensionProperties", vkEnumerateInstanceExtensionProperties(0, &available, extensions));
 
         create_info.enabledExtensionCount = context.extentions->size;
-        ppEnabledExtensionNames = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.extentions->size * sizeof(char*));
+        ppEnabledExtensionNames = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, create_info.enabledExtensionCount * sizeof(char*));
 
         u8 index = 0;
         b8 not_found = false;
@@ -179,7 +179,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
         extensions = NULL;
 
         if (not_found) {
-            tl_memory_free(ppEnabledExtensionNames, TL_MEMORY_TYPE_GRAPHICS, context.extentions->size * sizeof(char*));
+            tl_memory_free(ppEnabledExtensionNames, TL_MEMORY_TYPE_GRAPHICS, create_info.enabledExtensionCount * sizeof(char*));
             ppEnabledExtensionNames = NULL;
             return false;
         }
@@ -201,7 +201,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
 
         if (context.layers->size > 0) {
             create_info.enabledLayerCount = context.layers->size;
-            ppEnabledLayerNames = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.layers->size * sizeof(char*));
+            ppEnabledLayerNames = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, create_info.enabledLayerCount * sizeof(char*));
 
             u32 available = 0;
             VKCHECK("vkEnumerateInstanceLayerProperties", vkEnumerateInstanceLayerProperties(&available, 0));
@@ -235,8 +235,8 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
             layers = NULL;
 
             if (not_found) {
-                tl_memory_free(ppEnabledExtensionNames, TL_MEMORY_TYPE_GRAPHICS, context.extentions->size * sizeof(char*));
-                tl_memory_free(ppEnabledLayerNames, TL_MEMORY_TYPE_GRAPHICS, context.extentions->size * sizeof(char*));
+                tl_memory_free(ppEnabledExtensionNames, TL_MEMORY_TYPE_GRAPHICS, create_info.enabledExtensionCount * sizeof(char*));
+                tl_memory_free(ppEnabledLayerNames, TL_MEMORY_TYPE_GRAPHICS, create_info.enabledLayerCount * sizeof(char*));
                 return false;
             }
         }
@@ -249,8 +249,12 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
         create_info.ppEnabledExtensionNames = ppEnabledExtensionNames;
 
         VkResult result = vkCreateInstance(&create_info, context.allocator, &context.instance);
-        if (ppEnabledLayerNames != NULL) {
-            tl_memory_free((void*)ppEnabledLayerNames, TL_MEMORY_TYPE_GRAPHICS, context.extentions->size * sizeof(char*));
+        if (create_info.enabledExtensionCount > 0) {
+            tl_memory_free(ppEnabledExtensionNames, TL_MEMORY_TYPE_GRAPHICS, create_info.enabledExtensionCount * sizeof(char*));
+        }
+
+        if (create_info.enabledLayerCount > 0) {
+            tl_memory_free(ppEnabledLayerNames, TL_MEMORY_TYPE_GRAPHICS, create_info.enabledLayerCount * sizeof(char*));
         }
 
         if (result != VK_SUCCESS) {
