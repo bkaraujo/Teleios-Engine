@@ -71,6 +71,7 @@ static const char* tl_memory_type(TLEMemoryType type) {
     case TL_MEMORY_TYPE_ECS_SYSTEM:     return "TL_MEMORY_TYPE_ECS_SYSTEM    ";
     case TL_MEMORY_TYPE_ECS_COMPONENT:  return "TL_MEMORY_TYPE_ECS_COMPONENT ";
     case TL_MEMORY_TYPE_GRAPHICS:       return "TL_MEMORY_TYPE_GRAPHICS      ";
+    case TL_MEMORY_TYPE_STRING:         return "TL_MEMORY_TYPE_STRING        ";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";
     }
 
