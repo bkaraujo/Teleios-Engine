@@ -196,6 +196,7 @@ f64 tl_timer_micros(const TLTimer* timer) {
 static HWND hwnd;
 static b8 minimized = false;
 static b8 maximized = false;
+static b8 mouse_inside = false;
 static const char* prefix;
 
 b8 tl_platform_window_create(const TLSpecification* spec) {
@@ -350,11 +351,29 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
         tl_event_fire(TL_EVENT_INPUT_KEY_RELEASED, &event);
     } break;
 
+    case WM_MOUSELEAVE: {
+        mouse_inside = false;
+        tl_event_fire(TL_EVENT_INPUT_MOUSE_LEAVE, NULL);
+    } break;
+
     case WM_MOUSEMOVE: {
         TLEvent event = { 0 };
         event.data.i32[0] = GET_X_LPARAM(lParam);
         event.data.i32[1] = GET_Y_LPARAM(lParam);
-        tl_event_fire(TL_EVENT_INPUT_MOUSE_MOVE, &event);
+
+        if (!mouse_inside) {
+            TRACKMOUSEEVENT e = { 0 };
+            e.cbSize = sizeof(TRACKMOUSEEVENT);
+            e.dwFlags = TME_LEAVE;
+            e.hwndTrack = hwnd;
+            TrackMouseEvent(&e);
+
+            mouse_inside = true;
+            tl_event_fire(TL_EVENT_INPUT_MOUSE_ENTER, &event);
+        }
+        else {
+            tl_event_fire(TL_EVENT_INPUT_MOUSE_MOVE, &event);
+        }
     } break;
 
     case WM_MOUSEWHEEL: {
