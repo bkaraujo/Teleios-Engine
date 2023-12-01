@@ -59,8 +59,8 @@ typedef struct {
     struct {
         VkSwapchainKHR handle;
         VkPresentModeKHR present_mode;
-        VkSurfaceFormatKHR image_format;
-        VkExtent2D image_extent;
+        VkSurfaceFormatKHR format;
+        VkExtent2D extent;
         u32 image_count;
         u32 frames_in_flight;
 

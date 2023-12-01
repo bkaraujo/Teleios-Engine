@@ -18,18 +18,18 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
         context.surface.formats = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, context.surface.format_count * sizeof(VkSurfaceFormatKHR));
         VKCHECK("vkGetPhysicalDeviceSurfaceFormatsKHR", vkGetPhysicalDeviceSurfaceFormatsKHR(context.device.ph.handle, context.surface.handle, &context.surface.format_count, context.surface.formats));
 
-        context.swapchain.image_format.format = VK_FORMAT_UNDEFINED;
-        context.swapchain.image_format.colorSpace = VK_COLOR_SPACE_MAX_ENUM_KHR;
+        context.swapchain.format.format = VK_FORMAT_UNDEFINED;
+        context.swapchain.format.colorSpace = VK_COLOR_SPACE_MAX_ENUM_KHR;
 
         for (unsigned i = 0; i < context.surface.format_count; ++i) {
             VkSurfaceFormatKHR format = context.surface.formats[i];
             if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                context.swapchain.image_format = format;
+                context.swapchain.format = format;
                 break;
             }
         }
 
-        if (context.swapchain.image_format.format == VK_FORMAT_UNDEFINED) {
+        if (context.swapchain.format.format == VK_FORMAT_UNDEFINED) {
             TLERROR("tl_vulkan_swapchain_initialize: Unsupported format VK_FORMAT_B8G8R8A8_UNORM + VK_COLOR_SPACE_SRGB_NONLINEAR_KHR");
             return false;
         }
@@ -58,7 +58,7 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
     // =================================================
     // Image Extent
     // =================================================
-    context.swapchain.image_extent = context.surface.capabilities.currentExtent;
+    context.swapchain.extent = context.surface.capabilities.currentExtent;
     // =================================================
     // Image Count
     // =================================================
@@ -76,9 +76,9 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
     VkSwapchainCreateInfoKHR swapchain_create_info = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
     swapchain_create_info.surface = context.surface.handle;
     swapchain_create_info.minImageCount = context.swapchain.image_count;
-    swapchain_create_info.imageFormat = context.swapchain.image_format.format;
-    swapchain_create_info.imageColorSpace = context.swapchain.image_format.colorSpace;
-    swapchain_create_info.imageExtent = context.swapchain.image_extent;
+    swapchain_create_info.imageFormat = context.swapchain.format.format;
+    swapchain_create_info.imageColorSpace = context.swapchain.format.colorSpace;
+    swapchain_create_info.imageExtent = context.swapchain.extent;
     swapchain_create_info.imageArrayLayers = 1;
     swapchain_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
@@ -111,7 +111,7 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
         VkImageViewCreateInfo image_view_create_info = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
         image_view_create_info.image = context.swapchain.images[i];
         image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        image_view_create_info.format = context.swapchain.image_format.format;
+        image_view_create_info.format = context.swapchain.format.format;
         image_view_create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         image_view_create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
         image_view_create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -165,8 +165,8 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
     {
         TLVKImageCreateInfo info = { 0 };
         info.type = VK_IMAGE_TYPE_2D;
-        info.extent.width = context.swapchain.image_extent.width;
-        info.extent.height = context.swapchain.image_extent.height;
+        info.extent.width = context.swapchain.extent.width;
+        info.extent.height = context.swapchain.extent.height;
         info.extent.depth = 1;
         info.format = context.swapchain.depth_format;
         info.tilling = VK_IMAGE_TILING_OPTIMAL;
