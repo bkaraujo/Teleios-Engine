@@ -1,4 +1,5 @@
 #include "teleios/logger.h"
+#include "teleios/memory/tools.h"
 
 struct TLRegistry {
     b8 keyboard[TL_KEYS_MAXIMUM];

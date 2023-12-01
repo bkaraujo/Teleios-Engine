@@ -37,6 +37,12 @@ TLAPI void tl_memory_free(const void* target, TLEMemoryType type, u64 size) {
     registry.pool[type] -= size;
 }
 
+// ################################################################################
+//
+//                                     TOOLS
+//
+// ################################################################################
+#include "teleios/memory/tools.h"
 TLAPI void tl_memory_zero(const void* target, u64 size) {
     tl_platform_memory_set(target, 0, size);
 }
