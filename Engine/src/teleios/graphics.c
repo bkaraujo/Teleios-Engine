@@ -834,6 +834,39 @@ static b8 vkswapchain_initialize(const TLSpecification* spec) {
         image_view_create_info.subresourceRange.layerCount = 1;
         VKCHECK("vkCreateImageView", vkCreateImageView(context.device.lo.handle, &image_view_create_info, context.allocator, &context.swapchain.images_view[i]));
     }
+    // =================================================
+    // Detect Swapchain Depth Format
+    // =================================================
+    {
+        const u64 candidate_count = 3;
+        VkFormat candidate[3] = {
+            VK_FORMAT_D32_SFLOAT,
+            VK_FORMAT_D32_SFLOAT_S8_UINT,
+            VK_FORMAT_D24_UNORM_S8_UINT
+        };
+
+        context.swapchain.depth_format = VK_FORMAT_UNDEFINED;
+        u32 flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        for (unsigned i = 0; i < candidate_count; ++i) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(context.device.ph.handle, candidate[i], &properties);
+
+            if ((properties.linearTilingFeatures & flags) == flags) {
+                context.swapchain.depth_format = candidate[i];
+                break;
+            }
+
+            if ((properties.optimalTilingFeatures & flags) == flags) {
+                context.swapchain.depth_format = candidate[i];
+                break;
+            }
+        }
+
+        if (context.swapchain.depth_format == VK_FORMAT_UNDEFINED) {
+            TLERROR("No suitable Depth Format");
+            return false;
+        }
+    }
     return true;
 }
 

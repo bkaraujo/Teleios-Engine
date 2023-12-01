@@ -55,6 +55,7 @@ typedef struct {
         u32 image_count;
         u32 frames_in_flight;
 
+        VkFormat depth_format;
         u32 images_count;
         VkImage* images;
         VkImageView* images_view;
