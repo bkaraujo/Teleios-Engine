@@ -87,6 +87,142 @@ static const char* vkpresent(VkPresentModeKHR mode);
     }                                                           \
 }
 #endif
+
+u32 tl_vulkan_memory_index(u32 type, u32 flags) {
+    VkPhysicalDeviceMemoryProperties properties = context.device.ph.memory;
+
+    for (u32 i = 0; i < properties.memoryTypeCount; ++i) {
+        if (!(type & (1 << i))) return U32MAX;
+        if ((properties.memoryTypes[i].propertyFlags & flags) == flags) {
+            return i;
+        }
+    }
+
+    return U32MAX;
+}
+
+// ##############################################################################################
+//
+//                                        VULKAN IMAGE
+//
+// ##############################################################################################
+
+static void tl_vulkan_image_create_view(VkFormat format, VkImageAspectFlags aspect_flags, VKImage* image) {
+    VkImageViewCreateInfo view_create_info = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
+    view_create_info.image = image->handle;
+    view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    view_create_info.format = format;
+
+    view_create_info.subresourceRange.aspectMask = aspect_flags;
+    view_create_info.subresourceRange.levelCount = 1;
+    view_create_info.subresourceRange.baseMipLevel = 0;
+    view_create_info.subresourceRange.layerCount = 1;
+    view_create_info.subresourceRange.baseArrayLayer = 0;
+
+    VkResult result = vkCreateImageView(context.device.lo.handle, &view_create_info, context.allocator, &image->view);
+    if (result != VK_SUCCESS) {
+        TLERROR("tl_vulkan_image_create_view: vkCreateImageView failed with %s", vkresult(result));
+        image->view = NULL;
+    }
+}
+
+typedef struct {
+    VkImageType type;
+    VkExtent3D extent;
+    VkFormat format;
+    VkImageTiling tilling;
+    VkImageUsageFlags usage_flags;
+    VkMemoryPropertyFlags memory_flags;
+    b8 create_view;
+    VkImageAspectFlags aspect_flags;
+} TLVKImageCreateInfo;
+
+static VKImage* tl_vulkan_image_create(TLVKImageCreateInfo* info) {
+    VKImage* image = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+    image->extent = info->extent;
+    image->format = info->format;
+    image->tilling = info->tilling;
+
+    VkImageCreateInfo image_create_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+    image_create_info.imageType = VK_IMAGE_TYPE_2D;
+    image_create_info.extent = info->extent;
+    image_create_info.mipLevels = 4;
+    image_create_info.arrayLayers = 1;
+    image_create_info.format = info->format;
+    image_create_info.tiling = info->tilling;
+    image_create_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    image_create_info.usage = info->usage_flags;
+    image_create_info.samples = VK_SAMPLE_COUNT_1_BIT;
+    image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    VkResult result = vkCreateImage(context.device.lo.handle, &image_create_info, context.allocator, &image->handle);
+    if (result != VK_SUCCESS) {
+        tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+        TLERROR("tl_vulkan_image_create: vkCreateImage failed with %s", vkresult(result));
+        return NULL;
+    }
+
+    VkMemoryRequirements requirements;
+    vkGetImageMemoryRequirements(context.device.lo.handle, image->handle, &requirements);
+    u32 index = tl_vulkan_memory_index(requirements.memoryTypeBits, info->memory_flags);
+    if (index == U32MAX) {
+        tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+        TLERROR("tl_vulkan_image_create: Failed to find image memory index");
+        return false;
+    }
+
+    VkMemoryAllocateInfo memory_allocate_info = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO };
+    memory_allocate_info.allocationSize = requirements.size;
+    memory_allocate_info.memoryTypeIndex = index;
+    result = vkAllocateMemory(context.device.lo.handle, &memory_allocate_info, context.allocator, &image->memory);
+    if (result != VK_SUCCESS) {
+        tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+        TLERROR("tl_vulkan_image_create: vkAllocateMemory failed with %s", vkresult(result));
+        return NULL;
+    }
+
+    result = vkBindImageMemory(context.device.lo.handle, image->handle, image->memory, 0);
+    if (result != VK_SUCCESS) {
+        tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+        vkFreeMemory(context.device.lo.handle, image->memory, context.allocator);
+        TLERROR("tl_vulkan_image_create: vkBindImageMemory failed with %s", vkresult(result));
+        return NULL;
+    }
+
+    if (info->create_view) {
+        tl_vulkan_image_create_view(info->format, info->aspect_flags, image);
+        if (image->view == NULL) {
+            tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+            vkFreeMemory(context.device.lo.handle, image->memory, context.allocator);
+            TLERROR("tl_vulkan_image_create: Failed to create Image View");
+            return NULL;
+        }
+    }
+
+    return image;
+}
+
+static void tl_vulkan_image_destroy(VKImage* image) {
+    if (image == NULL) return;
+
+    if (image->view != NULL) {
+        vkDestroyImageView(context.device.lo.handle, image->view, context.allocator);
+        image->view = NULL;
+    }
+
+    if (image->memory != NULL) {
+        vkFreeMemory(context.device.lo.handle, image->memory, context.allocator);
+        image->memory = NULL;
+    }
+
+    if (image->handle != NULL) {
+        vkDestroyImage(context.device.lo.handle, image->handle, context.allocator);
+        image->handle = NULL;
+    }
+
+    tl_memory_free(image, TL_MEMORY_TYPE_GRAPHICS, sizeof(VKImage));
+}
+
 // ##############################################################################################
 //
 //                                        VULKAN INSTANCE
@@ -114,8 +250,8 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
     {
         u32 api_version = 0;
         VKCHECK("vkEnumerateInstanceVersion", vkEnumerateInstanceVersion(&api_version));
-
-        app_info.apiVersion = VK_MAKE_API_VERSION(0, VK_VERSION_MAJOR(api_version), VK_VERSION_MINOR(api_version), VK_VERSION_PATCH(api_version));
+        TLDEBUG("Vulkan Instance %u.%u.%u", VK_VERSION_MAJOR(api_version), VK_VERSION_MINOR(api_version), VK_VERSION_PATCH(api_version));
+        app_info.apiVersion = api_version;
         app_info.pApplicationName = "";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName = "Teleios Engine";
@@ -162,6 +298,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
             b8 found = false;
             for (unsigned i = 0; i < available; ++i) {
                 if (tl_string_equals(required, extensions[i].extensionName)) {
+                    TLDEBUG("Vulkan Instance Extention: %s", required);
                     found = true;
                     break;
                 }
@@ -228,6 +365,7 @@ static b8 vkinstance_initialize(const TLSpecification* spec) {
                     not_found = true;
                 }
 
+                TLDEBUG("Vulkan Instance Layer: %s", required);
                 current = current->next;
             }
 
@@ -367,9 +505,6 @@ static b8 vkdevice_initialize(const TLSpecification* spec) {
         return false;
     }
 
-    TLTRACE("vkdevice_initialize: Device %s", context.device.ph.properties.deviceName);
-    TLTRACE("vkdevice_initialize: Driver %s %s", context.device.ph.driver_properties.driverName, context.device.ph.driver_properties.driverInfo);
-
     if (!vkdevice_logical_create(spec)) {
         TLERROR("vkdevice_initialize: Failed to create VkDevice");
         return false;
@@ -436,7 +571,9 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
         properties2.pNext = &driverProperties;
         vkGetPhysicalDeviceProperties2(context.device.ph.handle, &properties2);
         tl_memory_copy(&properties2.properties, &context.device.ph.properties, sizeof(VkPhysicalDeviceProperties));
+        TLDEBUG("Vulkan Device %s", context.device.ph.properties.deviceName);
         tl_memory_copy(&driverProperties, &context.device.ph.driver_properties, sizeof(VkPhysicalDeviceDriverProperties));
+        TLDEBUG("Vulkan Device Driver %s %s", context.device.ph.driver_properties.driverName, context.device.ph.driver_properties.driverInfo);
     }
     // =================================================
     // Load the selected device's features
@@ -475,6 +612,7 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
                 return false;
             }
 
+            TLDEBUG("Vulkan Device Extention: %s", current->payload);
             current = current->next;
         }
 
@@ -547,6 +685,11 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
         // =================================================
         // Store device's selected index for future use
         // =================================================
+        TLDEBUG("Vulkan Device Queue Video Family: %u", video);
+        TLDEBUG("Vulkan Device Queue Graphics Family: %u", graphics);
+        TLDEBUG("Vulkan Device Queue Compute Family: %u %s", compute, compute == present ? " with present" : "");
+        TLDEBUG("Vulkan Device Queue Transfer Family: %u %s", transfer, transfer == present ? " with present" : "");
+
         context.device.ph.q_video = video;
         context.device.ph.q_compute = compute;
         context.device.ph.q_graphics = graphics;
@@ -853,20 +996,45 @@ static b8 vkswapchain_initialize(const TLSpecification* spec) {
 
             if ((properties.linearTilingFeatures & flags) == flags) {
                 context.swapchain.depth_format = candidate[i];
+                TLDEBUG("Vulkan Device Depth Format: %s", i == 0 ? "VK_FORMAT_D32_SFLOAT" : (i == 1 ? "VK_FORMAT_D32_SFLOAT_S8_UINT" : "VK_FORMAT_D24_UNORM_S8_UINT"));
                 break;
             }
 
             if ((properties.optimalTilingFeatures & flags) == flags) {
                 context.swapchain.depth_format = candidate[i];
+                TLDEBUG("Vulkan Device Depth Format: %s", i == 0 ? "VK_FORMAT_D32_SFLOAT" : (i == 1 ? "VK_FORMAT_D32_SFLOAT_S8_UINT" : "VK_FORMAT_D24_UNORM_S8_UINT"));
                 break;
             }
         }
 
         if (context.swapchain.depth_format == VK_FORMAT_UNDEFINED) {
-            TLERROR("No suitable Depth Format");
+            TLERROR("vkswapchain_initialize: No suitable Depth Format");
             return false;
         }
     }
+    // =================================================
+    // Create Swapchain Depth Buffer
+    // =================================================
+    {
+        TLVKImageCreateInfo info = { 0 };
+        info.type = VK_IMAGE_TYPE_2D;
+        info.extent.width = context.swapchain.image_extent.width;
+        info.extent.height = context.swapchain.image_extent.height;
+        info.extent.depth = 1;
+        info.format = context.swapchain.depth_format;
+        info.tilling = VK_IMAGE_TILING_OPTIMAL;
+        info.usage_flags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        info.memory_flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+        info.create_view = true;
+        info.aspect_flags = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+        context.swapchain.depth = tl_vulkan_image_create(&info);
+        if (context.swapchain.depth == NULL) {
+            TLERROR("vkswapchain_initialize: Failed to create depth buffer");
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -898,6 +1066,11 @@ static b8 vkswapchain_terminate(void) {
         tl_memory_free(context.swapchain.images, TL_MEMORY_TYPE_GRAPHICS, context.swapchain.images_count * sizeof(VkImage));
         context.swapchain.images = NULL;
         context.swapchain.images_count = 0;
+    }
+
+    if (context.swapchain.depth != NULL) {
+        tl_vulkan_image_destroy(context.swapchain.depth);
+        context.swapchain.depth = NULL;
     }
 
     if (context.swapchain.handle != VK_NULL_HANDLE) {

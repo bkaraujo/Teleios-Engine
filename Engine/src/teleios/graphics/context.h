@@ -6,6 +6,15 @@
 #include <vulkan/vulkan_core.h>
 
 typedef struct {
+    VkImage handle;
+    VkDeviceMemory memory;
+    VkFormat format;
+    VkImageTiling tilling;
+    VkExtent3D extent;
+    VkImageView view;
+} VKImage;
+
+typedef struct {
     VkInstance instance;
 #ifdef TELEIOS_DEBUG
     VkDebugUtilsMessengerEXT messenger;
@@ -56,6 +65,8 @@ typedef struct {
         u32 frames_in_flight;
 
         VkFormat depth_format;
+        VKImage* depth;
+
         u32 images_count;
         VkImage* images;
         VkImageView* images_view;
