@@ -64,6 +64,7 @@ typedef enum {
     TL_MEMORY_TYPE_ECS_COMPONENT,
     TL_MEMORY_TYPE_GRAPHICS,
     TL_MEMORY_TYPE_STRING,
+    TL_MEMORY_TYPE_FILE,
     TL_MEMORY_TYPE_MAXIMUM
 } TLEMemoryType;
 
@@ -349,6 +350,10 @@ typedef struct {
         struct {
             TLList* extentions;
         } device;
+        struct {
+            const char* fragment;
+            const char* vertex;
+        } pipeline;
     } vulkan;
 } TLSpecification;
 

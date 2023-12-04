@@ -693,6 +693,9 @@
     <ClInclude Include="src\teleios\filesystem\files.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\graphics\vulkan\vkpipeline.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stb\image.c">
@@ -897,6 +900,9 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\teleios\graphics\vulkan\vkdevice.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\graphics\vulkan\vkpipeline.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

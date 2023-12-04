@@ -75,4 +75,6 @@ typedef struct {
 
 extern VKContext context;
 
+#include "teleios/graphics/vulkan/vktools.h"
+
 #endif // TELEIOS_GRAPHICS_CONTEXT_H

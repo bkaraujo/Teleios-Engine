@@ -1,7 +1,6 @@
 #include "teleios/container.h"
 #include "teleios/graphics/vulkan/vkcontext.h"
 #include "teleios/graphics/vulkan/vkdevice.h"
-#include "teleios/graphics/vulkan/vktools.h"
 #include "teleios/logger.h"
 #include "teleios/memory/allocator.h"
 #include "teleios/memory/tools.h"

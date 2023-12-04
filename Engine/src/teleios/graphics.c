@@ -1,6 +1,7 @@
 #include "teleios/graphics/vulkan/vkcontext.h"
 #include "teleios/graphics/vulkan/vkdevice.h"
 #include "teleios/graphics/vulkan/vkinstance.h"
+#include "teleios/graphics/vulkan/vkpipeline.h"
 #include "teleios/graphics/vulkan/vksurface.h"
 #include "teleios/graphics/vulkan/vkswapchain.h"
 #include "teleios/memory/tools.h"
@@ -21,11 +22,13 @@ b8 tl_graphics_initialize(const TLSpecification* spec) {
     if (!tl_vulkan_surface_initialize(spec)) return false;
     if (!tl_vulkan_device_initialize(spec)) return false;
     if (!tl_vulkan_swapchain_initialize(spec)) return false;
+    if (!tl_vulkan_pipeline_initialize(spec)) return false;
 
     return true;
 }
 
 b8 tl_graphics_terminate(void) {
+    if (!tl_vulkan_pipeline_terminate()) return false;
     if (!tl_vulkan_swapchain_terminate()) return false;
     if (!tl_vulkan_device_terminate()) return false;
     if (!tl_vulkan_surface_terminate()) return false;

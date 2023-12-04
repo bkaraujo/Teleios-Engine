@@ -1,6 +1,5 @@
 #include "teleios/graphics/vulkan/vkcontext.h"
 #include "teleios/graphics/vulkan/vksurface.h"
-#include "teleios/graphics/vulkan/vktools.h"
 #include "teleios/logger.h"
 #include "teleios/platform/detector.h"
 
