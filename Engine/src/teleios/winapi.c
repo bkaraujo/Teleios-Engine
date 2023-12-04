@@ -95,7 +95,66 @@ void tl_platform_stdout(const u8 level, const char* message) {
     // Free and Restore resources
     SetConsoleTextAttribute(hconsole, csbi.wAttributes);
 }
+// ##############################################################################################
+//
+//                                        FILESYSTEM
+//
+// ##############################################################################################
+#include "teleios/filesystem/files.h"
+#include "teleios/memory/allocator.h"
 
+const u64 tl_filesyste_file_size(const char* path) {
+    LARGE_INTEGER file_size = { 0 };
+
+    WIN32_FILE_ATTRIBUTE_DATA file_attr_data;
+    if (GetFileAttributesEx(path, GetFileExInfoStandard, &file_attr_data)) {
+        file_size.LowPart = file_attr_data.nFileSizeLow;
+        file_size.HighPart = file_attr_data.nFileSizeHigh;
+        return file_size.QuadPart;
+    }
+
+    return 0;
+}
+
+const char* tl_filesystem_file_load(const char* path) {
+    HANDLE file = CreateFile(path,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+
+    if (file == INVALID_HANDLE_VALUE) {
+        TLERROR("tl_filesystem_file_load: Unable to open \"%s\".", path);
+        return NULL;
+    }
+
+    u64 file_size = tl_filesyste_file_size(path);
+    if (file_size == 0) {
+        CloseHandle(file);
+        TLERROR("tl_filesystem_file_load: Failed to read \"%s\" size.", path);
+        return NULL;
+    }
+    // Using tl_memory_alloc instead of platform_alloc for better memory tracking
+    char* payload = tl_memory_alloc(TL_MEMORY_TYPE_STRING, file_size + 1);
+
+    DWORD read = 0;
+    if (ReadFile(file, payload, (DWORD)(file_size), &read, NULL) == FALSE) {
+        CloseHandle(file);
+        tl_platform_memory_free(payload);
+        TLERROR("tl_filesystem_file_load: Failed to read \"%s\".", path);
+        return NULL;
+    }
+
+    if (read != file_size) {
+        TLWARN("tl_filesystem_file_load: Expected %llu bytes but got %llu from \"%s\"", file_size, read, path);
+    }
+
+    CloseHandle(file);
+    payload[file_size + 1] = '\0';
+    return payload;
+}
 // ##############################################################################################
 //
 //                                        TIME

@@ -269,6 +269,7 @@
     <ClInclude Include="src\teleios\event\manager.h" />
     <ClInclude Include="src\teleios\event\publisher.h" />
     <ClInclude Include="src\teleios\event\subcriber.h" />
+    <ClInclude Include="src\teleios\filesystem\files.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vkcontext.h" />
     <ClInclude Include="src\teleios\graphics\manager.h" />
     <ClInclude Include="src\teleios\graphics\primitive.h" />

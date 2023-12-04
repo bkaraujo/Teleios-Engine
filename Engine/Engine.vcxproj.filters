@@ -690,6 +690,9 @@
     <ClInclude Include="src\teleios\memory\tools.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\filesystem\files.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stb\image.c">
