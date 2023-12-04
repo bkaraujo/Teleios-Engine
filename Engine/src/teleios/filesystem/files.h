@@ -11,6 +11,11 @@
 /// <returns>Heap allocated result, or NULL otherwise</returns>
 const char* tl_filesystem_file_load(const char* path);
 
+/// <summary>
+/// Read the size of a file without open it.
+/// </summary>
+/// <param name="path">Absolute file path</param>
+/// <returns>Number of bytes in the file, or 0 otherwise</returns>
 const u64 tl_filesyste_file_size(const char* path);
 
 #endif // TELEIOS_FILESYSTEM_FILES_H
