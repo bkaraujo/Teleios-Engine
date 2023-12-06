@@ -276,7 +276,7 @@
     <ClInclude Include="src\teleios\graphics\vulkan\vkdevice.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vkimage.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vkinstance.h" />
-    <ClInclude Include="src\teleios\graphics\vulkan\vkpipeline.h" />
+    <ClInclude Include="src\teleios\renderer\vulkan\vkpipeline.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vksurface.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vkswapchain.h" />
     <ClInclude Include="src\teleios\graphics\vulkan\vktools.h" />
@@ -298,6 +298,7 @@
     <ClInclude Include="src\teleios\platform\time.h" />
     <ClInclude Include="src\teleios\platform\window.h" />
     <ClInclude Include="src\teleios\renderer\manager.h" />
+    <ClInclude Include="src\teleios\renderer\vulkan\vkrenderpass.h" />
     <ClInclude Include="src\teleios\scene\active.h" />
     <ClInclude Include="src\teleios\scene\manager.h" />
     <ClInclude Include="src\teleios\scene\region.h" />
@@ -364,7 +365,7 @@
     <ClCompile Include="src\teleios\graphics\vulkan\vkdevice.c" />
     <ClCompile Include="src\teleios\graphics\vulkan\vkimage.c" />
     <ClCompile Include="src\teleios\graphics\vulkan\vkinstance.c" />
-    <ClCompile Include="src\teleios\graphics\vulkan\vkpipeline.c" />
+    <ClCompile Include="src\teleios\renderer\vulkan\vkpipeline.c" />
     <ClCompile Include="src\teleios\graphics\vulkan\vksurface.c" />
     <ClCompile Include="src\teleios\graphics\vulkan\vkswapchain.c" />
     <ClCompile Include="src\teleios\graphics\vulkan\vktools.c" />
@@ -374,6 +375,7 @@
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
     <ClCompile Include="src\teleios\renderer.c" />
+    <ClCompile Include="src\teleios\renderer\vulkan\vkrenderpass.c" />
     <ClCompile Include="src\teleios\scenestack.c" />
     <ClCompile Include="src\teleios\winapi.c" />
     <ClCompile Include="src\teleios\scene.c" />

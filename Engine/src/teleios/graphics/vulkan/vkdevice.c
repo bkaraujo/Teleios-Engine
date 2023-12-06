@@ -200,11 +200,11 @@ static b8 vkdevice_physical_select(const TLSpecification* spec) {
         TLDEBUG("Vulkan Device Queue Compute Family: %u %s", compute, compute == present ? " with present" : "");
         TLDEBUG("Vulkan Device Queue Transfer Family: %u %s", transfer, transfer == present ? " with present" : "");
 
-        context.device.ph.q_video = video;
-        context.device.ph.q_compute = compute;
-        context.device.ph.q_graphics = graphics;
-        context.device.ph.q_transfer = transfer;
-        context.device.ph.q_present = present;
+        context.device.ph.video_q = video;
+        context.device.ph.compute_q = compute;
+        context.device.ph.graphics_q = graphics;
+        context.device.ph.transfer_q = transfer;
+        context.device.ph.present_q = present;
     }
 
     return true;
@@ -223,50 +223,50 @@ static b8 vkdevice_logical_create(const TLSpecification* spec) {
         vkGetPhysicalDeviceQueueFamilyProperties(context.device.ph.handle, &count, props);
 
         f32 queue_priorities[2] = { 0.9f, 1.0f };
-        if (context.device.ph.q_graphics != U8MAX) device_create_info.queueCreateInfoCount++;
-        if (context.device.ph.q_video != U8MAX) device_create_info.queueCreateInfoCount++;
-        if (context.device.ph.q_transfer != U8MAX) device_create_info.queueCreateInfoCount++;
-        if (context.device.ph.q_compute != U8MAX) device_create_info.queueCreateInfoCount++;
+        if (context.device.ph.graphics_q != U8MAX) device_create_info.queueCreateInfoCount++;
+        if (context.device.ph.video_q != U8MAX) device_create_info.queueCreateInfoCount++;
+        if (context.device.ph.transfer_q != U8MAX) device_create_info.queueCreateInfoCount++;
+        if (context.device.ph.compute_q != U8MAX) device_create_info.queueCreateInfoCount++;
 
         VkDeviceQueueCreateInfo* queue_create_infos = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, device_create_info.queueCreateInfoCount * sizeof(VkDeviceQueueCreateInfo));
 
         u8 index = 0;
-        if (context.device.ph.q_graphics != U8MAX) {
+        if (context.device.ph.graphics_q != U8MAX) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queue_create_infos[index].queueFamilyIndex = context.device.ph.q_graphics;
+            queue_create_infos[index].queueFamilyIndex = context.device.ph.graphics_q;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
             queue_create_infos[index].queueCount = 1;
             index++;
         }
 
-        if (context.device.ph.q_video != U8MAX) {
+        if (context.device.ph.video_q != U8MAX) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queue_create_infos[index].queueFamilyIndex = context.device.ph.q_video;
+            queue_create_infos[index].queueFamilyIndex = context.device.ph.video_q;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
             queue_create_infos[index].queueCount = 1;
             index++;
         }
 
-        if (context.device.ph.q_transfer != U8MAX) {
+        if (context.device.ph.transfer_q != U8MAX) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queue_create_infos[index].queueFamilyIndex = context.device.ph.q_transfer;
+            queue_create_infos[index].queueFamilyIndex = context.device.ph.transfer_q;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
             queue_create_infos[index].queueCount = 1;
-            if (context.device.ph.q_transfer == context.device.ph.q_present) {
-                if (props[context.device.ph.q_transfer].queueCount > 1) {
+            if (context.device.ph.transfer_q == context.device.ph.present_q) {
+                if (props[context.device.ph.transfer_q].queueCount > 1) {
                     queue_create_infos[index].queueCount = 2;
                 }
             }
             index++;
         }
 
-        if (context.device.ph.q_transfer != U8MAX) {
+        if (context.device.ph.transfer_q != U8MAX) {
             queue_create_infos[index].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queue_create_infos[index].queueFamilyIndex = context.device.ph.q_compute;
+            queue_create_infos[index].queueFamilyIndex = context.device.ph.compute_q;
             queue_create_infos[index].pQueuePriorities = queue_priorities;
             queue_create_infos[index].queueCount = 1;
-            if (context.device.ph.q_compute == context.device.ph.q_present) {
-                if (props[context.device.ph.q_compute].queueCount > 1) {
+            if (context.device.ph.compute_q == context.device.ph.present_q) {
+                if (props[context.device.ph.compute_q].queueCount > 1) {
                     queue_create_infos[index].queueCount = 2;
                 }
             }
@@ -317,34 +317,93 @@ static b8 vkdevice_logical_create(const TLSpecification* spec) {
     // Retrieve Logical Device's Queue Handle
     // =================================================
     {
-        context.device.lo.q_video = VK_NULL_HANDLE;
-        context.device.lo.q_graphics = VK_NULL_HANDLE;
-        context.device.lo.q_transfer = VK_NULL_HANDLE;
-        context.device.lo.q_compute = VK_NULL_HANDLE;
-        context.device.lo.q_present = VK_NULL_HANDLE;
+        context.device.lo.video_q = VK_NULL_HANDLE;
+        context.device.lo.graphics_q = VK_NULL_HANDLE;
+        context.device.lo.transfer_q = VK_NULL_HANDLE;
+        context.device.lo.compute_q = VK_NULL_HANDLE;
+        context.device.lo.present_q = VK_NULL_HANDLE;
 
-        if (context.device.ph.q_video != U8MAX)
-            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.q_video, 0, &context.device.lo.q_video);
+        if (context.device.ph.video_q != U8MAX)
+            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.video_q, 0, &context.device.lo.video_q);
 
-        if (context.device.ph.q_graphics != U8MAX)
-            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.q_graphics, 0, &context.device.lo.q_graphics);
+        if (context.device.ph.graphics_q != U8MAX)
+            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.graphics_q, 0, &context.device.lo.graphics_q);
 
-        if (context.device.ph.q_transfer != U8MAX)
-            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.q_transfer, 0, &context.device.lo.q_transfer);
+        if (context.device.ph.transfer_q != U8MAX)
+            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.transfer_q, 0, &context.device.lo.transfer_q);
 
-        if (context.device.ph.q_compute != U8MAX)
-            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.q_compute, 0, &context.device.lo.q_compute);
+        if (context.device.ph.compute_q != U8MAX)
+            vkGetDeviceQueue(context.device.lo.handle, context.device.ph.compute_q, 0, &context.device.lo.compute_q);
 
-        vkGetDeviceQueue(context.device.lo.handle, context.device.ph.q_present, 1, &context.device.lo.q_present);
+        vkGetDeviceQueue(context.device.lo.handle, context.device.ph.present_q, 1, &context.device.lo.present_q);
     }
     // =================================================
     // Create Queue's Command Pool
     // =================================================
-    // TODO: Create Queue's Command Pool
+    {
+        VkCommandPoolCreateInfo create_info = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+        create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+        context.device.lo.video_cp = VK_NULL_HANDLE;
+        if (context.device.lo.video_q != VK_NULL_HANDLE) {
+            create_info.queueFamilyIndex = context.device.ph.video_q;
+            VKCHECK("vkCreateCommandPool", vkCreateCommandPool(context.device.lo.handle, &create_info, context.allocator, &context.device.lo.video_cp));
+        }
+
+        context.device.lo.graphics_cp = VK_NULL_HANDLE;
+        if (context.device.lo.graphics_q != VK_NULL_HANDLE) {
+            create_info.queueFamilyIndex = context.device.ph.graphics_q;
+            VKCHECK("vkCreateCommandPool", vkCreateCommandPool(context.device.lo.handle, &create_info, context.allocator, &context.device.lo.graphics_cp));
+        }
+
+        context.device.lo.transfer_cp = VK_NULL_HANDLE;
+        if (context.device.lo.transfer_q != VK_NULL_HANDLE) {
+            create_info.queueFamilyIndex = context.device.ph.transfer_q;
+            VKCHECK("vkCreateCommandPool", vkCreateCommandPool(context.device.lo.handle, &create_info, context.allocator, &context.device.lo.transfer_cp));
+        }
+
+        context.device.lo.compute_cp = VK_NULL_HANDLE;
+        if (context.device.lo.compute_q != VK_NULL_HANDLE) {
+            create_info.queueFamilyIndex = context.device.ph.compute_q;
+            VKCHECK("vkCreateCommandPool", vkCreateCommandPool(context.device.lo.handle, &create_info, context.allocator, &context.device.lo.compute_cp));
+        }
+
+        context.device.lo.present_cp = VK_NULL_HANDLE;
+        if (context.device.lo.present_q != VK_NULL_HANDLE) {
+            create_info.queueFamilyIndex = context.device.ph.present_q;
+            VKCHECK("vkCreateCommandPool", vkCreateCommandPool(context.device.lo.handle, &create_info, context.allocator, &context.device.lo.present_cp));
+        }
+    }
+
     return true;
 }
 
 b8 tl_vulkan_device_terminate(void) {
+    if (context.device.lo.present_cp != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(context.device.lo.handle, context.device.lo.present_cp, context.allocator);
+        context.device.lo.present_cp = VK_NULL_HANDLE;
+    }
+
+    if (context.device.lo.compute_cp != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(context.device.lo.handle, context.device.lo.compute_cp, context.allocator);
+        context.device.lo.compute_cp = VK_NULL_HANDLE;
+    }
+
+    if (context.device.lo.transfer_cp != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(context.device.lo.handle, context.device.lo.transfer_cp, context.allocator);
+        context.device.lo.transfer_cp = VK_NULL_HANDLE;
+    }
+
+    if (context.device.lo.graphics_cp != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(context.device.lo.handle, context.device.lo.graphics_cp, context.allocator);
+        context.device.lo.graphics_cp = VK_NULL_HANDLE;
+    }
+
+    if (context.device.lo.video_cp != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(context.device.lo.handle, context.device.lo.video_cp, context.allocator);
+        context.device.lo.video_cp = VK_NULL_HANDLE;
+    }
+
     if (context.device.ph.extentions != NULL) {
         tl_list_clear(context.device.ph.extentions, tl_container_noop_dealocator);
         tl_list_destroy(context.device.ph.extentions);

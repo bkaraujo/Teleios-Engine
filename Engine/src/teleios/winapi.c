@@ -116,7 +116,7 @@ const u64 tl_filesyste_file_size(const char* path) {
     return 0;
 }
 
-const char* tl_filesystem_file_load(const char* path) {
+const char* tl_filesystem_file_tochar(const char* path) {
     HANDLE file = CreateFile(path,
         GENERIC_READ,
         FILE_SHARE_READ,
@@ -156,7 +156,7 @@ const char* tl_filesystem_file_load(const char* path) {
     return payload;
 }
 
-const u32* tl_filesystem_file_loadu32(const char* path) {
+const u32* tl_filesystem_file_tou32(const char* path) {
     HANDLE file = CreateFile(path,
         GENERIC_READ,
         FILE_SHARE_READ,

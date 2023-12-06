@@ -82,8 +82,8 @@ b8 tl_vulkan_swapchain_initialize(const TLSpecification* spec) {
     swapchain_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     swapchain_create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    if (context.device.ph.q_graphics != context.device.ph.q_present) {
-        u32 indexes[2] = { context.device.ph.q_graphics, context.device.ph.q_present };
+    if (context.device.ph.graphics_q != context.device.ph.present_q) {
+        u32 indexes[2] = { context.device.ph.graphics_q, context.device.ph.present_q };
         swapchain_create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         swapchain_create_info.queueFamilyIndexCount = 2;
         swapchain_create_info.pQueueFamilyIndices = indexes;
