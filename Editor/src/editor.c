@@ -6,7 +6,8 @@
 
 void tl_application_define(TLSpecification* spec) {
     spec->name = "Teleios Editor";
-
+    spec->vulkan.pipeline.fragment = "C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/frag.spv";
+    spec->vulkan.pipeline.vertex = "C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/vert.spv";
 }
 
 static TLIdentity* lGuiid;
