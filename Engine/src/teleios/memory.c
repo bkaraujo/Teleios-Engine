@@ -9,7 +9,6 @@ struct TLRegistry {
     u64 pool[TL_MEMORY_TYPE_MAXIMUM];
 };
 
-static u64 OSIZE = sizeof(TLObject);
 static struct TLRegistry registry = { 0 };
 
 b8 tl_memory_initialize(void) {

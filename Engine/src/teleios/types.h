@@ -52,57 +52,6 @@ typedef signed char         b8;
 
 #include "cglm/types-struct.h"
 
-typedef enum {
-    TL_MEMORY_TYPE_IDENTITY,
-    TL_MEMORY_TYPE_LAYER,
-    TL_MEMORY_TYPE_CONTAINER_LIST,
-    TL_MEMORY_TYPE_CONTAINER_NODE,
-    TL_MEMORY_TYPE_SCENE,
-    TL_MEMORY_TYPE_SCENE_REGION,
-    TL_MEMORY_TYPE_ECS_ENTITY,
-    TL_MEMORY_TYPE_ECS_SYSTEM,
-    TL_MEMORY_TYPE_ECS_COMPONENT,
-    TL_MEMORY_TYPE_GRAPHICS,
-    TL_MEMORY_TYPE_STRING,
-    TL_MEMORY_TYPE_FILE,
-    TL_MEMORY_TYPE_MAXIMUM
-} TLEMemoryType;
-
-typedef enum {
-    /// <summary>
-    /// The event should keep walking the event chain.
-    /// </summary>
-    TL_EVENT_STATUS_CONTUNE,
-
-    /// <summary>
-    /// The event should be consumed and stop walkin the event chain.
-    /// </summary>
-    TL_EVENT_STATUS_STOP
-} TLEventStatus;
-
-typedef struct {
-    // 128 bytes
-    union {
-        i64 i64[2];
-        u64 u64[2];
-
-        f64 f64[2];
-
-        i32 i32[4];
-        u32 u32[4];
-        f32 f32[4];
-
-        i16 i16[8];
-
-        u16 u16[8];
-
-        i8 i8[16];
-        u8 u8[16];
-
-        char c[16];
-    } data;
-} TLEvent;
-
 typedef struct {
     u16 year;
     u8  month;
@@ -133,46 +82,6 @@ typedef struct {
 typedef struct {
     const char identity[38];
 } TLIdentity;
-
-typedef struct {
-    const TLIdentity* identity;
-} TLComponent;
-
-typedef struct {
-    TLComponent owner;
-    ivec3s scale;
-    ivec3s position;
-} TLComponentTransform;
-
-typedef struct {
-    TLComponent owner;
-    const char* name;
-} TLComponentName;
-
-typedef struct {
-    TLIdentity* identity;
-    const char* name;
-
-    b8(*on_attach)(void);
-    b8(*on_detach)(void);
-
-    b8(*update_variable)(const u64 delta);
-    b8(*update_fixed)(const u64 delta);
-    b8(*update_after)(void);
-} TLLayer;
-
-typedef struct {
-    /* General Data */
-    const char* name;
-    const char identity[38];
-    const u8 refs;
-
-    /* Particular Data */
-    void* pointer;
-    const u64 stride;
-    void (*destructor)(const void*);
-
-} TLObject;
 
 typedef struct {
     const char* name;
