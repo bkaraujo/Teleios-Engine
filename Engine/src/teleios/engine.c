@@ -1,3 +1,4 @@
+#include "glad/glad.h" 
 #include "teleios/container.h"
 #include "teleios/engine.h"
 #include "teleios/event.h"
@@ -87,6 +88,8 @@ TLAPI b8 tl_engine_run(void) {
         const u64 time_delta = time_start - time_last;
         time_last = time_start;
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // ============================================
         // Fixed time step processing
         // ============================================
@@ -139,6 +142,10 @@ TLAPI b8 tl_engine_run(void) {
         tl_platform_update();
         tl_timer_update(&timer);
 
+        if (!tl_graphics_present()) {
+            TLERROR("tl_engine_run: Failed to present");
+            return false;
+        }
         // ============================================
         // Once Per-Second rotines
         // ============================================

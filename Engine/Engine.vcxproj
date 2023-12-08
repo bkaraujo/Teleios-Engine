@@ -256,6 +256,7 @@
     <ClInclude Include="src\cglm\version.h" />
     <ClInclude Include="src\glad\glad.h" />
     <ClInclude Include="src\glad\khrplatform.h" />
+    <ClInclude Include="src\glad\wgl.h" />
     <ClInclude Include="src\nuklear\nuklear.h" />
     <ClInclude Include="src\stb\image.h" />
     <ClInclude Include="src\teleios\container.h" />
@@ -326,6 +327,7 @@
     <ClCompile Include="src\cglm\vec3.c" />
     <ClCompile Include="src\cglm\vec4.c" />
     <ClCompile Include="src\glad\glad.c" />
+    <ClCompile Include="src\glad\wgl.c" />
     <ClCompile Include="src\nuklear\nuklear.c" />
     <ClCompile Include="src\stb\image.c" />
     <ClCompile Include="src\teleios\container_list.c" />
