@@ -1,26 +1,18 @@
 #include "teleios/container.h"
-#include "teleios/ecs/manager.h"
-#include "teleios/ecs/system.h"
 #include "teleios/engine.h"
 #include "teleios/event/codes.h"
 #include "teleios/event/manager.h"
 #include "teleios/event/subcriber.h"
-#include "teleios/graphics/manager.h"
 #include "teleios/identity/manager.h"
 #include "teleios/input/manager.h"
-#include "teleios/layer/manager.h"
-#include "teleios/layer/stack.h"
 #include "teleios/logger.h"
 #include "teleios/memory/manager.h"
 #include "teleios/platform/manager.h"
 #include "teleios/platform/window.h"
-#include "teleios/renderer/manager.h"
-#include "teleios/scene/manager.h"
 #include "teleios/time/epoch.h"
 #include "teleios/time/timer.h"
 
 static b8 running = true;
-static TLList* layers;
 static u64 STEP = 0;
 static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
 
@@ -34,13 +26,6 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
         return false;
     }
-
-    layers = tl_list_create();
-    if (layers == NULL) {
-        TLERROR("tl_engine_pre_initialize: Failed to allocate layer stack");
-        return false;
-    }
-    tl_layer_stack_set(layers);
 
     if (!tl_identity_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the idedntity manager");
@@ -62,32 +47,12 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         return false;
     }
 
-    if (!tl_scene_initialize()) {
-        TLERROR("tl_engine_initialize: Failed to initialize scene manager");
-        return false;
-    }
-
-    if (!tl_ecs_initialize()) {
-        TLERROR("tl_engine_initialize: Failed to initialize ecs manager");
-        return false;
-    }
-
     return true;
 }
 
 TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
     if (!tl_platform_window_create(spec)) {
         TLERROR("tl_engine_initialize: Failed create window");
-        return false;
-    }
-
-    if (!tl_graphics_initialize(spec)) {
-        TLERROR("tl_engine_initialize: Failed to initialize graphics manager");
-        return false;
-    }
-
-    if (!tl_renderer_initialize(spec)) {
-        TLERROR("tl_engine_initialize: Failed to initialize renderer manager");
         return false;
     }
 
@@ -122,19 +87,6 @@ TLAPI b8 tl_engine_run(void) {
                 step++;
                 accumulator -= STEP;
             }
-
-            // Perform the fixed time steps
-            for (unsigned i = 0; i < step; ++i) {
-                TLNode* current = layers->head;
-                while (current != NULL) {
-                    const TLLayer* layer = current->payload;
-                    if (!layer->update_fixed(STEP)) {
-                        TLERROR("tl_engine_run: Failed to layer->update_fixed");
-                        return false;
-                    }
-                    current = current->next;
-                }
-            }
         }
 
         // ============================================
@@ -142,20 +94,6 @@ TLAPI b8 tl_engine_run(void) {
         // ============================================
         {
             fps++;
-            TLNode* current = layers->head;
-            while (current != NULL) {
-                const TLLayer* layer = current->payload;
-                if (!layer->update_variable(time_delta)) {
-                    TLERROR("tl_engine_run: Failed to layer->update_variable");
-                    return false;
-                }
-
-                if (!layer->update_after()) {
-                    TLERROR("tl_engine_run: Failed to layer->update_after");
-                    return false;
-                }
-                current = current->next;
-            }
         }
 
         // ============================================
@@ -181,35 +119,6 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
-    if (!tl_renderer_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate renderer manager");
-        return false;
-    }
-    if (!tl_graphics_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate graphic manager");
-        return false;
-    }
-
-    while (layers->head != NULL) {
-        const TLLayer* layer = layers->head->payload;
-        TLWARN("tl_engine_terminate: Destroying layer \"%s\". %s", layer->name, MSG_PLEASE_DO_IT_YOURSELF);
-        tl_layer_stack_destroy(layer->identity);
-    }
-
-    if (!tl_list_destroy(layers)) {
-        TLERROR("tl_engine_terminate: Failed to destroy layers list");
-        return false;
-    }
-
-    if (!tl_ecs_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate ecs manager");
-        return false;
-    }
-
-    if (!tl_scene_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate scene manager");
-        return false;
-    }
 
     if (!tl_input_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate input manager");

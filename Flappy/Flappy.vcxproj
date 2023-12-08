@@ -10,6 +10,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\flappy.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -84,16 +87,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\flappy.c" />
-    <ClCompile Include="src\flappy\layers.c" />
-    <ClCompile Include="src\flappy\scenes.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\flappy\layer\gui.h" />
-    <ClInclude Include="src\flappy\layer\world.h" />
-    <ClInclude Include="src\flappy\scene\world.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

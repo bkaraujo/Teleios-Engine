@@ -81,11 +81,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\editor.c" />
-    <ClCompile Include="src\editor\layers.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\editor\layer\gui.h" />
-    <ClInclude Include="src\editor\layer\player.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shader\shader.frag" />

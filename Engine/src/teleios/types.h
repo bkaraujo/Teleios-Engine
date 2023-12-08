@@ -342,19 +342,6 @@ typedef struct {
         u32 height;
     } window;
 
-    struct {
-        struct {
-            TLList* extentions;
-            TLList* layers;
-        } instance;
-        struct {
-            TLList* extentions;
-        } device;
-        struct {
-            const char* fragment;
-            const char* vertex;
-        } pipeline;
-    } vulkan;
 } TLSpecification;
 
 #endif // TELEIOS_TYPES_H
