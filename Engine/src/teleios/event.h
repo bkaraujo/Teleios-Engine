@@ -3,6 +3,8 @@
 
 #include "teleios/types.h"
 
+#define TL_EVENT_APPLICATION_QUIT  200
+
 typedef enum {
     /// <summary>
     /// The event should keep walking the event chain.

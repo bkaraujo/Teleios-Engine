@@ -1,0 +1,80 @@
+#include "editor/layer_debug.h"
+#include <teleios/engine.h>
+#include <teleios/event.h>
+#include <teleios/input.h>
+#include <teleios/logger.h>
+#include <teleios/memory.h>
+
+static b8 editor_layer_initialize(void);
+static b8 editor_layer_terminate(void);
+static b8 editor_layer_update(const u64 delta);
+static b8 editor_ayer_update_fixed(const u64 delta);
+static b8 editor_layer_update_late(void);
+
+static TLLayer* layer;
+const TLLayer* editor_layer_debug_get(void) {
+    return layer;
+}
+
+b8 editor_layer_debug_initialize(void) {
+    layer = tl_memory_alloc(TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
+    if (layer == NULL) {
+        TLERROR("editor_layer_debug_initialize: Failed to create layer");
+        return false;
+    }
+
+    layer->name = "Editor Debug";
+    layer->initialize = editor_layer_initialize;
+    layer->terminate = editor_layer_terminate;
+    layer->update = editor_layer_update;
+    layer->update_fixed = editor_ayer_update_fixed;
+    layer->update_late = editor_layer_update_late;
+
+
+    if (!tl_engine_layer_append(editor_layer_debug_get())) {
+        TLERROR("editor_layer_debug_initialize: Engine refused to append layer");
+        return false;
+    }
+
+    return true;
+}
+
+static b8 editor_layer_initialize(void) {
+    TLDEBUG("editor_layer_initialize: Initializing Editor Debug Layer");
+    return true;
+}
+
+static b8 editor_layer_terminate(void) {
+    TLDEBUG("editor_layer_terminate: Terminating Editor Debug Layer");
+    return true;
+}
+
+static b8 editor_layer_update(const u64 delta) {
+    return true;
+}
+
+static b8 editor_ayer_update_fixed(const u64 delta) {
+    return true;
+}
+
+static b8 editor_layer_update_late() {
+    if (tl_input_key_released(TL_KEY_ESCAPE)) {
+        TLEvent event = { 0 };
+        tl_event_fire(TL_EVENT_APPLICATION_QUIT, &event);
+    }
+
+    return true;
+}
+
+b8 editor_layer_debug_terminate(void) {
+    if (layer != NULL) {
+        if (!tl_engine_layer_remove(editor_layer_debug_get())) {
+            TLERROR("editor_layer_debug_terminate: Engine refused to remove layer");
+            return false;
+        }
+
+        tl_memory_free(layer, TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
+    }
+
+    return true;
+}

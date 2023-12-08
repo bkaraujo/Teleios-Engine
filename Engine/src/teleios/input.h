@@ -5,12 +5,9 @@
 #include "teleios/inputcodes.h"
 #include "teleios/types.h"
 
-// -------------- Manager API
 b8 tl_input_initialize(void);
 void tl_input_update(void);
 b8 tl_input_terminate(void);
-
-// -------------- Pooling API
 
 TLAPI b8 tl_input_key_active(TLKeyboardKey key);
 TLAPI b8 tl_input_key_pressed(TLKeyboardKey key);

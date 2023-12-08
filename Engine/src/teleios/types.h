@@ -84,6 +84,17 @@ typedef struct {
 } TLIdentity;
 
 typedef struct {
+    TLIdentity identity;
+    const char* name;
+
+    b8(*initialize)(void);
+    b8(*update)(const u64 delta);
+    b8(*update_fixed)(const u64 delta);
+    b8(*update_late)(void);
+    b8(*terminate)(void);
+} TLLayer;
+
+typedef struct {
     const char* name;
     struct {
         u8 per_second;
@@ -92,7 +103,6 @@ typedef struct {
         u32 witdh;
         u32 height;
     } window;
-
 } TLSpecification;
 
 #endif // TELEIOS_TYPES_H

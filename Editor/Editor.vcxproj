@@ -81,10 +81,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\editor.c" />
+    <ClCompile Include="src\editor\layer_debug.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shader\shader.frag" />
     <None Include="Assets\Shader\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\editor\layer_debug.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

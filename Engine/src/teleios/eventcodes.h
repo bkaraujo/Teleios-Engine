@@ -4,8 +4,6 @@
 #include "teleios/types.h"
 
 typedef enum {
-    TL_EVENT_APPLICATION_QUIT = 200, // Null
-
     TL_EVENT_WINDOW_RESIZED = 210, // u32[0, 1]
     TL_EVENT_WINDOW_MINIMIZED, // Null
     TL_EVENT_WINDOW_MAXIMIZED, // Null
