@@ -270,6 +270,7 @@
     <ClInclude Include="src\teleios\memory.h" />
     <ClInclude Include="src\teleios\platform.h" />
     <ClInclude Include="src\teleios\platform_detector.h" />
+    <ClInclude Include="src\teleios\time.h" />
     <ClInclude Include="src\teleios\timer.h" />
     <ClInclude Include="src\teleios\string.h" />
     <ClInclude Include="src\teleios\types.h" />
