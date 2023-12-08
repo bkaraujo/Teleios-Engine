@@ -2,6 +2,7 @@
 #include "teleios/engine.h"
 #include "teleios/event.h"
 #include "teleios/eventcodes.h"
+#include "teleios/graphics.h"
 #include "teleios/identity.h"
 #include "teleios/input.h"
 #include "teleios/logger.h"
@@ -58,6 +59,11 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 
     if (!tl_platform_window_create(spec)) {
         TLERROR("tl_input_initialize: Failed create window");
+        return false;
+    }
+
+    if (!tl_graphics_initialize(spec)) {
+        TLERROR("tl_input_initialize: Failed to initialize graphics manager");
         return false;
     }
 
@@ -150,6 +156,10 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
+    if (!tl_graphics_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate graphics manager");
+        return false;
+    }
 
     if (!tl_list_destroy(layers)) {
         TLERROR("tl_engine_terminate: Failed to terminate layer stack");
