@@ -59,8 +59,7 @@ static b8 editor_ayer_update_fixed(const u64 delta) {
 
 static b8 editor_layer_update_late() {
     if (tl_input_key_released(TL_KEY_ESCAPE)) {
-        TLEvent event = { 0 };
-        tl_event_fire(TL_EVENT_APPLICATION_QUIT, &event);
+        tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
     }
 
     return true;
