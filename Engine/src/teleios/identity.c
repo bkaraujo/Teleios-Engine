@@ -1,6 +1,5 @@
 #include "teleios/container.h"
-#include "teleios/identity/generator.h"
-#include "teleios/identity/manager.h"
+#include "teleios/identity.h"
 #include "teleios/logger.h"
 #include "teleios/string.h"
 
@@ -9,13 +8,31 @@
 static const char UUID[] = "0123456789abcdef";
 static TLList* known;
 
-static b8 tl_identity_comparator(const void* first, const void* second);
-static void tl_identity_fill(const TLIdentity* identity);
-// ##############################################################################################
-//
-//                                        GENERATOR
-//
-// ##############################################################################################
+static b8 tl_identity_comparator(const void* first, const void* second) {
+    return tl_string_equals(first, second);
+}
+
+static void tl_identity_fill(const TLIdentity* identity) {
+    for (unsigned i = 0; i < 37; ++i) {
+        *((i8*)&identity->identity[i]) = UUID[rand() % 16];
+    }
+
+    *((i8*)&identity->identity[8]) = '-';
+    *((i8*)&identity->identity[13]) = '-';
+    *((i8*)&identity->identity[18]) = '-';
+    *((i8*)&identity->identity[23]) = '-';
+    *((i8*)&identity->identity[37]) = 0; // null-terminated
+}
+b8 tl_identity_initialize(void) {
+    known = tl_list_create();
+    if (known == NULL) {
+        TLERROR("tl_identity_initialize: Failed to initialize known list");
+        return false;
+    }
+
+    return true;
+}
+
 void tl_identity_generate(const TLIdentity* identity) {
     while (true) {
         tl_identity_fill(identity);
@@ -41,21 +58,6 @@ b8 tl_identity_equals(const TLIdentity* first, const TLIdentity* second) {
     return tl_string_equals(first->identity, second->identity);
 }
 
-// ##############################################################################################
-//
-//                                        MANAGER
-//
-// ##############################################################################################
-b8 tl_identity_initialize(void) {
-    known = tl_list_create();
-    if (known == NULL) {
-        TLERROR("tl_identity_initialize: Failed to initialize known list");
-        return false;
-    }
-
-    return true;
-}
-
 b8 tl_identity_terminate(void) {
     if (!tl_list_clear(known, tl_container_noop_dealocator)) {
         TLERROR("tl_identity_terminate: Failed to clear the known list");
@@ -70,24 +72,4 @@ b8 tl_identity_terminate(void) {
     known = NULL;
 
     return true;
-}
-// ##############################################################################################
-//
-//                                        HELPERS
-//
-// ##############################################################################################
-static void tl_identity_fill(const TLIdentity* identity) {
-    for (unsigned i = 0; i < 37; ++i) {
-        *((i8*)&identity->identity[i]) = UUID[rand() % 16];
-    }
-
-    *((i8*)&identity->identity[8]) = '-';
-    *((i8*)&identity->identity[13]) = '-';
-    *((i8*)&identity->identity[18]) = '-';
-    *((i8*)&identity->identity[23]) = '-';
-    *((i8*)&identity->identity[37]) = 0; // null-terminated
-}
-
-static b8 tl_identity_comparator(const void* first, const void* second) {
-    return tl_string_equals(first, second);
 }

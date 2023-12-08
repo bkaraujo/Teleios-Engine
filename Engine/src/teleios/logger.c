@@ -3,9 +3,7 @@
 #include <stdlib.h>
 
 #include "teleios/logger.h"
-#include "teleios/platform/console.h"
-#include "teleios/platform/memory.h"
-#include "teleios/platform/time.h"
+#include "teleios/platform.h"
 
 static const char* LITERALS[6] = { "FATAL", "ERROR", "WARN ", "INFO ", "DEBUG", "TRACE" };
 static const char* LAYOUT = "%d-%d-%d %d:%d:%d,%d %s - %s\n";

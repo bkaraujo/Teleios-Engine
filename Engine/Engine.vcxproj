@@ -260,31 +260,20 @@
     <ClInclude Include="src\teleios\defines.h" />
     <ClInclude Include="src\teleios\engine.h" />
     <ClInclude Include="src\teleios\application.h" />
-    <ClInclude Include="src\teleios\event\codes.h" />
-    <ClInclude Include="src\teleios\event\manager.h" />
-    <ClInclude Include="src\teleios\event\publisher.h" />
-    <ClInclude Include="src\teleios\event\subcriber.h" />
-    <ClInclude Include="src\teleios\filesystem\files.h" />
-    <ClInclude Include="src\teleios\identity\generator.h" />
-    <ClInclude Include="src\teleios\identity\manager.h" />
-    <ClInclude Include="src\teleios\input\manager.h" />
-    <ClInclude Include="src\teleios\input\pool.h" />
+    <ClInclude Include="src\teleios\event.h" />
+    <ClInclude Include="src\teleios\eventcodes.h" />
+    <ClInclude Include="src\teleios\filesystem.h" />
+    <ClInclude Include="src\teleios\identity.h" />
+    <ClInclude Include="src\teleios\input.h" />
+    <ClInclude Include="src\teleios\inputcodes.h" />
     <ClInclude Include="src\teleios\logger.h" />
-    <ClInclude Include="src\teleios\memory\manager.h" />
-    <ClInclude Include="src\teleios\memory\allocator.h" />
-    <ClInclude Include="src\teleios\memory\tools.h" />
-    <ClInclude Include="src\teleios\platform\console.h" />
-    <ClInclude Include="src\teleios\platform\detector.h" />
-    <ClInclude Include="src\teleios\platform\info.h" />
-    <ClInclude Include="src\teleios\platform\manager.h" />
-    <ClInclude Include="src\teleios\platform\memory.h" />
-    <ClInclude Include="src\teleios\platform\time.h" />
-    <ClInclude Include="src\teleios\platform\window.h" />
-    <ClInclude Include="src\teleios\time\epoch.h" />
-    <ClInclude Include="src\teleios\time\timer.h" />
+    <ClInclude Include="src\teleios\memory.h" />
+    <ClInclude Include="src\teleios\platform.h" />
+    <ClInclude Include="src\teleios\platform_detector.h" />
+    <ClInclude Include="src\teleios\timer.h" />
     <ClInclude Include="src\teleios\string.h" />
-    <ClInclude Include="src\teleios\time\wallclock.h" />
     <ClInclude Include="src\teleios\types.h" />
+    <ClInclude Include="src\teleios\window\manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\cglm\affine.c" />
@@ -340,7 +329,7 @@
     <ClCompile Include="src\teleios\input.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
-    <ClCompile Include="src\teleios\winapi.c" />
+    <ClCompile Include="src\teleios\platform_windows.c" />
     <ClCompile Include="src\teleios\string.c" />
     <ClCompile Include="src\teleios\time.c" />
   </ItemGroup>

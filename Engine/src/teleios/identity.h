@@ -3,6 +3,9 @@
 
 #include "teleios/types.h"
 
+b8 tl_identity_initialize(void);
+b8 tl_identity_terminate(void);
+
 void tl_identity_generate(const TLIdentity* identity);
 b8 tl_identity_empty(const TLIdentity* identity);
 b8 tl_identity_equals(const TLIdentity* first, const TLIdentity* second);

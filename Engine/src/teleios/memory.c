@@ -1,5 +1,6 @@
 #include "teleios/logger.h"
-#include "teleios/platform/memory.h"
+#include "teleios/memory.h"
+#include "teleios/platform.h"
 
 #include <stdlib.h>
 
@@ -10,12 +11,10 @@ struct TLRegistry {
 
 static u64 OSIZE = sizeof(TLObject);
 static struct TLRegistry registry = { 0 };
-// ################################################################################
-//
-//                                     ALLOCATOR
-//
-// ################################################################################
-#include "teleios/memory/allocator.h"
+
+b8 tl_memory_initialize(void) {
+    return true;
+}
 
 TLAPI void* tl_memory_alloc(TLEMemoryType type, u64 size) {
     void* block = tl_platform_memory_alloc(size);
@@ -37,12 +36,6 @@ TLAPI void tl_memory_free(const void* target, TLEMemoryType type, u64 size) {
     registry.pool[type] -= size;
 }
 
-// ################################################################################
-//
-//                                     TOOLS
-//
-// ################################################################################
-#include "teleios/memory/tools.h"
 TLAPI void tl_memory_zero(const void* target, u64 size) {
     tl_platform_memory_set(target, 0, size);
 }
@@ -53,16 +46,6 @@ TLAPI void tl_memory_set(const void* target, i32 value, u64 size) {
 
 TLAPI void tl_memory_copy(const void* source, const void* target, u64 size) {
     tl_platform_memory_copy(source, target, size);
-}
-
-// ################################################################################
-//
-//                                     MANAGER
-//
-// ################################################################################
-#include "teleios/memory/manager.h"
-b8 tl_memory_initialize(void) {
-    return true;
 }
 
 static const char* tl_memory_type(TLEMemoryType type) {

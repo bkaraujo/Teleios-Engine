@@ -1,11 +1,18 @@
-#include "teleios/platform/detector.h"
+#include "teleios/platform_detector.h"
 
 #ifdef TELEIOS_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <malloc.h>
 
+#include "teleios/platform.h"
 #include "teleios/logger.h"
 #include "teleios/string.h"
+#include "teleios/event.h"
+#include "teleios/eventcodes.h"
+#include "teleios/inputcodes.h"
+#include <windowsx.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 static HINSTANCE hinstance;
 // ##############################################################################################
@@ -13,7 +20,6 @@ static HINSTANCE hinstance;
 //                                        MEMORY
 //
 // ##############################################################################################
-#include "teleios/platform/memory.h"
 static HANDLE heap;
 
 void* tl_platform_memory_alloc(u64 size) {
@@ -53,8 +59,6 @@ void tl_platform_memory_set(const void* target, i32 value, u64 size) {
 //                                        CONSOLE
 //
 // ##############################################################################################
-#include "teleios/platform/console.h"
-
 static HANDLE hconsole;
 
 #define TL_CONSOLE_BLACK        ( 0 )
@@ -100,8 +104,8 @@ void tl_platform_stdout(const u8 level, const char* message) {
 //                                        FILESYSTEM
 //
 // ##############################################################################################
-#include "teleios/filesystem/files.h"
-#include "teleios/memory/allocator.h"
+#include "teleios/filesystem.h"
+#include "teleios/memory.h"
 
 const u64 tl_filesyste_file_size(const char* path) {
     LARGE_INTEGER file_size = { 0 };
@@ -200,8 +204,6 @@ const u32* tl_filesystem_file_tou32(const char* path) {
 //                                        TIME
 //
 // ##############################################################################################
-#include "teleios/platform/time.h"
-
 u64 tl_platform_time_epoch(void) {
     // Read the system-time and set it to local-time
     FILETIME ft; GetSystemTimePreciseAsFileTime(&ft);
@@ -247,8 +249,6 @@ void tl_platform_time_now(TLDateTime* dt) {
 //                                        TIMER
 //
 // ##############################################################################################
-#include "teleios/time/timer.h"
-
 static LARGE_INTEGER frequency;
 void tl_timer_begin(TLTimer* timer) {
     LARGE_INTEGER start; QueryPerformanceCounter(&start);
@@ -281,12 +281,6 @@ f64 tl_timer_micros(const TLTimer* timer) {
 //                                        WINDOW
 //
 // ##############################################################################################
-#include "teleios/platform/window.h"
-#include "teleios/event/codes.h"
-#include "teleios/event/publisher.h"
-#include <windowsx.h>
-#include <stdarg.h>
-#include <stdio.h>
 
 static HWND hwnd;
 static b8 minimized = false;
@@ -514,8 +508,6 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 //                                        INFO
 //
 // ##############################################################################################
-#include "teleios/platform/info.h"
-
 void* tl_platform_handle(void) {
     return &hinstance;
 }
@@ -529,8 +521,6 @@ void* tl_platform_window_handle(void) {
 //                                        MANAGER
 //
 // ##############################################################################################
-#include "teleios/platform/manager.h"
-
 b8 tl_platform_initialize(void) {
     QueryPerformanceFrequency(&frequency);
 

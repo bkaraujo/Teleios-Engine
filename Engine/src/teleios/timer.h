@@ -1,5 +1,5 @@
-#ifndef TELEIOS_TIME_TIMER_H
-#define TELEIOS_TIME_TIMER_H
+#ifndef TELEIOS_TIMER_H
+#define TELEIOS_TIMER_H
 
 #include "teleios/types.h"
 

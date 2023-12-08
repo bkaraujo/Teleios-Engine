@@ -1,14 +1,24 @@
 #include "teleios/container.h"
+#include "teleios/event.h"
+#include "teleios/eventcodes.h"
 #include "teleios/logger.h"
 
 static TLList* list[U8MAX];
-// ##############################################################################################
-//
-//                                        SUBSCRIBER
-//
-// ##############################################################################################
-#include "teleios/event/subcriber.h"
-#include "teleios/event/codes.h"
+
+static b8 tl_dealocator(const void* payload) {
+    return true;
+}
+
+b8 tl_event_initialize(void) {
+    for (unsigned i = 0; i < U8MAX; ++i) {
+        list[i] = tl_list_create();
+        if (list[i] == NULL) {
+            TLERROR("tl_event_initialize: Failed to create list");
+            return false;
+        }
+    }
+    return true;
+}
 
 b8 tl_event_subscribe(const u8 code, PFN_EventHandler handler) {
     if (code != TL_EVENT_MAXIMUM) {
@@ -29,12 +39,6 @@ b8 tl_event_subscribe(const u8 code, PFN_EventHandler handler) {
 
     return true;
 }
-// ##############################################################################################
-//
-//                                        PUBLISHER
-//
-// ##############################################################################################
-#include "teleios/event/publisher.h"
 
 void tl_event_fire(const u8 code, const TLEvent* event) {
     TLNode* current = list[code]->head;
@@ -46,27 +50,6 @@ void tl_event_fire(const u8 code, const TLEvent* event) {
 
         current = current->next;
     }
-}
-// ##############################################################################################
-//
-//                                        MANAGER
-//
-// ##############################################################################################
-#include "teleios/event/manager.h"
-
-b8 tl_event_initialize(void) {
-    for (unsigned i = 0; i < U8MAX; ++i) {
-        list[i] = tl_list_create();
-        if (list[i] == NULL) {
-            TLERROR("tl_event_initialize: Failed to create list");
-            return false;
-        }
-    }
-    return true;
-}
-
-static b8 tl_dealocator(const void* payload) {
-    return true;
 }
 
 b8 tl_event_terminate(void) {
