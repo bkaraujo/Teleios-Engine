@@ -5,8 +5,13 @@
 b8 tl_graphics_initialize(const TLSpecification* spec) {
     return gl_initialize(spec);
 }
-b8 tl_graphics_present(void) {
-    return gl_present();
+
+void tl_graphics_being(void) {
+    gl_clear();
+}
+
+void tl_graphics_present(void) {
+    gl_present();
 }
 
 b8 tl_graphics_terminate(void) {

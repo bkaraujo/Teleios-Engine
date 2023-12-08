@@ -4,7 +4,8 @@
 #include "teleios/types.h"
 
 b8 gl_initialize(const TLSpecification* spec);
-b8 gl_present(void);
+void gl_clear(void);
+void gl_present(void);
 b8 gl_terminamte(void);
 
 

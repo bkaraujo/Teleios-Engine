@@ -77,9 +77,14 @@ static b8 gl_context_load(void) {
 #endif
 }
 
+void gl_clear(void) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-b8 gl_present(void) {
-    return SwapBuffers(device);
+void gl_present(void) {
+    if (!SwapBuffers(device)) {
+        TLFATAL("Openbgl failed to swap buffers");
+    }
 }
 
 b8 gl_terminamte(void) {
