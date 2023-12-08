@@ -6,7 +6,7 @@
 b8 gl_initialize(const TLSpecification* spec);
 void gl_clear(void);
 void gl_present(void);
-b8 gl_terminamte(void);
+b8 gl_terminate(void);
 
 
 #endif // TELEIOS_GRAPHICS_OPENGL_H

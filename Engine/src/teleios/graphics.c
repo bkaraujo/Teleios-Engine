@@ -15,5 +15,5 @@ void tl_graphics_present(void) {
 }
 
 b8 tl_graphics_terminate(void) {
-    return gl_terminamte();
+    return gl_terminate();
 }
