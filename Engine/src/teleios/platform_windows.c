@@ -405,15 +405,16 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
         } break;
 
         case SIZE_RESTORED: {
+            TLEvent event = { 0 };
+            event.data.u32[0] = LOWORD(lParam);
+            event.data.u32[1] = HIWORD(lParam);
+
             if (maximized || minimized) {
                 maximized = false;
                 minimized = false;
-                tl_event_fire(TL_EVENT_WINDOW_RESTORED, NULL);
+                tl_event_fire(TL_EVENT_WINDOW_RESTORED, &event);
             }
             else {
-                TLEvent event = { 0 };
-                event.data.u32[0] = LOWORD(lParam);
-                event.data.u32[1] = HIWORD(lParam);
                 tl_event_fire(TL_EVENT_WINDOW_RESIZED, &event);
             }
         } break;

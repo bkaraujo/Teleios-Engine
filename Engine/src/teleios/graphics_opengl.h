@@ -6,6 +6,7 @@
 b8 gl_initialize(const TLSpecification* spec);
 void gl_clear(void);
 void gl_present(void);
+void gl_resize(const ivec2s size);
 b8 gl_terminate(void);
 
 

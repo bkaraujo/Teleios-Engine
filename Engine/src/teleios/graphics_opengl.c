@@ -44,6 +44,10 @@ void gl_present(void) {
     }
 }
 
+void gl_resize(const ivec2s size) {
+    glViewport(0, 0, size.x, size.y);
+}
+
 b8 gl_terminate(void) {
 #ifdef TELEIOS_PLATFORM_WINDOWS
     if (context != NULL) {
