@@ -6,7 +6,7 @@ b8 tl_graphics_initialize(const TLSpecification* spec) {
     return gl_initialize(spec);
 }
 
-void tl_graphics_being(void) {
+void tl_graphics_clear(void) {
     gl_clear();
 }
 

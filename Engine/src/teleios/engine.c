@@ -8,6 +8,7 @@
 #include "teleios/logger.h"
 #include "teleios/memory.h"
 #include "teleios/platform.h"
+#include "teleios/renderer.h"
 #include "teleios/time.h"
 #include "teleios/timer.h"
 
@@ -67,6 +68,11 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
         return false;
     }
 
+    if (!tl_renderer_initialize(spec)) {
+        TLERROR("tl_input_initialize: Failed to initialize renderer");
+        return false;
+    }
+
     STEP = MICROSECOND / spec->simulation.per_second;
 
     return true;
@@ -87,7 +93,6 @@ TLAPI b8 tl_engine_run(void) {
         const u64 time_delta = time_start - time_last;
         time_last = time_start;
 
-        tl_graphics_being();
         // ============================================
         // Fixed time step processing
         // ============================================
@@ -118,6 +123,8 @@ TLAPI b8 tl_engine_run(void) {
         {
             fps++;
 
+            tl_renderer_frame_begin();
+
             TLNode* current = layers->head;
             while (current != NULL) {
                 const TLLayer* layer = current->payload;
@@ -131,9 +138,10 @@ TLAPI b8 tl_engine_run(void) {
                 layer->update_late();
                 current = current->next;
             }
+
+            tl_renderer_frame_end();
         }
 
-        tl_graphics_present();
         // ============================================
         // Frame finalization rotines
         // ============================================
@@ -158,6 +166,11 @@ TLAPI b8 tl_engine_run(void) {
 }
 
 TLAPI b8 tl_engine_terminate(void) {
+    if (!tl_renderer_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate renderer");
+        return false;
+    }
+
     if (!tl_graphics_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate graphics manager");
         return false;

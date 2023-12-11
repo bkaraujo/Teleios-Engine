@@ -275,6 +275,7 @@
     <ClInclude Include="src\teleios\memory.h" />
     <ClInclude Include="src\teleios\platform.h" />
     <ClInclude Include="src\teleios\platform_detector.h" />
+    <ClInclude Include="src\teleios\renderer.h" />
     <ClInclude Include="src\teleios\time.h" />
     <ClInclude Include="src\teleios\timer.h" />
     <ClInclude Include="src\teleios\string.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
     <ClCompile Include="src\teleios\platform_windows.c" />
+    <ClCompile Include="src\teleios\renderer.c" />
     <ClCompile Include="src\teleios\string.c" />
     <ClCompile Include="src\teleios\time.c" />
   </ItemGroup>
