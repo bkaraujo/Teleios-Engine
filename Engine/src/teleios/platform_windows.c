@@ -271,6 +271,7 @@ static b8 mouse_inside = false;
 static const char* prefix;
 
 b8 tl_platform_window_create(const TLSpecification* spec) {
+    TLTRACE("tl_platform_window_create: Creating application window");
     u32 window_width = spec->window.witdh;
     u32 window_height = spec->window.height;
 

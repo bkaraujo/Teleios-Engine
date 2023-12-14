@@ -52,6 +52,22 @@ typedef signed char         b8;
 
 #include "cglm/types-struct.h"
 
+typedef enum {
+    TL_FILE_TYPE_STRING,
+    TL_FILE_TYPE_U32
+} TLFileType;
+
+typedef struct {
+    const TLFileType type;
+    const u64 size;
+    const char* path;
+    union {
+        const void* raw;
+        const u32* u32;
+        const char* string;
+    } payload;
+} TLFile;
+
 typedef struct {
     u16 year;
     u8  month;

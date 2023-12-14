@@ -4,11 +4,6 @@
 #include "teleios/graphics.h"
 
 typedef struct {
-    u32 handler;
-} TLShader;
-
-typedef struct {
-    TLShader* shader;
     TLGraphics* graphics;
 } TLRenderable;
 

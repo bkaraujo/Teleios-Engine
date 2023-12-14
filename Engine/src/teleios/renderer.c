@@ -1,8 +1,7 @@
-#include "teleios/graphics.h"
-#include "teleios/renderer.h"
-
+#include "teleios/teleios.h"
 
 b8 tl_renderer_initialize(const TLSpecification* spec) {
+    TLTRACE("tl_renderer_initialize: Initializing Renderer");
     return true;
 }
 
@@ -10,7 +9,7 @@ void tl_renderer_frame_begin(void) {
     tl_graphics_clear();
 }
 
-void tl_renderer_submmit(TLRenderable* renderable) {
+TLAPI void tl_renderer_submmit(TLRenderable* renderable) {
 
 }
 

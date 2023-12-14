@@ -2,71 +2,26 @@
 #include <glad/glad.h>
 #include <teleios/teleios.h>
 
-unsigned int VAO = GL_NONE;
-unsigned int VBO = GL_NONE;
-unsigned int shaderProgram = GL_NONE;
+static unsigned int VAO = GL_NONE;
+static unsigned int VBO = GL_NONE;
+static TLGraphics* shader = NULL;
 
 static b8 editor_layer_initialize(void) {
     TLDEBUG("editor_layer_initialize: Initializing Editor World Layer");
 
-    {
-        unsigned int vertexShader = GL_NONE;
-        {
-            const TLFile* file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/vertex.glsl");
-            vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &file->payload.string, 0);
-            tl_filesystem_file_free(file);
+    TLShaderSource sources[2];
+    sources[0].type = TL_SHADER_TYPE_VERTEX;
+    sources[0].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/vertex.glsl");
+    sources[1].type = TL_SHADER_TYPE_FRAGMENT;
+    sources[1].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/fragment.glsl");
+    shader = tl_graphics_shader(sources, 2);
 
-            glCompileShader(vertexShader);
+    tl_filesystem_file_free(sources[0].file);
+    tl_filesystem_file_free(sources[1].file);
 
-            int  success;
-            char infoLog[512];
-            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-            if (!success) {
-                glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-                TLERROR("editor_layer_initialize: Failed to compile vertex shader: %s", infoLog);
-                return false;
-            }
-        }
-
-        unsigned int fragmentShader = GL_NONE;
-        {
-            const TLFile* file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/fragment.glsl");
-            vertexShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(vertexShader, 1, &file->payload.string, 0);
-            tl_filesystem_file_free(file);
-
-            glCompileShader(vertexShader);
-
-            int  success;
-            char infoLog[512];
-            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-            if (!success) {
-                glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-                TLERROR("editor_layer_initialize: Failed to compile fragment shader: %s", infoLog);
-                return false;
-            }
-        }
-
-        {
-            shaderProgram = glCreateProgram();
-
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-
-            int  success;
-            char infoLog[512];
-            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-            if (!success) {
-                glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-                TLERROR("editor_layer_initialize: Failed to compile shader program: %s", infoLog);
-                return false;
-            }
-        }
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+    if (shader == NULL) {
+        TLERROR("editor_layer_initialize: Failed to compile shader");
+        return false;
     }
 
     {
@@ -89,11 +44,13 @@ static b8 editor_layer_initialize(void) {
             glEnableVertexAttribArray(0);
         }
     }
+
     return true;
 }
 
 static b8 editor_layer_terminate(void) {
     TLDEBUG("editor_layer_terminate: Terminating Editor World Layer");
+    tl_graphics_primitive_destroy(shader);
     return true;
 }
 
@@ -106,7 +63,7 @@ static b8 editor_ayer_update_fixed(const u64 delta) {
 }
 
 static b8 editor_layer_update_late(void) {
-    glUseProgram(shaderProgram);
+    glUseProgram(shader->handler);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
