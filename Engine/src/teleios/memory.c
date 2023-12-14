@@ -61,6 +61,9 @@ static const char* tl_memory_type(TLEMemoryType type) {
     case TL_MEMORY_TYPE_GRAPHICS:       return "TL_MEMORY_TYPE_GRAPHICS      ";
     case TL_MEMORY_TYPE_STRING:         return "TL_MEMORY_TYPE_STRING        ";
     case TL_MEMORY_TYPE_FILE:           return "TL_MEMORY_TYPE_FILE          ";
+    case TL_MEMORY_TYPE_FILE_CONTENT:   return "TL_MEMORY_TYPE_FILE_CONTENT  ";
+    case TL_MEMORY_TYPE_ENVIRONMENT:    return "TL_MEMORY_TYPE_ENVIRONMENT   ";
+    case TL_MEMORY_TYPE_UNSIGNED:       return "TL_MEMORY_TYPE_UNSIGNED      ";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";
     }
 

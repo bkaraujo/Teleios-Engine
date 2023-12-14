@@ -152,12 +152,11 @@ static const TLFile* tl_filesystem_file_read(const char* path, const TLFileType 
 
 
     switch (file->type) {
-    case TL_FILE_TYPE_U32: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_UNSIGNED, file->size); break;
-    case TL_FILE_TYPE_STRING: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_STRING, file->size + 1); break;
+    case TL_FILE_TYPE_U32: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_FILE_CONTENT, file->size); break;
+    case TL_FILE_TYPE_STRING: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_FILE_CONTENT, file->size + 1); break;
     }
 
     DWORD read = 0;
-
     if (!ReadFile(handle, (LPVOID)file->payload.raw, (DWORD)(file->size), &read, NULL)) { tl_filesystem_file_error(handle, file); return NULL; }
     if (read != file->size) { TLWARN("tl_filesystem_file_read: Expected %llu bytes but got %llu from \"%s\"", file->size, read, file->path); }
     if (file->type == TL_FILE_TYPE_STRING) { *((u64*)&file->size) = file_size + 1; }
@@ -177,13 +176,7 @@ TLAPI const TLFile* tl_filesystem_file_tou32(const char* path) {
 TLAPI void tl_filesystem_file_free(const TLFile* file) {
     if (file == NULL) return;
 
-    TLEMemoryType type;
-    switch (file->type) {
-    case TL_FILE_TYPE_U32: type = TL_MEMORY_TYPE_UNSIGNED; break;
-    case TL_FILE_TYPE_STRING: type = TL_FILE_TYPE_STRING; break;
-    }
-
-    tl_memory_free(file->payload.raw, TL_FILE_TYPE_STRING, file->size);
+    tl_memory_free(file->payload.raw, TL_MEMORY_TYPE_FILE_CONTENT, file->size);
     tl_memory_free(file->path, TL_MEMORY_TYPE_STRING, tl_string_length(file->path));
     tl_memory_free(file, TL_MEMORY_TYPE_FILE, sizeof(TLFile));
 }
