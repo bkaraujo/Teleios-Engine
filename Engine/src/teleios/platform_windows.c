@@ -120,83 +120,72 @@ const u64 tl_filesyste_file_size(const char* path) {
     return 0;
 }
 
-const char* tl_filesystem_file_tochar(const char* path) {
-    HANDLE file = CreateFile(path,
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-
-    if (file == INVALID_HANDLE_VALUE) {
-        TLERROR("tl_filesystem_file_load: Unable to open \"%s\".", path);
-        return NULL;
+static void tl_filesystem_file_error(HANDLE handle, const TLFile* file) {
+    TLERROR("tl_filesystem_file_read: Failed to read \"%s\".", file->path);
+    if (!CloseHandle(handle)) {
+        TLERROR("tl_filesystem_file_read: Failed to close file.");
     }
 
-    u64 file_size = tl_filesyste_file_size(path);
-    if (file_size == 0) {
-        CloseHandle(file);
-        TLERROR("tl_filesystem_file_load: Failed to read \"%s\" size.", path);
-        return NULL;
-    }
-    // Using tl_memory_alloc instead of platform_alloc for better memory tracking
-    char* payload = tl_memory_alloc(TL_MEMORY_TYPE_FILE, file_size + 1);
-
-    DWORD read = 0;
-    if (ReadFile(file, payload, (DWORD)(file_size), &read, NULL) == FALSE) {
-        CloseHandle(file);
-        tl_platform_memory_free(payload);
-        TLERROR("tl_filesystem_file_load: Failed to read \"%s\".", path);
-        return NULL;
-    }
-
-    if (read != file_size) {
-        TLWARN("tl_filesystem_file_load: Expected %llu bytes but got %llu from \"%s\"", file_size, read, path);
-    }
-
-    CloseHandle(file);
-    payload[file_size + 1] = '\0';
-    return payload;
+    tl_filesystem_file_free(file);
 }
 
-const u32* tl_filesystem_file_tou32(const char* path) {
-    HANDLE file = CreateFile(path,
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-
-    if (file == INVALID_HANDLE_VALUE) {
-        TLERROR("tl_filesystem_file_load: Unable to open \"%s\".", path);
-        return NULL;
-    }
+static const TLFile* tl_filesystem_file_read(const char* path, const TLFileType type) {
+    TLTRACE("tl_filesystem_file_read: %s", path);
 
     u64 file_size = tl_filesyste_file_size(path);
     if (file_size == 0) {
-        CloseHandle(file);
-        TLERROR("tl_filesystem_file_load: Failed to read \"%s\" size.", path);
+        TLERROR("tl_filesystem_file_read: Failed to read \"%s\" size.", path);
         return NULL;
     }
-    // Using tl_memory_alloc instead of platform_alloc for better memory tracking
-    u32* payload = tl_memory_alloc(TL_MEMORY_TYPE_FILE, file_size);
+
+    HANDLE handle = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (handle == INVALID_HANDLE_VALUE) {
+        TLERROR("tl_filesystem_file_read: Unable to open \"%s\".", path);
+        return NULL;
+    }
+
+    TLFile* file = tl_memory_alloc(TL_MEMORY_TYPE_FILE, sizeof(TLFile));
+    *((TLFileType*)&file->type) = type;
+    file->path = tl_memory_alloc(TL_MEMORY_TYPE_STRING, tl_string_length(path));
+    tl_memory_copy(path, file->path, tl_string_length(path));
+    *((u64*)&file->size) = file_size;
+
+
+    switch (file->type) {
+    case TL_FILE_TYPE_U32: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_UNSIGNED, file->size); break;
+    case TL_FILE_TYPE_STRING: file->payload.raw = tl_memory_alloc(TL_MEMORY_TYPE_STRING, file->size + 1); break;
+    }
 
     DWORD read = 0;
-    if (ReadFile(file, payload, (DWORD)(file_size), &read, NULL) == FALSE) {
-        CloseHandle(file);
-        tl_platform_memory_free(payload);
-        TLERROR("tl_filesystem_file_load: Failed to read \"%s\".", path);
-        return NULL;
+
+    if (!ReadFile(handle, (LPVOID)file->payload.raw, (DWORD)(file->size), &read, NULL)) { tl_filesystem_file_error(handle, file); return NULL; }
+    if (read != file->size) { TLWARN("tl_filesystem_file_read: Expected %llu bytes but got %llu from \"%s\"", file->size, read, file->path); }
+    if (file->type == TL_FILE_TYPE_STRING) { *((u64*)&file->size) = file_size + 1; }
+
+    CloseHandle(handle);
+    return file;
+}
+
+TLAPI const TLFile* tl_filesystem_file_tochar(const char* path) {
+    return tl_filesystem_file_read(path, TL_FILE_TYPE_STRING);
+}
+
+TLAPI const TLFile* tl_filesystem_file_tou32(const char* path) {
+    return tl_filesystem_file_read(path, TL_FILE_TYPE_U32);
+}
+
+TLAPI void tl_filesystem_file_free(const TLFile* file) {
+    if (file == NULL) return;
+
+    TLEMemoryType type;
+    switch (file->type) {
+    case TL_FILE_TYPE_U32: type = TL_MEMORY_TYPE_UNSIGNED; break;
+    case TL_FILE_TYPE_STRING: type = TL_FILE_TYPE_STRING; break;
     }
 
-    if (read != file_size) {
-        TLWARN("tl_filesystem_file_load: Expected %llu bytes but got %llu from \"%s\"", file_size, read, path);
-    }
-
-    CloseHandle(file);
-    return payload;
+    tl_memory_free(file->payload.raw, TL_FILE_TYPE_STRING, file->size);
+    tl_memory_free(file->path, TL_MEMORY_TYPE_STRING, tl_string_length(file->path));
+    tl_memory_free(file, TL_MEMORY_TYPE_FILE, sizeof(TLFile));
 }
 
 // ##############################################################################################
@@ -352,7 +341,7 @@ void tl_platform_window_set_title(const char* title, ...) {
     va_end(parameters);
 
     tl_platform_memory_set(formated, 0, 80);
-    sprintf_s(formated, 100, "%s (%s)", prefix, intermediate);
+    sprintf_s(formated, 100, "%s %s", prefix, intermediate);
     SetWindowText(hwnd, formated);
 }
 
