@@ -11,9 +11,8 @@ void tl_graphics_present(void);
 
 
 typedef enum {
-    TL_GRAPHICS_PRIMITIVE_MESH,
-
-    TL_GRAPHICS_PRIMITIVE_SHADER
+    TL_GRAPHICS_PRIMITIVE_SHADER,
+    TL_GRAPHICS_PRIMITIVE_GEOMETRY
 } TLGraphcisType;
 
 typedef struct {
@@ -22,13 +21,14 @@ typedef struct {
 } TLShader;
 
 typedef struct {
-    b8(*bind)(void);
-    b8(*unbind)(void);
+    u32 vbo;
+    u32 ebo;
+    u32 indices;
 } TLGraphicsBuffer;
 
 typedef struct {
     TLGraphcisType type;
-    u32 handler;
+    u32 handle;
 
     // Polimorphic contet based on 'type'
     union {
@@ -52,5 +52,30 @@ typedef struct {
 } TLShaderSource;
 
 TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 count);
+
+typedef enum {
+    TL_BUFFER_LAYOUT_TYPE_U8,
+    TL_BUFFER_LAYOUT_TYPE_U16,
+    TL_BUFFER_LAYOUT_TYPE_U32,
+    TL_BUFFER_LAYOUT_TYPE_I8,
+    TL_BUFFER_LAYOUT_TYPE_I16,
+    TL_BUFFER_LAYOUT_TYPE_I32,
+    TL_BUFFER_LAYOUT_TYPE_F32,
+    TL_BUFFER_LAYOUT_TYPE_F64
+} TLBufferLayoutType;
+
+typedef struct {
+    u8 components;
+    const char* name;
+    TLBufferLayoutType type;
+} TLBufferLayout;
+
+typedef struct {
+    u32 vsize; f32* vertices;
+    u32 isize; u32* indices;
+    u32 lsize; TLBufferLayout* layout;
+} TLGraphicsGeometry;
+
+TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry);
 
 #endif // TELEIOS_GRAPHICS_H

@@ -5,17 +5,110 @@
 
 #include "teleios/teleios.h"
 #include "teleios/eventcodes.h"
-#include "teleios/graphics.h"
 #include "teleios/platform.h"
 
 #include "glad/glad.h" // must be after Windows.h
 #include "glad/wgl.h"  // must be after Windows.h
+
+
+#define SUBSCRIBE(event,callback)                                       \
+    if (!tl_event_subscribe(event, callback)) {                         \
+        TLERROR("tl_graphics_initialize: Failed to tl_event_subscribe");\
+        return false;                                                   \
+    }
 
 #ifdef TELEIOS_PLATFORM_WINDOWS
 #include <GL/GL.h> // must be after glad.h
 static HDC device;
 static HGLRC context;
 #endif
+
+static u32 tl_graphics_layouttype(TLBufferLayoutType type) {
+    switch (type) {
+    case TL_BUFFER_LAYOUT_TYPE_U8: return GL_UNSIGNED_BYTE;
+    case TL_BUFFER_LAYOUT_TYPE_U16: return GL_UNSIGNED_SHORT;
+    case TL_BUFFER_LAYOUT_TYPE_U32: return GL_UNSIGNED_INT;
+    case TL_BUFFER_LAYOUT_TYPE_I8: return GL_BYTE;
+    case TL_BUFFER_LAYOUT_TYPE_I16: return GL_SHORT;
+    case TL_BUFFER_LAYOUT_TYPE_I32: return GL_INT;
+    case TL_BUFFER_LAYOUT_TYPE_F32: return GL_FLOAT;
+    case TL_BUFFER_LAYOUT_TYPE_F64: return GL_DOUBLE;
+    }
+
+    return GL_NONE;
+}
+
+static u32 tl_graphics_layoutsize(TLBufferLayoutType type) {
+    switch (type) {
+    case TL_BUFFER_LAYOUT_TYPE_U8: return sizeof(u8);
+    case TL_BUFFER_LAYOUT_TYPE_U16: return sizeof(u16);
+    case TL_BUFFER_LAYOUT_TYPE_U32: return sizeof(u32);
+    case TL_BUFFER_LAYOUT_TYPE_I8: return sizeof(i8);
+    case TL_BUFFER_LAYOUT_TYPE_I16: return sizeof(i16);
+    case TL_BUFFER_LAYOUT_TYPE_I32: return sizeof(i32);
+    case TL_BUFFER_LAYOUT_TYPE_F32: return sizeof(f32);
+    case TL_BUFFER_LAYOUT_TYPE_F64: return sizeof(f64);
+    }
+
+    return 0;
+}
+
+TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry) {
+    // ######################################
+    // Backup the currently bound VAO
+    // ######################################
+    u32 vao = GL_NONE; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+
+    // ######################################
+    // Create the new VAO
+    // ######################################
+    TLGraphics* object = tl_graphics_primitive_create(TL_GRAPHICS_PRIMITIVE_SHADER);
+    object->type = TL_GRAPHICS_PRIMITIVE_GEOMETRY;
+    glGenVertexArrays(1, &object->handle);
+    glBindVertexArray(object->handle);
+    TLTRACE("tl_graphics_geometry: Creating VAO %u", object->handle);
+    // ######################################
+    // Create the VBO
+    // ######################################
+    glGenBuffers(1, &object->object.buffer.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, object->object.buffer.vbo);
+    glBufferData(GL_ARRAY_BUFFER, geometry->vsize * sizeof(f32), geometry->vertices, GL_STATIC_DRAW);
+
+    u32 stride = 0;
+    for (unsigned i = 0; i < geometry->lsize; ++i) {
+        TLBufferLayout layout = geometry->layout[i];
+        stride += layout.components * tl_graphics_layoutsize(layout.type);
+    }
+
+    u32 offset = 0;
+    for (unsigned i = 0; i < geometry->lsize; ++i) {
+        TLBufferLayout layout = geometry->layout[i];
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(
+            i,                                      // index
+            layout.components,                      // size
+            tl_graphics_layouttype(layout.type),    // type
+            GL_FALSE,                               // normalize
+            stride,                                 // stride
+            (const void*)offset                    // offset
+        );
+
+        offset += layout.components * tl_graphics_layoutsize(layout.type);
+    }
+    // ######################################
+    // Create the EBO
+    // ######################################
+    glGenBuffers(1, &object->object.buffer.ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->object.buffer.ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry->isize * sizeof(u32), geometry->indices, GL_STATIC_DRAW);
+
+    object->object.buffer.indices = geometry->isize;
+    // ######################################
+    // Restore the previously binded VAO
+    // ######################################
+    glBindVertexArray(vao);
+    return object;
+}
 
 TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 count) {
     if (count == 0) {
@@ -24,7 +117,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
     }
 
     TLGraphics* program = tl_graphics_primitive_create(TL_GRAPHICS_PRIMITIVE_SHADER);
-    program->handler = glCreateProgram();
+    program->handle = glCreateProgram();
 
     int  success;
     char infoLog[512];
@@ -65,16 +158,16 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
             return NULL;
         }
 
-        glAttachShader(program->handler, handle);
+        glAttachShader(program->handle, handle);
     }
 
     {
-        glLinkProgram(program->handler);
-        glGetProgramiv(program->handler, GL_LINK_STATUS, &success);
+        glLinkProgram(program->handle);
+        glGetProgramiv(program->handle, GL_LINK_STATUS, &success);
 
         if (!success) {
             tl_memory_zero(infoLog, 512);
-            glGetProgramInfoLog(program->handler, 512, NULL, infoLog);
+            glGetProgramInfoLog(program->handle, 512, NULL, infoLog);
             TLERROR("editor_layer_initialize: Failed to compile shader program: %s", infoLog);
 
             // Delete all create shaders
@@ -108,17 +201,25 @@ TLAPI TLGraphics* tl_graphics_primitive_create(const TLGraphcisType type) {
 
 TLAPI void tl_graphics_primitive_destroy(TLGraphics* primitive) {
     if (primitive->type == TL_GRAPHICS_PRIMITIVE_SHADER) {
-        glDeleteProgram(primitive->handler);
+        TLTRACE("tl_graphics_primitive_destroy: Destroying Shader %u", primitive->handle);
+        glDeleteProgram(primitive->handle);
+        primitive->handle = GL_NONE;
+    }
+
+    if (primitive->type == TL_GRAPHICS_PRIMITIVE_GEOMETRY) {
+        TLTRACE("tl_graphics_primitive_destroy: Destroying VAO %u", primitive->handle);
+        glDeleteBuffers(1, &primitive->object.buffer.vbo);
+        primitive->object.buffer.vbo = GL_NONE;
+
+        glDeleteBuffers(1, &primitive->object.buffer.ebo);
+        primitive->object.buffer.ebo = GL_NONE;
+
+        glDeleteVertexArrays(1, &primitive->handle);
+        primitive->handle = GL_NONE;
     }
 
     tl_memory_free(primitive, TL_MEMORY_TYPE_GRAPHICS, sizeof(TLGraphics));
 }
-
-#define SUBSCRIBE(event,callback)                                       \
-    if (!tl_event_subscribe(event, callback)) {                         \
-        TLERROR("tl_graphics_initialize: Failed to tl_event_subscribe");\
-        return false;                                                   \
-    }
 
 static TLEventStatus tl_graphics_resize(const u8 code, const TLEvent* event) {
     ivec2s size = { 0 };

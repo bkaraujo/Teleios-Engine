@@ -2,8 +2,7 @@
 #include <glad/glad.h>
 #include <teleios/teleios.h>
 
-static unsigned int VAO = GL_NONE;
-static unsigned int VBO = GL_NONE;
+static TLGraphics* geometry = NULL;
 static TLGraphics* shader = NULL;
 
 static b8 editor_layer_initialize(void) {
@@ -24,33 +23,44 @@ static b8 editor_layer_initialize(void) {
         return false;
     }
 
-    {
-        {
-            glGenVertexArrays(1, &VAO);
-            glBindVertexArray(VAO);
-        }
+    TLGraphicsGeometry create_info = { 0 };
+    create_info.vsize = 4 * (3 + 4);
+    float vertices[] = {
+        // Position , color
+         0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,    // top right
+         0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom right
+        -0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom left
+        -0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f     // top left 
+    };
+    create_info.vertices = vertices;
 
-        {
-            f32 vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.0f,  0.5f, 0.0f
-            };
+    create_info.isize = 2 * 3;
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };
+    create_info.indices = indices;
 
-            glGenBuffers(1, &VBO);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-        }
-    }
+    TLBufferLayout layout[2];
+    layout[0].name = "aPos";
+    layout[0].components = 3;
+    layout[0].type = TL_BUFFER_LAYOUT_TYPE_F32;
 
+    layout[1].name = "aColor";
+    layout[1].components = 4;
+    layout[1].type = TL_BUFFER_LAYOUT_TYPE_F32;
+
+    create_info.lsize = 2;
+    create_info.layout = &layout;
+
+    geometry = tl_graphics_geometry(&create_info);
     return true;
 }
 
 static b8 editor_layer_terminate(void) {
     TLDEBUG("editor_layer_terminate: Terminating Editor World Layer");
     tl_graphics_primitive_destroy(shader);
+    tl_graphics_primitive_destroy(geometry);
     return true;
 }
 
@@ -63,9 +73,9 @@ static b8 editor_ayer_update_fixed(const u64 delta) {
 }
 
 static b8 editor_layer_update_late(void) {
-    glUseProgram(shader->handler);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glUseProgram(shader->handle);
+    glBindVertexArray(geometry->handle);
+    glDrawElements(GL_TRIANGLES, geometry->object.buffer.indices, GL_UNSIGNED_INT, 0);
 
     return true;
 }

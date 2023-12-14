@@ -1,6 +1,6 @@
 #include "editor/layer_debug.h"
+#include <glad/glad.h>
 #include <teleios/teleios.h>
-
 
 static b8 editor_layer_initialize(void) {
     TLDEBUG("editor_layer_initialize: Initializing Editor Debug Layer");
@@ -20,9 +20,18 @@ static b8 editor_ayer_update_fixed(const u64 delta) {
     return true;
 }
 
+static b8 line = false;
 static b8 editor_layer_update_late(void) {
+
     if (tl_input_key_released(TL_KEY_ESCAPE)) {
         tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
+    }
+
+    if (tl_input_key_released(TL_KEY_F12)) {
+        line = !line;
+
+        if (line)   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     return true;
