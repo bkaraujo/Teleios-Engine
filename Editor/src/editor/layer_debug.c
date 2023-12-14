@@ -1,15 +1,32 @@
 #include "editor/layer_debug.h"
-#include <teleios/engine.h>
-#include <teleios/event.h>
-#include <teleios/input.h>
-#include <teleios/logger.h>
-#include <teleios/memory.h>
+#include <teleios/teleios.h>
 
-static b8 editor_layer_initialize(void);
-static b8 editor_layer_terminate(void);
-static b8 editor_layer_update(const u64 delta);
-static b8 editor_ayer_update_fixed(const u64 delta);
-static b8 editor_layer_update_late(void);
+
+static b8 editor_layer_initialize(void) {
+    TLDEBUG("editor_layer_initialize: Initializing Editor Debug Layer");
+    return true;
+}
+
+static b8 editor_layer_terminate(void) {
+    TLDEBUG("editor_layer_terminate: Terminating Editor Debug Layer");
+    return true;
+}
+
+static b8 editor_layer_update(const u64 delta) {
+    return true;
+}
+
+static b8 editor_ayer_update_fixed(const u64 delta) {
+    return true;
+}
+
+static b8 editor_layer_update_late(void) {
+    if (tl_input_key_released(TL_KEY_ESCAPE)) {
+        tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
+    }
+
+    return true;
+}
 
 static TLLayer* layer;
 const TLLayer* editor_layer_debug_get(void) {
@@ -34,32 +51,6 @@ b8 editor_layer_debug_initialize(void) {
     if (!tl_engine_layer_append(editor_layer_debug_get())) {
         TLERROR("editor_layer_debug_initialize: Engine refused to append layer");
         return false;
-    }
-
-    return true;
-}
-
-static b8 editor_layer_initialize(void) {
-    TLDEBUG("editor_layer_initialize: Initializing Editor Debug Layer");
-    return true;
-}
-
-static b8 editor_layer_terminate(void) {
-    TLDEBUG("editor_layer_terminate: Terminating Editor Debug Layer");
-    return true;
-}
-
-static b8 editor_layer_update(const u64 delta) {
-    return true;
-}
-
-static b8 editor_ayer_update_fixed(const u64 delta) {
-    return true;
-}
-
-static b8 editor_layer_update_late() {
-    if (tl_input_key_released(TL_KEY_ESCAPE)) {
-        tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
     }
 
     return true;

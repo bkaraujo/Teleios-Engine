@@ -82,13 +82,15 @@
   <ItemGroup>
     <ClCompile Include="src\editor.c" />
     <ClCompile Include="src\editor\layer_debug.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Shader\shader.frag" />
-    <None Include="Assets\Shader\shader.vert" />
+    <ClCompile Include="src\editor\layer_world.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\editor\layer_debug.h" />
+    <ClInclude Include="src\editor\layer_world.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shader\fragment.glsl" />
+    <None Include="Assets\Shader\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

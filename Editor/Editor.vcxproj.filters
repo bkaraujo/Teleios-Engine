@@ -21,14 +21,20 @@
     <ClCompile Include="src\editor\layer_debug.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Shader\shader.vert" />
-    <None Include="Assets\Shader\shader.frag" />
+    <ClCompile Include="src\editor\layer_world.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\editor\layer_debug.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\editor\layer_world.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shader\vertex.glsl" />
+    <None Include="Assets\Shader\fragment.glsl" />
   </ItemGroup>
 </Project>

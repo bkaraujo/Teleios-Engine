@@ -1,10 +1,12 @@
 #include "teleios/container.h"
 #include "teleios/engine.h"
+#include "teleios/environment.h"
 #include "teleios/event.h"
 #include "teleios/eventcodes.h"
 #include "teleios/graphics.h"
 #include "teleios/identity.h"
 #include "teleios/input.h"
+#include "teleios/layerstack.h"
 #include "teleios/logger.h"
 #include "teleios/memory.h"
 #include "teleios/platform.h"
@@ -13,6 +15,8 @@
 #include "teleios/timer.h"
 
 static b8 running = true;
+static b8 paused = false;
+
 static u64 STEP = 0;
 static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
 static TLList* layers;
@@ -25,6 +29,11 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 
     if (!tl_memory_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
+        return false;
+    }
+
+    if (!tl_environment_initialize()) {
+        TLERROR("tl_engine_pre_initialize: Failed to initialize environment manager");
         return false;
     }
 
@@ -93,53 +102,61 @@ TLAPI b8 tl_engine_run(void) {
         const u64 time_delta = time_start - time_last;
         time_last = time_start;
 
-        // ============================================
-        // Fixed time step processing
-        // ============================================
-        {
-            // Compute needed fixed time steps
-            u8 step = 0;
-            accumulator += time_delta;
-            while (accumulator > STEP) {
-                step++;
-                accumulator -= STEP;
+        if (!paused) {
+            // ============================================
+            // Fixed time step processing
+            // ============================================
+            {
+                // Compute needed fixed time steps
+                u8 step = 0;
+                accumulator += time_delta;
+                while (accumulator > STEP) {
+                    step++;
+                    accumulator -= STEP;
+                }
+
+                // Ferform the actual steps
+                for (unsigned i = 0; i < step; ++i) {
+                    ups++;
+                    TLNode* current = layers->head;
+                    while (current != NULL) {
+                        const TLLayer* layer = current->payload;
+                        layer->update_fixed(STEP);
+                        current = current->next;
+                    }
+                }
             }
 
-            // Ferform the actual steps
-            for (unsigned i = 0; i < step; ++i) {
-                ups++;
+            // ============================================
+            // Variable time step processing
+            // ============================================
+            {
+                fps++;
+
+                tl_renderer_frame_begin();
+
                 TLNode* current = layers->head;
                 while (current != NULL) {
                     const TLLayer* layer = current->payload;
-                    layer->update_fixed(STEP);
+                    layer->update(time_delta);
                     current = current->next;
                 }
+
+                current = layers->head;
+                while (current != NULL) {
+                    const TLLayer* layer = current->payload;
+                    layer->update_late();
+                    current = current->next;
+                }
+
+                tl_renderer_frame_end();
             }
         }
 
-        // ============================================
-        // Variable time step processing
-        // ============================================
-        {
-            fps++;
-
-            tl_renderer_frame_begin();
-
-            TLNode* current = layers->head;
-            while (current != NULL) {
-                const TLLayer* layer = current->payload;
-                layer->update(time_delta);
-                current = current->next;
-            }
-
-            current = layers->head;
-            while (current != NULL) {
-                const TLLayer* layer = current->payload;
-                layer->update_late();
-                current = current->next;
-            }
-
-            tl_renderer_frame_end();
+        if (tl_input_key_released(TL_KEY_PAUSE)) {
+            paused = !paused;
+            if (paused) tl_platform_window_set_title("PAUSED");
+            else tl_platform_window_set_title("FPS: ?? UPS: ??");
         }
 
         // ============================================
@@ -154,6 +171,8 @@ TLAPI b8 tl_engine_run(void) {
         // ============================================
         if (tl_timer_seconds(&timer) >= SECOND) {
             TLDEBUG("FPS: %llu UPS: %llu", fps, ups);
+            if (!paused)
+                tl_platform_window_set_title("FPS: %llu UPS: %llu", fps, ups);
 
             fps = ups = 0;
             tl_timer_reset(&timer);
@@ -196,6 +215,11 @@ TLAPI b8 tl_engine_terminate(void) {
         return false;
     }
 
+    if (!tl_environment_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate environment manager");
+
+    }
+
     if (!tl_memory_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate the memory manager");
         return false;
@@ -210,8 +234,10 @@ TLAPI b8 tl_engine_terminate(void) {
 }
 
 static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event) {
-    if (code == TL_EVENT_APPLICATION_QUIT) {
-        running = false;
+    switch (code) {
+    case TL_EVENT_APPLICATION_QUIT: running = false; break;
+    case TL_EVENT_WINDOW_MINIMIZED: paused = true; break;
+    case TL_EVENT_WINDOW_RESTORED: paused = false; break;
     }
 
     return TL_EVENT_STATUS_CONTUNE;
