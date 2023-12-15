@@ -180,7 +180,134 @@ TLAPI void tl_filesystem_file_free(const TLFile* file) {
     tl_memory_free(file->path, TL_MEMORY_TYPE_STRING, tl_string_length(file->path));
     tl_memory_free(file, TL_MEMORY_TYPE_FILE, sizeof(TLFile));
 }
+// ##############################################################################################
+//
+//                                        THREAD
+//
+// ##############################################################################################
+#include "teleios/thread.h"
 
+u64 tl_thread_current_id(void) {
+    return (u64)GetCurrentThreadId();
+}
+
+void tl_thread_current_sleep(u64 millis) {
+    Sleep(millis);
+}
+
+TLThread* tl_thread_create(b8 detach, const void* funtion, const void* parameters) {
+
+    DWORD id = 0;
+    HANDLE handle = CreateThread(NULL, CREATE_SUSPENDED, (LPTHREAD_START_ROUTINE)funtion, parameters, 0, (DWORD*)&id);
+    if (handle == 0) {
+        TLERROR("tl_thread_create: Failed with 0x%x", GetLastError());
+        return NULL;
+    }
+
+    if (detach) {
+        ResumeThread(handle);
+        CloseHandle(handle);
+        return NULL;
+    }
+
+    TLThread* thread = tl_memory_alloc(TL_MEMORY_TYPE_THREAD, sizeof(TLThread));
+    if (thread == NULL) {
+        TLERROR("tl_thread_create: Failed to allocate thread");
+        TerminateThread(handle, 0);
+        CloseHandle(handle);
+        return NULL;
+    }
+
+    thread->id = id;
+    thread->handle = handle;
+    thread->running = true;
+    thread->suspended = false;
+
+    ResumeThread(thread->handle);
+    return thread;
+}
+
+b8 tl_thread_destroy(TLThread* thread) {
+    if (thread == NULL) {
+        TLWARN("tl_thread_destroy: Thread or handle is NULL");
+        return false;
+    }
+
+    DWORD exit_code; GetExitCodeThread(thread->handle, &exit_code);
+    CloseHandle(thread->handle);
+    tl_memory_free(thread, TL_MEMORY_TYPE_THREAD, sizeof(TLThread));
+
+    return true;
+}
+
+b8 tl_thread_detach(TLThread* thread) {
+    if (thread == NULL) {
+        TLWARN("tl_thread_detach: Thread or handle is NULL");
+        return false;
+    }
+
+    CloseHandle(thread->handle);
+    tl_memory_free(thread, TL_MEMORY_TYPE_THREAD, sizeof(TLThread));
+
+    return true;
+}
+
+b8 tl_thread_wait(TLThread* thread) {
+    if (thread == NULL) {
+        TLWARN("tl_thread_wait: Thread is NULL or it is detached");
+        return false;
+    }
+
+    switch (WaitForSingleObject(thread->handle, INFINITE)) {
+    case WAIT_OBJECT_0: return true;
+    case WAIT_ABANDONED: return false;
+    }
+
+    return true;
+}
+
+// ##############################################################################################
+//
+//                                        MUTEX
+//
+// ##############################################################################################
+#include "teleios/mutex.h"
+
+void* tl_mutex_create(void) {
+    return CreateMutex(0, 0, 0);
+}
+
+b8 tl_mutex_lock(void* mutex) {
+    if (mutex == NULL) {
+        TLERROR("tl_mutex_lock: Mutex is NULL");
+        return false;
+    }
+
+    switch (WaitForSingleObject(mutex, INFINITE)) {
+    case WAIT_OBJECT_0: return true;
+    case WAIT_ABANDONED: return false;
+    }
+
+    return true;
+}
+
+b8 tl_mutex_unlock(void* mutex) {
+    if (mutex == NULL) {
+        TLERROR("tl_mutex_unlock: Mutex is NULL");
+        return false;
+    }
+
+    return ReleaseMutex(mutex) != 0;
+}
+
+void tl_mutex_destroy(void* mutex) {
+    if (mutex == NULL) {
+        TLWARN("tl_mutex_destroy: Mutex is NULL");
+        return;
+    }
+
+    CloseHandle(mutex);
+}
 // ##############################################################################################
 //
 //                                        TIME
