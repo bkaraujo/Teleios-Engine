@@ -30,6 +30,8 @@ static b8 tl_layer_comparator(const void* first, const void* second);
 // ####################################################################
 
 TLAPI b8 tl_engine_pre_initialize(void) {
+    if (!tl_logger_initialize()) return false;
+
     if (!tl_platform_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
         return false;
@@ -238,7 +240,7 @@ TLAPI b8 tl_engine_terminate(void) {
         return false;
     }
 
-    return true;
+    return tl_logger_terminate();
 }
 
 TLAPI b8 tl_engine_layer_append(const TLLayer* layer) {
