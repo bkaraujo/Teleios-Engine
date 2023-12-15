@@ -11,9 +11,13 @@ struct TLRegistry {
 
 static struct TLRegistry registry = { 0 };
 
-b8 tl_memory_initialize(void) {
-    return true;
-}
+static const char* tl_memory_type(TLEMemoryType type);
+
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
 
 TLAPI void* tl_memory_alloc(TLEMemoryType type, u64 size) {
     void* block = tl_platform_memory_alloc(size);
@@ -47,6 +51,31 @@ TLAPI void tl_memory_copy(const void* source, const void* target, u64 size) {
     tl_platform_memory_copy(source, target, size);
 }
 
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
+
+b8 tl_memory_initialize(void) {
+    return true;
+}
+
+b8 tl_memory_terminate(void) {
+    if (registry.allocated == 0) return true;
+
+    for (unsigned i = 0; i < TL_MEMORY_TYPE_MAXIMUM; ++i)
+        if (registry.pool[i] > 0)
+            TLERROR("tl_memory_terminate: Leak %s - %u bytes", tl_memory_type(i), registry.pool[i]);
+
+    return false;
+}
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
 static const char* tl_memory_type(TLEMemoryType type) {
     switch (type) {
     case TL_MEMORY_TYPE_IDENTITY:       return "TL_MEMORY_TYPE_IDENTITY      ";
@@ -64,18 +93,9 @@ static const char* tl_memory_type(TLEMemoryType type) {
     case TL_MEMORY_TYPE_FILE_CONTENT:   return "TL_MEMORY_TYPE_FILE_CONTENT  ";
     case TL_MEMORY_TYPE_ENVIRONMENT:    return "TL_MEMORY_TYPE_ENVIRONMENT   ";
     case TL_MEMORY_TYPE_UNSIGNED:       return "TL_MEMORY_TYPE_UNSIGNED      ";
+    case TL_MEMORY_TYPE_RENDERER:       return "TL_MEMORY_TYPE_RENDERER      ";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";
     }
 
     return "TL_MEMORY_TYPE_ ???";
-}
-
-b8 tl_memory_terminate(void) {
-    if (registry.allocated == 0) return true;
-
-    for (unsigned i = 0; i < TL_MEMORY_TYPE_MAXIMUM; ++i)
-        if (registry.pool[i] > 0)
-            TLERROR("tl_memory_terminate: Leak %s - %u bytes", tl_memory_type(i), registry.pool[i]);
-
-    return false;
 }

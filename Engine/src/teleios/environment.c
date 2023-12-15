@@ -10,6 +10,20 @@ typedef struct {
 
 static TLList* environment;
 
+static b8 tl_environment_dealocator(const void* payload);
+
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
+
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
+
 b8 tl_environment_initialize(void) {
     environment = tl_list_create();
     if (environment == NULL) {
@@ -67,11 +81,6 @@ const void* tl_environment_get(const TLEnvironmentVariables key) {
     return NULL;
 }
 
-static b8 tl_environment_dealocator(const void* payload) {
-    tl_memory_free(payload, TL_MEMORY_TYPE_ENVIRONMENT, sizeof(TLEntry));
-    return true;
-}
-
 b8 tl_environment_terminate(void) {
     if (environment != NULL) {
         if (!tl_list_clear(environment, tl_environment_dealocator)) {
@@ -86,5 +95,16 @@ b8 tl_environment_terminate(void) {
 
         environment = NULL;
     }
+    return true;
+}
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static b8 tl_environment_dealocator(const void* payload) {
+    tl_memory_free(payload, TL_MEMORY_TYPE_ENVIRONMENT, sizeof(TLEntry));
     return true;
 }

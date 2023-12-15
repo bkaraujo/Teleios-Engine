@@ -5,6 +5,14 @@
 static const LSIZE = sizeof(TLList);
 static const NSIZE = sizeof(TLNode);
 
+static b8 tl_list_address_comparator(const void* first, const void* second);
+
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
+
 TLAPI b8 tl_container_noop_dealocator(const void* pointer) {
     return true;
 }
@@ -240,10 +248,6 @@ TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*
     return false;
 }
 
-static b8 tl_list_address_comparator(const void* first, const void* second) {
-    return first == second;
-}
-
 TLAPI b8 tl_list_remove_payload(TLList* list, const void* payload) {
     return tl_list_remove(list, tl_list_address_comparator, payload) != NULL;
 }
@@ -270,6 +274,30 @@ TLAPI b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload)) {
         current = current->next;
     }
 
+    return true;
+}
+
+TLAPI b8 tl_list_remove_all(TLList* list) {
+    if (list == NULL) {
+        TLERROR("tl_list_clear: list is null");
+        return false;
+    }
+
+    if (list->head == NULL) {
+        return true;
+    }
+
+    TLNode* current = list->head;
+    while (current != NULL) {
+        TLNode* next = current->next;
+        tl_memory_free(current, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
+        list->size--;
+        list->head = next;
+        current = next;
+    }
+
+    list->head = NULL;
+    list->tail = NULL;
     return true;
 }
 
@@ -317,4 +345,20 @@ TLAPI b8 tl_list_destroy(TLList* list) {
     }
 
     return true;
+}
+
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static b8 tl_list_address_comparator(const void* first, const void* second) {
+    return first == second;
 }

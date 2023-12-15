@@ -18,8 +18,16 @@ static b8 running = true;
 static b8 paused = false;
 
 static u64 STEP = 0;
-static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
 static TLList* layers;
+
+static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event);
+static b8 tl_layer_comparator(const void* first, const void* second);
+
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
 
 TLAPI b8 tl_engine_pre_initialize(void) {
     if (!tl_platform_initialize()) {
@@ -103,6 +111,8 @@ TLAPI b8 tl_engine_run(void) {
         time_last = time_start;
 
         if (!paused) {
+            tl_renderer_frame_begin();
+
             // ============================================
             // Fixed time step processing
             // ============================================
@@ -133,8 +143,6 @@ TLAPI b8 tl_engine_run(void) {
             {
                 fps++;
 
-                tl_renderer_frame_begin();
-
                 TLNode* current = layers->head;
                 while (current != NULL) {
                     const TLLayer* layer = current->payload;
@@ -148,9 +156,9 @@ TLAPI b8 tl_engine_run(void) {
                     layer->update_late();
                     current = current->next;
                 }
-
-                tl_renderer_frame_end();
             }
+
+            tl_renderer_frame_end();
         }
 
         if (tl_input_key_released(TL_KEY_PAUSE)) {
@@ -233,20 +241,6 @@ TLAPI b8 tl_engine_terminate(void) {
     return true;
 }
 
-static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event) {
-    switch (code) {
-    case TL_EVENT_APPLICATION_QUIT: running = false; break;
-    case TL_EVENT_WINDOW_MINIMIZED: paused = true; break;
-    case TL_EVENT_WINDOW_RESTORED: paused = false; break;
-    }
-
-    return TL_EVENT_STATUS_CONTUNE;
-}
-
-static b8 tl_layer_comparator(const void* first, const void* second) {
-    return tl_identity_equals(first, second);
-}
-
 TLAPI b8 tl_engine_layer_append(const TLLayer* layer) {
     if (layer == NULL) {
         TLERROR("tl_engine_layer_remove: Layer is NULL.");
@@ -289,4 +283,30 @@ TLAPI b8 tl_engine_layer_remove(const TLLayer* layer) {
     }
 
     return true;
+}
+
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static TLEventStatus tl_engine_eventhandler(const u8 code, const TLEvent* event) {
+    switch (code) {
+    case TL_EVENT_APPLICATION_QUIT: running = false; break;
+    case TL_EVENT_WINDOW_MINIMIZED: paused = true; break;
+    case TL_EVENT_WINDOW_RESTORED: paused = false; break;
+    }
+
+    return TL_EVENT_STATUS_CONTUNE;
+}
+
+static b8 tl_layer_comparator(const void* first, const void* second) {
+    return tl_identity_equals(first, second);
 }

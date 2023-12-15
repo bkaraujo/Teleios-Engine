@@ -15,5 +15,6 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload);
 TLAPI b8 tl_list_append_all(const TLList* soource, TLList* target);
 TLAPI b8 tl_list_remove_payload(TLList* list, const void* payload);
 TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node);
+TLAPI b8 tl_list_remove_all(TLList* list);
 TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void*), const void* payload);
 #endif // TELEIOS_CONTAINER_H

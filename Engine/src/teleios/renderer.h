@@ -1,7 +1,7 @@
 #ifndef TELEIOS_RENDERER_H
 #define TELEIOS_RENDERER_H
 
-#include "teleios/renderer_primitives.h"
+#include "teleios/graphics.h"
 #include "teleios/types.h"
 
 b8 tl_renderer_initialize(const TLSpecification* spec);
@@ -9,6 +9,7 @@ b8 tl_renderer_terminate(void);
 
 void tl_renderer_frame_begin(void);
 void tl_renderer_frame_end(void);
-TLAPI void tl_renderer_submmit(TLRenderable* renderable);
+
+TLAPI void tl_renderer_submmit(const TLGraphics* shade, const TLGraphics* geometry);
 
 #endif // TELEIOS_RENDERER_H

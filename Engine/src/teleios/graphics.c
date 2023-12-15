@@ -1,59 +1,26 @@
+#include "teleios/eventcodes.h"
+#include "teleios/platform.h"
+#include "teleios/teleios.h"
+
 #include "teleios/platform_detector.h"
 #ifdef TELEIOS_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif
 
-#include "teleios/teleios.h"
-#include "teleios/eventcodes.h"
-#include "teleios/platform.h"
-
 #include "glad/glad.h" // must be after Windows.h
 #include "glad/wgl.h"  // must be after Windows.h
 
+static u32 tl_graphics_layouttype(TLBufferLayoutType type);
+static u32 tl_graphics_layoutsize(TLBufferLayoutType type);
+static TLEventStatus tl_graphics_resize(const u8 code, const TLEvent* event);
 
-#define SUBSCRIBE(event,callback)                                       \
-    if (!tl_event_subscribe(event, callback)) {                         \
-        TLERROR("tl_graphics_initialize: Failed to tl_event_subscribe");\
-        return false;                                                   \
-    }
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
 
-#ifdef TELEIOS_PLATFORM_WINDOWS
-#include <GL/GL.h> // must be after glad.h
-static HDC device;
-static HGLRC context;
-#endif
-
-static u32 tl_graphics_layouttype(TLBufferLayoutType type) {
-    switch (type) {
-    case TL_BUFFER_LAYOUT_TYPE_U8: return GL_UNSIGNED_BYTE;
-    case TL_BUFFER_LAYOUT_TYPE_U16: return GL_UNSIGNED_SHORT;
-    case TL_BUFFER_LAYOUT_TYPE_U32: return GL_UNSIGNED_INT;
-    case TL_BUFFER_LAYOUT_TYPE_I8: return GL_BYTE;
-    case TL_BUFFER_LAYOUT_TYPE_I16: return GL_SHORT;
-    case TL_BUFFER_LAYOUT_TYPE_I32: return GL_INT;
-    case TL_BUFFER_LAYOUT_TYPE_F32: return GL_FLOAT;
-    case TL_BUFFER_LAYOUT_TYPE_F64: return GL_DOUBLE;
-    }
-
-    return GL_NONE;
-}
-
-static u32 tl_graphics_layoutsize(TLBufferLayoutType type) {
-    switch (type) {
-    case TL_BUFFER_LAYOUT_TYPE_U8: return sizeof(u8);
-    case TL_BUFFER_LAYOUT_TYPE_U16: return sizeof(u16);
-    case TL_BUFFER_LAYOUT_TYPE_U32: return sizeof(u32);
-    case TL_BUFFER_LAYOUT_TYPE_I8: return sizeof(i8);
-    case TL_BUFFER_LAYOUT_TYPE_I16: return sizeof(i16);
-    case TL_BUFFER_LAYOUT_TYPE_I32: return sizeof(i32);
-    case TL_BUFFER_LAYOUT_TYPE_F32: return sizeof(f32);
-    case TL_BUFFER_LAYOUT_TYPE_F64: return sizeof(f64);
-    }
-
-    return 0;
-}
-
-TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry) {
+TLAPI TLGraphics* tl_graphics_geometry(const TLGeometry* geometry) {
     // ######################################
     // Backup the currently bound VAO
     // ######################################
@@ -70,8 +37,8 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry) {
     // ######################################
     // Create the VBO
     // ######################################
-    glGenBuffers(1, &object->object.buffer.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, object->object.buffer.vbo);
+    glGenBuffers(1, &object->payload.vertex.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, object->payload.vertex.vbo);
     glBufferData(GL_ARRAY_BUFFER, geometry->vsize * sizeof(f32), geometry->vertices, GL_STATIC_DRAW);
 
     u32 stride = 0;
@@ -90,7 +57,7 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry) {
             tl_graphics_layouttype(layout.type),    // type
             GL_FALSE,                               // normalize
             stride,                                 // stride
-            (const void*)offset                    // offset
+            (const void*)offset                     // offset
         );
 
         offset += layout.components * tl_graphics_layoutsize(layout.type);
@@ -98,11 +65,11 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGraphicsGeometry* geometry) {
     // ######################################
     // Create the EBO
     // ######################################
-    glGenBuffers(1, &object->object.buffer.ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->object.buffer.ebo);
+    glGenBuffers(1, &object->payload.vertex.ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->payload.vertex.ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry->isize * sizeof(u32), geometry->indices, GL_STATIC_DRAW);
 
-    object->object.buffer.indices = geometry->isize;
+    object->payload.vertex.indices = geometry->isize;
     // ######################################
     // Restore the previously binded VAO
     // ######################################
@@ -118,6 +85,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
 
     TLGraphics* program = tl_graphics_primitive_create(TL_GRAPHICS_PRIMITIVE_SHADER);
     program->handle = glCreateProgram();
+    TLTRACE("tl_graphics_shader: Creating shader %u", program->handle);
 
     int  success;
     char infoLog[512];
@@ -129,11 +97,11 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
         u32 type = GL_NONE;
         if (type == GL_NONE && source.type == TL_SHADER_TYPE_VERTEX) {
             type = GL_VERTEX_SHADER;
-            program->object.shader.vertex = source.file->path;
+            program->payload.shader.vertex = source.file->path;
         }
         if (type == GL_NONE && source.type == TL_SHADER_TYPE_FRAGMENT) {
             type = GL_FRAGMENT_SHADER;
-            program->object.shader.fragment = source.file->path;
+            program->payload.shader.fragment = source.file->path;
         }
 
         handle = glCreateShader(type);
@@ -208,11 +176,11 @@ TLAPI void tl_graphics_primitive_destroy(TLGraphics* primitive) {
 
     if (primitive->type == TL_GRAPHICS_PRIMITIVE_GEOMETRY) {
         TLTRACE("tl_graphics_primitive_destroy: Destroying VAO %u", primitive->handle);
-        glDeleteBuffers(1, &primitive->object.buffer.vbo);
-        primitive->object.buffer.vbo = GL_NONE;
+        glDeleteBuffers(1, &primitive->payload.vertex.vbo);
+        primitive->payload.vertex.vbo = GL_NONE;
 
-        glDeleteBuffers(1, &primitive->object.buffer.ebo);
-        primitive->object.buffer.ebo = GL_NONE;
+        glDeleteBuffers(1, &primitive->payload.vertex.ebo);
+        primitive->payload.vertex.ebo = GL_NONE;
 
         glDeleteVertexArrays(1, &primitive->handle);
         primitive->handle = GL_NONE;
@@ -221,17 +189,23 @@ TLAPI void tl_graphics_primitive_destroy(TLGraphics* primitive) {
     tl_memory_free(primitive, TL_MEMORY_TYPE_GRAPHICS, sizeof(TLGraphics));
 }
 
-static TLEventStatus tl_graphics_resize(const u8 code, const TLEvent* event) {
-    ivec2s size = { 0 };
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
 
-    if (code == TL_EVENT_WINDOW_RESIZED || code == TL_EVENT_WINDOW_RESTORED) {
-        size.x = event->data.u32[0];
-        size.y = event->data.u32[1];
+#ifdef TELEIOS_PLATFORM_WINDOWS
+#include <GL/GL.h> // must be after glad.h
+static HDC device;
+static HGLRC context;
+#endif
+
+#define SUBSCRIBE(event,callback)                                       \
+    if (!tl_event_subscribe(event, callback)) {                         \
+        TLERROR("tl_graphics_initialize: Failed to tl_event_subscribe");\
+        return false;                                                   \
     }
-
-    glViewport(0, 0, size.x, size.y);
-    return TL_EVENT_STATUS_CONTUNE;
-}
 
 b8 tl_graphics_initialize(const TLSpecification* spec) {
     TLTRACE("tl_graphics_initialize: Loading OpenGL");
@@ -415,4 +389,52 @@ b8 tl_graphics_terminate(void) {
 #endif
 
     return true;
+}
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static u32 tl_graphics_layouttype(TLBufferLayoutType type) {
+    switch (type) {
+    case TL_BUFFER_LAYOUT_TYPE_U8: return GL_UNSIGNED_BYTE;
+    case TL_BUFFER_LAYOUT_TYPE_U16: return GL_UNSIGNED_SHORT;
+    case TL_BUFFER_LAYOUT_TYPE_U32: return GL_UNSIGNED_INT;
+    case TL_BUFFER_LAYOUT_TYPE_I8: return GL_BYTE;
+    case TL_BUFFER_LAYOUT_TYPE_I16: return GL_SHORT;
+    case TL_BUFFER_LAYOUT_TYPE_I32: return GL_INT;
+    case TL_BUFFER_LAYOUT_TYPE_F32: return GL_FLOAT;
+    case TL_BUFFER_LAYOUT_TYPE_F64: return GL_DOUBLE;
+    }
+
+    return GL_NONE;
+}
+
+static u32 tl_graphics_layoutsize(TLBufferLayoutType type) {
+    switch (type) {
+    case TL_BUFFER_LAYOUT_TYPE_U8: return sizeof(u8);
+    case TL_BUFFER_LAYOUT_TYPE_U16: return sizeof(u16);
+    case TL_BUFFER_LAYOUT_TYPE_U32: return sizeof(u32);
+    case TL_BUFFER_LAYOUT_TYPE_I8: return sizeof(i8);
+    case TL_BUFFER_LAYOUT_TYPE_I16: return sizeof(i16);
+    case TL_BUFFER_LAYOUT_TYPE_I32: return sizeof(i32);
+    case TL_BUFFER_LAYOUT_TYPE_F32: return sizeof(f32);
+    case TL_BUFFER_LAYOUT_TYPE_F64: return sizeof(f64);
+    }
+
+    return 0;
+}
+
+static TLEventStatus tl_graphics_resize(const u8 code, const TLEvent* event) {
+    ivec2s size = { 0 };
+
+    if (code == TL_EVENT_WINDOW_RESIZED || code == TL_EVENT_WINDOW_RESTORED) {
+        size.x = event->data.u32[0];
+        size.y = event->data.u32[1];
+    }
+
+    glViewport(0, 0, size.x, size.y);
+    return TL_EVENT_STATUS_CONTUNE;
 }

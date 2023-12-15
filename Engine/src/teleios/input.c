@@ -14,18 +14,31 @@ static i32 mouse_x, mouse_y;
 static struct TLRegistry previous;
 static struct TLRegistry current;
 
-static TLEventStatus tl_input_event(const u8 code, const TLEvent* event) {
-    switch (code) {
-    case TL_EVENT_INPUT_KEY_PRESSED: current.keyboard[event->data.u16[0]] = true; break;
-    case TL_EVENT_INPUT_KEY_RELEASED: current.keyboard[event->data.u16[0]] = false; break;
-    case TL_EVENT_INPUT_MOUSE_PRESSED: current.button[event->data.u8[0]] = true; break;
-    case TL_EVENT_INPUT_MOUSE_RELEASED: current.button[event->data.u8[0]] = true; break;
-    case TL_EVENT_INPUT_MOUSE_WHELL: scroll = event->data.i8[0]; break;
-    case TL_EVENT_INPUT_MOUSE_MOVE: mouse_x = event->data.i32[0]; mouse_y = event->data.i32[1]; break;
-    }
+static TLEventStatus tl_input_event(const u8 code, const TLEvent* event);
 
-    return TL_EVENT_STATUS_CONTUNE;
-}
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
+
+TLAPI b8 tl_input_key_active(TLKeyboardKey key) { return current.keyboard[key]; }
+TLAPI b8 tl_input_key_pressed(TLKeyboardKey key) { return !previous.keyboard[key] && current.keyboard[key]; }
+TLAPI b8 tl_input_key_released(TLKeyboardKey key) { return previous.keyboard[key] && !current.keyboard[key]; }
+
+TLAPI i32 tl_input_mouse_x(void) { return mouse_x; }
+TLAPI i32 tl_input_mouse_y(void) { return mouse_y; }
+TLAPI i8 tl_input_mouse_scroll(void) { return scroll; }
+
+TLAPI b8 tl_input_mouse_active(TLMouseButton button) { return current.button[button]; }
+TLAPI b8 tl_input_mouse_pressed(TLMouseButton button) { return !previous.button[button] && current.button[button]; }
+TLAPI b8 tl_input_mouse_released(TLMouseButton button) { return previous.button[button] && !current.button[button]; }
+
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
 
 b8 tl_input_initialize(void) {
     mouse_y = mouse_x = 0;
@@ -69,18 +82,26 @@ void tl_input_update(void) {
     tl_memory_copy(&current, &previous, sizeof(struct TLRegistry));
 }
 
-TLAPI b8 tl_input_key_active(TLKeyboardKey key) { return current.keyboard[key]; }
-TLAPI b8 tl_input_key_pressed(TLKeyboardKey key) { return !previous.keyboard[key] && current.keyboard[key]; }
-TLAPI b8 tl_input_key_released(TLKeyboardKey key) { return previous.keyboard[key] && !current.keyboard[key]; }
-
-TLAPI i32 tl_input_mouse_x(void) { return mouse_x; }
-TLAPI i32 tl_input_mouse_y(void) { return mouse_y; }
-TLAPI i8 tl_input_mouse_scroll(void) { return scroll; }
-
-TLAPI b8 tl_input_mouse_active(TLMouseButton button) { return current.button[button]; }
-TLAPI b8 tl_input_mouse_pressed(TLMouseButton button) { return !previous.button[button] && current.button[button]; }
-TLAPI b8 tl_input_mouse_released(TLMouseButton button) { return previous.button[button] && !current.button[button]; }
-
 b8 tl_input_terminate(void) {
     return true;
+}
+
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static TLEventStatus tl_input_event(const u8 code, const TLEvent* event) {
+    switch (code) {
+    case TL_EVENT_INPUT_KEY_PRESSED: current.keyboard[event->data.u16[0]] = true; break;
+    case TL_EVENT_INPUT_KEY_RELEASED: current.keyboard[event->data.u16[0]] = false; break;
+    case TL_EVENT_INPUT_MOUSE_PRESSED: current.button[event->data.u8[0]] = true; break;
+    case TL_EVENT_INPUT_MOUSE_RELEASED: current.button[event->data.u8[0]] = true; break;
+    case TL_EVENT_INPUT_MOUSE_WHELL: scroll = event->data.i8[0]; break;
+    case TL_EVENT_INPUT_MOUSE_MOVE: mouse_x = event->data.i32[0]; mouse_y = event->data.i32[1]; break;
+    }
+
+    return TL_EVENT_STATUS_CONTUNE;
 }

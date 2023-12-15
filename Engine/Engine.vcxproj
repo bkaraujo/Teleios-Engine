@@ -268,6 +268,7 @@
     <ClInclude Include="src\teleios\eventcodes.h" />
     <ClInclude Include="src\teleios\filesystem.h" />
     <ClInclude Include="src\teleios\graphics.h" />
+    <ClInclude Include="src\teleios\graphics_types.h" />
     <ClInclude Include="src\teleios\identity.h" />
     <ClInclude Include="src\teleios\input.h" />
     <ClInclude Include="src\teleios\inputcodes.h" />
@@ -276,8 +277,8 @@
     <ClInclude Include="src\teleios\memory.h" />
     <ClInclude Include="src\teleios\platform.h" />
     <ClInclude Include="src\teleios\platform_detector.h" />
-    <ClInclude Include="src\teleios\renderer_primitives.h" />
     <ClInclude Include="src\teleios\renderer.h" />
+    <ClInclude Include="src\teleios\renderer_types.h" />
     <ClInclude Include="src\teleios\teleios.h" />
     <ClInclude Include="src\teleios\time.h" />
     <ClInclude Include="src\teleios\timer.h" />

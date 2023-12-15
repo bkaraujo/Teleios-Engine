@@ -23,9 +23,8 @@ static b8 editor_layer_initialize(void) {
         return false;
     }
 
-    TLGraphicsGeometry create_info = { 0 };
-    create_info.vsize = 4 * (3 + 4);
-    float vertices[] = {
+    TLGeometry create_info = { 0 };
+    f32 vertices[] = {
         // Position , color
          0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,    // top right
          0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom right
@@ -33,13 +32,14 @@ static b8 editor_layer_initialize(void) {
         -0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f     // top left 
     };
     create_info.vertices = vertices;
+    create_info.vsize = sizeof(vertices) / sizeof(f32);
 
-    create_info.isize = 2 * 3;
-    unsigned int indices[] = {  // note that we start from 0!
+    u32 indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
     create_info.indices = indices;
+    create_info.isize = sizeof(indices) / sizeof(u32);
 
     TLBufferLayout layout[2];
     layout[0].name = "aPos";
@@ -73,9 +73,7 @@ static b8 editor_ayer_update_fixed(const u64 delta) {
 }
 
 static b8 editor_layer_update_late(void) {
-    glUseProgram(shader->handle);
-    glBindVertexArray(geometry->handle);
-    glDrawElements(GL_TRIANGLES, geometry->object.buffer.indices, GL_UNSIGNED_INT, 0);
+    tl_renderer_submmit(shader, geometry);
 
     return true;
 }

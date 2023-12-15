@@ -5,24 +5,28 @@
 
 #include <stdlib.h>
 
-static const char UUID[] = "0123456789abcdef";
+static const char      UUID[] = "0123456789abcdef";
+static const char     EMPTY[] = "";
+static const char    ZEROES[] = "000000000000000000000000000000000000";
+static const char UUID_ZERO[] = "00000000-0000-0000-0000-000000000000";
+
 static TLList* known;
 
-static b8 tl_identity_comparator(const void* first, const void* second) {
-    return tl_string_equals(first, second);
-}
+static b8 tl_identity_comparator(const void* first, const void* second);
+static void tl_identity_fill(const TLIdentity* identity);
 
-static void tl_identity_fill(const TLIdentity* identity) {
-    for (unsigned i = 0; i < 37; ++i) {
-        *((i8*)&identity->identity[i]) = UUID[rand() % 16];
-    }
+// ####################################################################
+// ####################################################################
+//                              Public API
+// ####################################################################
+// ####################################################################
 
-    *((i8*)&identity->identity[8]) = '-';
-    *((i8*)&identity->identity[13]) = '-';
-    *((i8*)&identity->identity[18]) = '-';
-    *((i8*)&identity->identity[23]) = '-';
-    *((i8*)&identity->identity[37]) = 0; // null-terminated
-}
+// ####################################################################
+// ####################################################################
+//                          Internal API
+// ####################################################################
+// ####################################################################
+
 b8 tl_identity_initialize(void) {
     known = tl_list_create();
     if (known == NULL) {
@@ -42,10 +46,6 @@ void tl_identity_generate(const TLIdentity* identity) {
 
     tl_list_append(known, identity->identity);
 }
-
-static const char     EMPTY[] = "";
-static const char    ZEROES[] = "000000000000000000000000000000000000";
-static const char UUID_ZERO[] = "00000000-0000-0000-0000-000000000000";
 
 b8 tl_identity_empty(const TLIdentity* identity) {
     if (identity->identity == NULL) return true;
@@ -72,4 +72,26 @@ b8 tl_identity_terminate(void) {
     known = NULL;
 
     return true;
+}
+
+// ####################################################################
+// ####################################################################
+//                              Private API
+// ####################################################################
+// ####################################################################
+
+static b8 tl_identity_comparator(const void* first, const void* second) {
+    return tl_string_equals(first, second);
+}
+
+static void tl_identity_fill(const TLIdentity* identity) {
+    for (unsigned i = 0; i < 37; ++i) {
+        *((i8*)&identity->identity[i]) = UUID[rand() % 16];
+    }
+
+    *((i8*)&identity->identity[8]) = '-';
+    *((i8*)&identity->identity[13]) = '-';
+    *((i8*)&identity->identity[18]) = '-';
+    *((i8*)&identity->identity[23]) = '-';
+    *((i8*)&identity->identity[37]) = 0; // null-terminated
 }
