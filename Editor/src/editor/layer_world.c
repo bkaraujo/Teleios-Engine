@@ -8,52 +8,55 @@ static TLGraphics* shader = NULL;
 static b8 editor_layer_initialize(void) {
     TLDEBUG("editor_layer_initialize: Initializing Editor World Layer");
 
-    TLShaderSource sources[2];
-    sources[0].type = TL_SHADER_TYPE_VERTEX;
-    sources[0].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/vertex.glsl");
-    sources[1].type = TL_SHADER_TYPE_FRAGMENT;
-    sources[1].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/fragment.glsl");
-    shader = tl_graphics_shader(sources, 2);
+    {
+        TLShaderSource sources[2];
+        sources[0].type = TL_SHADER_TYPE_VERTEX;
+        sources[0].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/vertex.glsl");
+        sources[1].type = TL_SHADER_TYPE_FRAGMENT;
+        sources[1].file = tl_filesystem_file_tochar("C:/Users/bkrau/OneDrive/Trabalho/BKraujo/TeleiosEngine/Editor/Assets/Shader/fragment.glsl");
+        shader = tl_graphics_shader(sources, 2);
 
-    tl_filesystem_file_free(sources[0].file);
-    tl_filesystem_file_free(sources[1].file);
+        tl_filesystem_file_free(sources[0].file);
+        tl_filesystem_file_free(sources[1].file);
 
-    if (shader == NULL) {
-        TLERROR("editor_layer_initialize: Failed to compile shader");
-        return false;
+        if (shader == NULL) {
+            TLERROR("editor_layer_initialize: Failed to compile shader");
+            return false;
+        }
     }
+    {
+        TLGeometry create_info = { 0 };
+        f32 vertices[] = {
+            // Position , color
+             0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,    // top right
+             0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom right
+            -0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom left
+            -0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f     // top left 
+        };
+        create_info.vertices = vertices;
+        create_info.vsize = sizeof(vertices) / sizeof(f32);
 
-    TLGeometry create_info = { 0 };
-    f32 vertices[] = {
-        // Position , color
-         0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,    // top right
-         0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom right
-        -0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,    // bottom left
-        -0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f     // top left 
-    };
-    create_info.vertices = vertices;
-    create_info.vsize = sizeof(vertices) / sizeof(f32);
+        u32 indices[] = {  // note that we start from 0!
+            0, 1, 3,   // first triangle
+            1, 2, 3    // second triangle
+        };
+        create_info.indices = indices;
+        create_info.isize = sizeof(indices) / sizeof(u32);
 
-    u32 indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
-    create_info.indices = indices;
-    create_info.isize = sizeof(indices) / sizeof(u32);
+        TLBufferLayout layout[2];
+        layout[0].name = "aPos";
+        layout[0].components = 3;
+        layout[0].type = TL_BUFFER_LAYOUT_TYPE_F32;
 
-    TLBufferLayout layout[2];
-    layout[0].name = "aPos";
-    layout[0].components = 3;
-    layout[0].type = TL_BUFFER_LAYOUT_TYPE_F32;
+        layout[1].name = "aColor";
+        layout[1].components = 4;
+        layout[1].type = TL_BUFFER_LAYOUT_TYPE_F32;
 
-    layout[1].name = "aColor";
-    layout[1].components = 4;
-    layout[1].type = TL_BUFFER_LAYOUT_TYPE_F32;
+        create_info.lsize = 2;
+        create_info.layout = &layout;
 
-    create_info.lsize = 2;
-    create_info.layout = &layout;
-
-    geometry = tl_graphics_geometry(&create_info);
+        geometry = tl_graphics_geometry(&create_info);
+    }
     return true;
 }
 
