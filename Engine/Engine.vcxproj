@@ -257,34 +257,8 @@
     <ClInclude Include="src\glad\glad.h" />
     <ClInclude Include="src\glad\khrplatform.h" />
     <ClInclude Include="src\glad\wgl.h" />
-    <ClInclude Include="src\teleios\concurrent.h" />
     <ClInclude Include="src\nuklear\nuklear.h" />
     <ClInclude Include="src\stb\image.h" />
-    <ClInclude Include="src\teleios\container.h" />
-    <ClInclude Include="src\teleios\defines.h" />
-    <ClInclude Include="src\teleios\engine.h" />
-    <ClInclude Include="src\teleios\application.h" />
-    <ClInclude Include="src\teleios\environment.h" />
-    <ClInclude Include="src\teleios\event.h" />
-    <ClInclude Include="src\teleios\eventcodes.h" />
-    <ClInclude Include="src\teleios\filesystem.h" />
-    <ClInclude Include="src\teleios\graphics.h" />
-    <ClInclude Include="src\teleios\graphics_types.h" />
-    <ClInclude Include="src\teleios\identity.h" />
-    <ClInclude Include="src\teleios\input.h" />
-    <ClInclude Include="src\teleios\inputcodes.h" />
-    <ClInclude Include="src\teleios\layerstack.h" />
-    <ClInclude Include="src\teleios\logger.h" />
-    <ClInclude Include="src\teleios\memory.h" />
-    <ClInclude Include="src\teleios\platform.h" />
-    <ClInclude Include="src\teleios\platform_detector.h" />
-    <ClInclude Include="src\teleios\renderer.h" />
-    <ClInclude Include="src\teleios\renderer_types.h" />
-    <ClInclude Include="src\teleios\teleios.h" />
-    <ClInclude Include="src\teleios\time.h" />
-    <ClInclude Include="src\teleios\timer.h" />
-    <ClInclude Include="src\teleios\string.h" />
-    <ClInclude Include="src\teleios\types.h" />
     <ClInclude Include="src\teleios\window\manager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -336,19 +310,6 @@
     <ClCompile Include="src\glad\wgl.c" />
     <ClCompile Include="src\nuklear\nuklear.c" />
     <ClCompile Include="src\stb\image.c" />
-    <ClCompile Include="src\teleios\container_list.c" />
-    <ClCompile Include="src\teleios\engine.c" />
-    <ClCompile Include="src\teleios\environment.c" />
-    <ClCompile Include="src\teleios\event.c" />
-    <ClCompile Include="src\teleios\graphics.c" />
-    <ClCompile Include="src\teleios\identity.c" />
-    <ClCompile Include="src\teleios\input.c" />
-    <ClCompile Include="src\teleios\logger.c" />
-    <ClCompile Include="src\teleios\memory.c" />
-    <ClCompile Include="src\teleios\platform_windows.c" />
-    <ClCompile Include="src\teleios\renderer.c" />
-    <ClCompile Include="src\teleios\string.c" />
-    <ClCompile Include="src\teleios\time.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

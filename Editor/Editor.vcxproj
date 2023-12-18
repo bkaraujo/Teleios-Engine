@@ -80,15 +80,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\editor.c" />
-    <ClCompile Include="src\editor\layer_debug.c" />
-    <ClCompile Include="src\editor\layer_world.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\editor\layer_debug.h" />
-    <ClInclude Include="src\editor\layer_world.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Assets\Shader\fragment.glsl" />
     <None Include="Assets\Shader\vertex.glsl" />
   </ItemGroup>
