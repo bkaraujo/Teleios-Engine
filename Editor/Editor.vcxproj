@@ -62,6 +62,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/DYNAMICBASE "$(SolutionDir)build\bin\Debug\Engine\teleios.lib" "$(VULKAN_SDK)\Lib\vulkan-1.lib"  opengl32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy /Y $(solutionDir)build\bin\$(ConfigurationName)\Engine\teleios.dll $(solutionDir)build\bin\$(ConfigurationName)\$(ProjectName)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

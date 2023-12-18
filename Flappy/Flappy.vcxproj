@@ -67,6 +67,9 @@
     <CustomBuildStep>
       <Command>Copy-Item -Path $(SolutionDir)buid\bin\Engine\Engine.dll -Destination $(SolutionDir)buid\bin\Flappy</Command>
     </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>xcopy /Y $(solutionDir)build\bin\$(ConfigurationName)\Engine\teleios.dll $(solutionDir)build\bin\$(ConfigurationName)\$(ProjectName)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
