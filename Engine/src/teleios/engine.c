@@ -30,17 +30,9 @@ static b8 tl_layer_comparator(const void* first, const void* second);
 // ####################################################################
 
 TLAPI b8 tl_engine_pre_initialize(void) {
+    if (!tl_platform_initialize()) return false;
+    if (!tl_memory_initialize()) return false;
     if (!tl_logger_initialize()) return false;
-
-    if (!tl_platform_initialize()) {
-        TLERROR("tl_engine_pre_initialize: Failed to initialize the underlying platform");
-        return false;
-    }
-
-    if (!tl_memory_initialize()) {
-        TLERROR("tl_engine_pre_initialize: Failed to initialize the memory manager");
-        return false;
-    }
 
     if (!tl_environment_initialize()) {
         TLERROR("tl_engine_pre_initialize: Failed to initialize environment manager");
@@ -229,18 +221,11 @@ TLAPI b8 tl_engine_terminate(void) {
         TLERROR("tl_engine_terminate: Failed to terminate environment manager");
 
     }
+    if (!tl_memory_terminate()) return false;
+    if (!tl_logger_terminate()) return false;
+    if (!tl_platform_terminate()) return false;
 
-    if (!tl_memory_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate the memory manager");
-        return false;
-    }
-
-    if (!tl_platform_terminate()) {
-        TLERROR("tl_engine_terminate: Failed to terminate the underlying platform");
-        return false;
-    }
-
-    return tl_logger_terminate();
+    return true;
 }
 
 TLAPI b8 tl_engine_layer_append(const TLLayer* layer) {

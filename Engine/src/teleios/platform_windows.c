@@ -40,7 +40,7 @@ void tl_platform_memory_free(void* block) {
 
 void tl_platform_memory_copy(const void* source, const void* target, u64 size) {
 #pragma warning( push )
-#pragma warning( disable : 4090)
+#pragma warning( disable : 4090) // const to un-const
     i32 error = memcpy_s(target, size, source, size);
 #pragma warning( pop )
     if (error != 0) {
@@ -50,7 +50,7 @@ void tl_platform_memory_copy(const void* source, const void* target, u64 size) {
 
 void tl_platform_memory_set(const void* target, i32 value, u64 size) {
 #pragma warning( push )
-#pragma warning( disable : 4090)
+#pragma warning( disable : 4090) // const to un-const
     memset(target, value, size);
 #pragma warning( pop )
 }
@@ -185,20 +185,23 @@ TLAPI void tl_filesystem_file_free(const TLFile* file) {
 //                                        THREAD
 //
 // ##############################################################################################
-#include "teleios/thread.h"
+#include "teleios/concurrent.h"
 
 u64 tl_thread_current_id(void) {
     return (u64)GetCurrentThreadId();
 }
 
 void tl_thread_current_sleep(u64 millis) {
-    Sleep(millis);
+    Sleep((DWORD)millis);
 }
 
 TLThread* tl_thread_create(b8 detach, const void* funtion, const void* parameters) {
 
     DWORD id = 0;
+#pragma warning( push )
+#pragma warning( disable : 4090) // const to un-const
     HANDLE handle = CreateThread(NULL, CREATE_SUSPENDED, (LPTHREAD_START_ROUTINE)funtion, parameters, 0, (DWORD*)&id);
+#pragma warning( pop )
     if (handle == 0) {
         TLERROR("tl_thread_create: Failed with 0x%x", GetLastError());
         return NULL;
@@ -213,7 +216,7 @@ TLThread* tl_thread_create(b8 detach, const void* funtion, const void* parameter
     TLThread* thread = tl_memory_alloc(TL_MEMORY_TYPE_THREAD, sizeof(TLThread));
     if (thread == NULL) {
         TLERROR("tl_thread_create: Failed to allocate thread");
-        TerminateThread(handle, 0);
+        TerminateThread(handle, 0); // safe: uninitialized thread
         CloseHandle(handle);
         return NULL;
     }
@@ -271,43 +274,26 @@ b8 tl_thread_wait(TLThread* thread) {
 //                                        MUTEX
 //
 // ##############################################################################################
-#include "teleios/mutex.h"
+#include "teleios/concurrent.h"
 
-void* tl_mutex_create(void) {
-    return CreateMutex(0, 0, 0);
-}
-
-b8 tl_mutex_lock(void* mutex) {
+void tl_mutex_lock(CRITICAL_SECTION* mutex) {
     if (mutex == NULL) {
         TLERROR("tl_mutex_lock: Mutex is NULL");
-        return false;
-    }
-
-    switch (WaitForSingleObject(mutex, INFINITE)) {
-    case WAIT_OBJECT_0: return true;
-    case WAIT_ABANDONED: return false;
-    }
-
-    return true;
-}
-
-b8 tl_mutex_unlock(void* mutex) {
-    if (mutex == NULL) {
-        TLERROR("tl_mutex_unlock: Mutex is NULL");
-        return false;
-    }
-
-    return ReleaseMutex(mutex) != 0;
-}
-
-void tl_mutex_destroy(void* mutex) {
-    if (mutex == NULL) {
-        TLWARN("tl_mutex_destroy: Mutex is NULL");
         return;
     }
 
-    CloseHandle(mutex);
+    EnterCriticalSection(mutex);
 }
+
+void tl_mutex_unlock(CRITICAL_SECTION* mutex) {
+    if (mutex == NULL) {
+        TLERROR("tl_mutex_unlock: Mutex is NULL");
+        return;
+    }
+
+    LeaveCriticalSection(mutex);
+}
+
 // ##############################################################################################
 //
 //                                        TIME

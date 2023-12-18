@@ -52,7 +52,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CGLM_STATIC;TELEIOS_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CGLM_STATIC;TELEIOS_DEBUG;_AMD64_</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -257,7 +257,7 @@
     <ClInclude Include="src\glad\glad.h" />
     <ClInclude Include="src\glad\khrplatform.h" />
     <ClInclude Include="src\glad\wgl.h" />
-    <ClInclude Include="src\teleios\mutex.h" />
+    <ClInclude Include="src\teleios\concurrent.h" />
     <ClInclude Include="src\nuklear\nuklear.h" />
     <ClInclude Include="src\stb\image.h" />
     <ClInclude Include="src\teleios\container.h" />
@@ -281,7 +281,6 @@
     <ClInclude Include="src\teleios\renderer.h" />
     <ClInclude Include="src\teleios\renderer_types.h" />
     <ClInclude Include="src\teleios\teleios.h" />
-    <ClInclude Include="src\teleios\thread.h" />
     <ClInclude Include="src\teleios\time.h" />
     <ClInclude Include="src\teleios\timer.h" />
     <ClInclude Include="src\teleios\string.h" />

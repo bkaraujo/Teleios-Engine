@@ -95,6 +95,7 @@ static const char* tl_memory_type(TLEMemoryType type) {
     case TL_MEMORY_TYPE_UNSIGNED:       return "TL_MEMORY_TYPE_UNSIGNED      ";
     case TL_MEMORY_TYPE_RENDERER:       return "TL_MEMORY_TYPE_RENDERER      ";
     case TL_MEMORY_TYPE_THREAD:         return "TL_MEMORY_TYPE_THREAD        ";
+    case TL_MEMORY_TYPE_CONCURRENT:     return "TL_MEMORY_TYPE_CONCURRENT    ";
     case TL_MEMORY_TYPE_MAXIMUM:        return "TL_MEMORY_TYPE_MAXIMUM       ";
     }
 

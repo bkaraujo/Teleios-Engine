@@ -627,10 +627,7 @@
     <ClInclude Include="src\teleios\renderer_types.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\teleios\thread.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
-    <ClInclude Include="src\teleios\mutex.h">
+    <ClInclude Include="src\teleios\concurrent.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>

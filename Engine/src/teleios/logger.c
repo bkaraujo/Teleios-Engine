@@ -2,12 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "teleios/concurrent.h"
 #include "teleios/logger.h"
-#include "teleios/mutex.h"
 #include "teleios/platform.h"
-#include "teleios/thread.h"
+#include "teleios/platform_detector.h"
 
-static void* mutex = NULL;
+#ifdef TELEIOS_PLATFORM_WINDOWS
+#include <Windows.h>
+
+static CRITICAL_SECTION mutex;
+#endif
+
 
 // ####################################################################
 // ####################################################################
@@ -22,7 +27,7 @@ static char intermediate[1030];
 static char formated[1030];
 
 TLAPI void tl_logger_write(const u8 level, const char* message, ...) {
-    while (!tl_mutex_lock(mutex));
+    tl_mutex_lock(&mutex);
 
     {
         tl_platform_memory_set(&intermediate, 0, 1030);
@@ -45,7 +50,7 @@ TLAPI void tl_logger_write(const u8 level, const char* message, ...) {
         if (level == 0) exit(99);
     }
 
-    tl_mutex_unlock(mutex);
+    tl_mutex_unlock(&mutex);
 }
 
 // ####################################################################
@@ -55,15 +60,21 @@ TLAPI void tl_logger_write(const u8 level, const char* message, ...) {
 // ####################################################################
 
 b8 tl_logger_initialize(void) {
-    mutex = tl_mutex_create();
-    return mutex != NULL;
+#ifdef TELEIOS_PLATFORM_WINDOWS
+    InitializeCriticalSection(&mutex);
+    return true;
+#else
+    return false;
+#endif
 }
 
 b8 tl_logger_terminate(void) {
-    tl_mutex_destroy(mutex);
-    mutex = NULL;
-
+#ifdef TELEIOS_PLATFORM_WINDOWS
+    DeleteCriticalSection(&mutex);
     return true;
+#else
+    return false;
+#endif
 }
 
 // ####################################################################
