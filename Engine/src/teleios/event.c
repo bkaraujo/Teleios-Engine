@@ -51,7 +51,7 @@ b8 tl_event_subscribe(const u8 code, PFN_EventHandler handler) {
     return true;
 }
 
-void tl_event_fire(const u8 code, const TLEvent* event) {
+TLAPI void tl_event_fire(const u8 code, const TLEvent* event) {
     TLNode* current = list[code]->head;
     while (current != NULL) {
         PFN_EventHandler handler = (PFN_EventHandler)current->payload;

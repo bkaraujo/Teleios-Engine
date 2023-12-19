@@ -13,7 +13,7 @@ TLAPI b8 tl_input_key_active(TLKeyboardKey key);
 TLAPI b8 tl_input_key_pressed(TLKeyboardKey key);
 TLAPI b8 tl_input_key_released(TLKeyboardKey key);
 
-TLAPI i8 tl_input_mouse_scroll(void);
+TLAPI b8 tl_input_mouse_scroll(void);
 TLAPI i32 tl_input_mouse_x(void);
 TLAPI i32 tl_input_mouse_y(void);
 

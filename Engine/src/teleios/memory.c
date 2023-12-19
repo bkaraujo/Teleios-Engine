@@ -32,7 +32,7 @@ TLAPI void* tl_memory_alloc(TLEMemoryType type, u64 size) {
     return block;
 }
 
-TLAPI void tl_memory_free(const void* target, TLEMemoryType type, u64 size) {
+void tl_memory_free(const void* target, TLEMemoryType type, u64 size) {
     tl_platform_memory_free(target);
 
     registry.allocated -= size;

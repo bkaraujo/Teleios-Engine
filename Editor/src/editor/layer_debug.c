@@ -1,5 +1,5 @@
 #include "editor/layer_debug.h"
-#include <glad/glad.h>
+//#include <glad/glad.h>
 #include <teleios/teleios.h>
 
 static b8 editor_layer_initialize(void) {
@@ -27,12 +27,12 @@ static b8 editor_layer_update_late(void) {
         tl_event_fire(TL_EVENT_APPLICATION_QUIT, NULL);
     }
 
-    if (tl_input_key_released(TL_KEY_F12)) {
-        line = !line;
+    //if (tl_input_key_released(TL_KEY_F12)) {
+    //    line = !line;
 
-        if (line)   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        else        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
+    //    if (line)   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //    else        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //}
 
     return true;
 }

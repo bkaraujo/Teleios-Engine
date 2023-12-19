@@ -62,8 +62,8 @@ static b8 editor_layer_initialize(void) {
 
 static b8 editor_layer_terminate(void) {
     TLDEBUG("editor_layer_terminate: Terminating Editor World Layer");
-    tl_graphics_primitive_destroy(shader);
-    tl_graphics_primitive_destroy(geometry);
+    tl_graphics_destroy(shader);
+    tl_graphics_destroy(geometry);
     return true;
 }
 

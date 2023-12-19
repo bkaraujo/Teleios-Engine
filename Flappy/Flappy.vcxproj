@@ -55,7 +55,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TLIMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -65,11 +65,14 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DYNAMICBASE "$(SolutionDir)build\bin\Debug\Engine\teleios.lib" "$(VULKAN_SDK)\Lib\vulkan-1.lib"   opengl32.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/DYNAMICBASE "$(SolutionDir)build\bin\$(ConfigurationName)\Engine\teleios.lib" opengl32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
       <Command>Copy-Item -Path $(SolutionDir)buid\bin\Engine\Engine.dll -Destination $(SolutionDir)buid\bin\Flappy</Command>
     </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>xcopy /Y $(SolutionDir)build\bin\$(ConfigurationName)\Engine\teleios.dll $(SolutionDir)build\bin\$(ConfigurationName)\$(ProjectName)\</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

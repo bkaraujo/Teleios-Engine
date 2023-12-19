@@ -107,7 +107,7 @@ void tl_platform_stdout(const u8 level, const char* message) {
 #include "teleios/filesystem.h"
 #include "teleios/memory.h"
 
-const u64 tl_filesyste_file_size(const char* path) {
+TLAPI const u64 tl_filesyste_file_size(const char* path) {
     LARGE_INTEGER file_size = { 0 };
 
     WIN32_FILE_ATTRIBUTE_DATA file_attr_data;
@@ -216,7 +216,10 @@ TLThread* tl_thread_create(b8 detach, const void* funtion, const void* parameter
     TLThread* thread = tl_memory_alloc(TL_MEMORY_TYPE_THREAD, sizeof(TLThread));
     if (thread == NULL) {
         TLERROR("tl_thread_create: Failed to allocate thread");
+#pragma warning( push )
+#pragma warning( disable : 6258) // const to un-const
         TerminateThread(handle, 0); // safe: uninitialized thread
+#pragma warning( pop )
         CloseHandle(handle);
         return NULL;
     }

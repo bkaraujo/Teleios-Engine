@@ -13,11 +13,11 @@ static b8 tl_list_address_comparator(const void* first, const void* second);
 // ####################################################################
 // ####################################################################
 
-TLAPI b8 tl_container_noop_dealocator(const void* pointer) {
+b8 tl_container_noop_dealocator(const void* pointer) {
     return true;
 }
 
-TLAPI TLList* tl_list_create(void) {
+TLList* tl_list_create(void) {
     TLList* list = tl_memory_alloc(TL_MEMORY_TYPE_CONTAINER_LIST, LSIZE);
     if (list == NULL) {
         TLERROR("tl_list_create: Failed to allocate memory");
@@ -27,7 +27,7 @@ TLAPI TLList* tl_list_create(void) {
     return list;
 }
 
-TLAPI b8 tl_list_append(TLList* list, const void* payload) {
+b8 tl_list_append(TLList* list, const void* payload) {
     if (list == NULL) {
         TLERROR("tl_list_append: list is null");
         return false;
@@ -60,7 +60,7 @@ TLAPI b8 tl_list_append(TLList* list, const void* payload) {
     return true;
 }
 
-TLAPI b8 tl_list_append_all(const TLList* source, TLList* target) {
+b8 tl_list_append_all(const TLList* source, TLList* target) {
     if (source == NULL) {
         TLERROR("tl_list_append: source is null");
         return false;
@@ -84,7 +84,7 @@ TLAPI b8 tl_list_append_all(const TLList* source, TLList* target) {
     return true;
 }
 
-TLAPI TLList* tl_list_clone(TLList* list) {
+TLList* tl_list_clone(TLList* list) {
     if (list == NULL) {
         TLERROR("tl_list_append: list is null");
         return NULL;
@@ -111,7 +111,7 @@ TLAPI TLList* tl_list_clone(TLList* list) {
     return target;
 }
 
-TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
+b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     if (list == NULL) {
         TLERROR("tl_list_remove_node: list is null");
         return false;
@@ -156,7 +156,7 @@ TLAPI b8 tl_list_remove_node(TLList* list, const TLNode* node) {
     return true;
 }
 
-TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
+const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
     if (list == NULL) {
         TLERROR("tl_list_remove: list is null");
         return NULL;
@@ -226,7 +226,7 @@ TLAPI const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, cons
     return NULL;
 }
 
-TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
+b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*), const void* payload) {
     if (list == NULL) return false;
     if (payload == NULL) return false;
 
@@ -248,11 +248,11 @@ TLAPI b8 tl_list_contains(TLList* list, b8(*comparator)(const void*, const void*
     return false;
 }
 
-TLAPI b8 tl_list_remove_payload(TLList* list, const void* payload) {
+b8 tl_list_remove_payload(TLList* list, const void* payload) {
     return tl_list_remove(list, tl_list_address_comparator, payload) != NULL;
 }
 
-TLAPI b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload)) {
+b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload)) {
     if (list == NULL) {
         TLERROR("tl_list_clear: list is null");
         return false;
@@ -277,7 +277,7 @@ TLAPI b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload)) {
     return true;
 }
 
-TLAPI b8 tl_list_remove_all(TLList* list) {
+b8 tl_list_remove_all(TLList* list) {
     if (list == NULL) {
         TLERROR("tl_list_clear: list is null");
         return false;
@@ -301,7 +301,7 @@ TLAPI b8 tl_list_remove_all(TLList* list) {
     return true;
 }
 
-TLAPI b8 tl_list_destroy(TLList* list) {
+b8 tl_list_destroy(TLList* list) {
     if (list == NULL) {
         TLERROR("tl_list_clear: list is null");
         return false;

@@ -19,11 +19,41 @@ int main(int argc, char** argv) {
     spec.simulation.per_second = 75;
 
     tl_application_define(&spec);
-    if (!tl_engine_initialize(&spec)) return -1;
-    if (!tl_application_initialize(&spec)) return -99;
-    if (!tl_engine_run()) return -1;
-    if (!tl_application_terminate()) return -99;
-    if (!tl_engine_terminate()) return -1;
+    if (!tl_engine_initialize(&spec)) {
+        if (!tl_engine_terminate()) {
+            return 99;
+        }
+
+        return 10;
+    }
+
+    if (!tl_application_initialize(&spec)) {
+        if (!tl_engine_terminate()) {
+            return 99;
+        }
+
+        return 11;
+    }
+
+    if (!tl_engine_run()) {
+        if (!tl_engine_terminate()) {
+            return 99;
+        }
+
+        return 20;
+    }
+
+    if (!tl_application_terminate()) {
+        if (!tl_engine_terminate()) {
+            return 99;
+        }
+
+        return 31;
+    }
+
+    if (!tl_engine_terminate()) {
+        return 99;
+    }
 
     return 0;
 }

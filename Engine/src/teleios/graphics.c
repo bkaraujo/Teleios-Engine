@@ -13,7 +13,7 @@
 static u32 tl_graphics_layouttype(TLBufferLayoutType type);
 static u32 tl_graphics_layoutsize(TLBufferLayoutType type);
 static TLEventStatus tl_graphics_resize(const u8 code, const TLEvent* event);
-
+static TLGraphics* tl_graphics_primitive(const TLGraphcisType type);
 // ####################################################################
 // ####################################################################
 //                              Public API
@@ -29,7 +29,7 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGeometry* geometry) {
     // ######################################
     // Create the new VAO
     // ######################################
-    TLGraphics* object = tl_graphics_primitive_create(TL_GRAPHICS_PRIMITIVE_SHADER);
+    TLGraphics* object = tl_graphics_primitive(TL_GRAPHICS_PRIMITIVE_SHADER);
     object->type = TL_GRAPHICS_PRIMITIVE_GEOMETRY;
     glGenVertexArrays(1, &object->handle);
     glBindVertexArray(object->handle);
@@ -51,6 +51,8 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGeometry* geometry) {
     for (unsigned i = 0; i < geometry->lsize; ++i) {
         TLBufferLayout layout = geometry->layout[i];
         glEnableVertexAttribArray(i);
+#pragma warning( push )
+#pragma warning( disable : 4312)
         glVertexAttribPointer(
             i,                                      // index
             layout.components,                      // size
@@ -59,6 +61,7 @@ TLAPI TLGraphics* tl_graphics_geometry(const TLGeometry* geometry) {
             stride,                                 // stride
             (const void*)offset                     // offset
         );
+#pragma warning( pop )
 
         offset += layout.components * tl_graphics_layoutsize(layout.type);
     }
@@ -83,7 +86,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
         return NULL;
     }
 
-    TLGraphics* program = tl_graphics_primitive_create(TL_GRAPHICS_PRIMITIVE_SHADER);
+    TLGraphics* program = tl_graphics_primitive(TL_GRAPHICS_PRIMITIVE_SHADER);
     program->handle = glCreateProgram();
     TLTRACE("tl_graphics_shader: Creating shader %u", program->handle);
 
@@ -121,7 +124,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
             }
 
             // Destroy the primitive
-            tl_graphics_primitive_destroy(program);
+            tl_graphics_destroy(program);
             tl_memory_free(shader, TL_MEMORY_TYPE_GRAPHICS, count * sizeof(u32));
             return NULL;
         }
@@ -146,7 +149,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
             }
 
             // Destroy the primitive
-            tl_graphics_primitive_destroy(program);
+            tl_graphics_destroy(program);
             tl_memory_free(shader, TL_MEMORY_TYPE_GRAPHICS, count * sizeof(u32));
             return NULL;
         }
@@ -156,18 +159,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
     return program;
 }
 
-TLAPI TLGraphics* tl_graphics_primitive_create(const TLGraphcisType type) {
-    TLGraphics* primitive = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, sizeof(TLGraphics));
-    if (primitive == NULL) {
-        TLERROR("tl_graphics_primitive_create: Failed to create primitive");
-        return NULL;
-    }
-
-    tl_memory_copy(&type, &primitive->type, sizeof(TLGraphcisType));
-    return primitive;
-}
-
-TLAPI void tl_graphics_primitive_destroy(TLGraphics* primitive) {
+TLAPI void tl_graphics_destroy(TLGraphics* primitive) {
     if (primitive->type == TL_GRAPHICS_PRIMITIVE_SHADER) {
         TLTRACE("tl_graphics_primitive_destroy: Destroying Shader %u", primitive->handle);
         glDeleteProgram(primitive->handle);
@@ -194,6 +186,16 @@ TLAPI void tl_graphics_primitive_destroy(TLGraphics* primitive) {
 //                          Internal API
 // ####################################################################
 // ####################################################################
+static TLGraphics* tl_graphics_primitive(const TLGraphcisType type) {
+    TLGraphics* primitive = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, sizeof(TLGraphics));
+    if (primitive == NULL) {
+        TLERROR("tl_graphics_primitive_create: Failed to create primitive");
+        return NULL;
+    }
+
+    tl_memory_copy(&type, &primitive->type, sizeof(TLGraphcisType));
+    return primitive;
+}
 
 #ifdef TELEIOS_PLATFORM_WINDOWS
 #include <GL/GL.h> // must be after glad.h

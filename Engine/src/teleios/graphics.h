@@ -10,9 +10,7 @@ b8 tl_graphics_terminate(void);
 void tl_graphics_clear(void);
 void tl_graphics_present(void);
 
-TLAPI TLGraphics* tl_graphics_primitive_create(const TLGraphcisType type);
-TLAPI void tl_graphics_primitive_destroy(TLGraphics* object);
-
+TLAPI void tl_graphics_destroy(TLGraphics* object);
 TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 count);
 TLAPI TLGraphics* tl_graphics_geometry(const TLGeometry* geometry);
 
