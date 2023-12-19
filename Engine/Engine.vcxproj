@@ -19,7 +19,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -52,11 +52,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CGLM_STATIC;TELEIOS_DEBUG;_AMD64_</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_AMD64_;CGLM_STATIC;TLEXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include\;$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -259,6 +259,11 @@
     <ClInclude Include="src\glad\wgl.h" />
     <ClInclude Include="src\nuklear\nuklear.h" />
     <ClInclude Include="src\stb\image.h" />
+    <ClInclude Include="src\teleios\application.h" />
+    <ClInclude Include="src\teleios\defines.h" />
+    <ClInclude Include="src\teleios\types-structs.h" />
+    <ClInclude Include="src\teleios\teleios.h" />
+    <ClInclude Include="src\teleios\types.h" />
     <ClInclude Include="src\teleios\window\manager.h" />
   </ItemGroup>
   <ItemGroup>

@@ -18,4 +18,9 @@
     <None Include="Assets\Shader\vertex.glsl" />
     <None Include="Assets\Shader\fragment.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\editor.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
