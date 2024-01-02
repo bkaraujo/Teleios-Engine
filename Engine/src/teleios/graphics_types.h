@@ -18,13 +18,11 @@ typedef struct {
     const char* fragment;
 } TLShader;
 
-
 typedef struct {
     u32 vbo;
     u32 ebo;
     u32 indices;
 } TLVertexBuffer;
-
 
 typedef enum {
     TL_GRAPHICS_PRIMITIVE_SHADER,
@@ -35,7 +33,6 @@ typedef struct {
     TLGraphcisType type;
     u32 handle;
 
-    // Polimorphic contet based on 'type'
     union {
         TLVertexBuffer vertex;
         TLShader shader;
@@ -65,6 +62,5 @@ typedef struct {
     u32 isize; u32* indices;
     u32 lsize; TLBufferLayout* layout;
 } TLGeometry;
-
 
 #endif // TELEIOS_GRAPHICS_TYPES_H

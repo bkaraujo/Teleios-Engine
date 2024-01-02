@@ -87,13 +87,12 @@ const TLLayer* editor_layer_world_get(void) {
 }
 
 b8 editor_layer_world_initialize(void) {
-    layer = tl_memory_alloc(TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
+    layer = tl_layer_create("Editor World");
     if (layer == NULL) {
         TLERROR("editor_layer_debug_initialize: Failed to create layer");
         return false;
     }
 
-    layer->name = "Editor World";
     layer->initialize = editor_layer_initialize;
     layer->terminate = editor_layer_terminate;
     layer->update = editor_layer_update;
@@ -110,14 +109,5 @@ b8 editor_layer_world_initialize(void) {
 }
 
 b8 editor_layer_world_terminate(void) {
-    if (layer != NULL) {
-        if (!tl_engine_layer_remove(editor_layer_world_get())) {
-            TLERROR("editor_layer_debug_terminate: Engine refused to remove layer");
-            return false;
-        }
-
-        tl_memory_free(layer, TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
-    }
-
-    return true;
+    return tl_layer_destroy(layer);
 }

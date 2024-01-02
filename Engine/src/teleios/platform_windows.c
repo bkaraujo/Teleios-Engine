@@ -14,20 +14,20 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-static HINSTANCE hinstance;
+static HINSTANCE m_hinstance;
 // ##############################################################################################
 //
 //                                        MEMORY
 //
 // ##############################################################################################
-static HANDLE heap;
+static HANDLE m_heap;
 
 void* tl_platform_memory_alloc(u64 size) {
-    return HeapAlloc(heap, HEAP_ZERO_MEMORY, size);
+    return HeapAlloc(m_heap, HEAP_ZERO_MEMORY, size);
 }
 
 void tl_platform_memory_free(void* block) {
-    HeapFree(heap, HEAP_NO_SERIALIZE, block);
+    HeapFree(m_heap, HEAP_NO_SERIALIZE, block);
 }
 
 //void* tl_platform_memory_stack_alloc(const u64 size) {
@@ -109,8 +109,7 @@ void tl_platform_stdout(const u8 level, const char* message) {
 
 TLAPI const u64 tl_filesyste_file_size(const char* path) {
     LARGE_INTEGER file_size = { 0 };
-
-    WIN32_FILE_ATTRIBUTE_DATA file_attr_data;
+    WIN32_FILE_ATTRIBUTE_DATA file_attr_data = { 0 };
     if (GetFileAttributesEx(path, GetFileExInfoStandard, &file_attr_data)) {
         file_size.LowPart = file_attr_data.nFileSizeLow;
         file_size.HighPart = file_attr_data.nFileSizeHigh;
@@ -308,12 +307,12 @@ u64 tl_platform_time_epoch(void) {
     // FILETIME lft; FileTimeToLocalFileTime(&ft, &lft);
 
     // takes the last modified date
-    LARGE_INTEGER date;
+    LARGE_INTEGER date = { 0 };
     date.HighPart = ft.dwHighDateTime;
     date.LowPart = ft.dwLowDateTime;
 
     // 100-nanoseconds = milliseconds * 10000
-    LARGE_INTEGER adjust;
+    LARGE_INTEGER adjust = { 0 };
     adjust.QuadPart = 11644473600000 * 10000;
 
     // removes the diff between 1970 and 1601
@@ -333,13 +332,13 @@ void tl_platform_time_now(TLDateTime* dt) {
 
 #pragma warning( push )
 #pragma warning( disable : 4244)
-    dt->year = st.wYear;
-    dt->month = st.wMonth;
-    dt->day = st.wDay;
-    dt->hour = st.wHour;
-    dt->minute = st.wMinute;
-    dt->second = st.wSecond;
-    dt->milliseconds = st.wMilliseconds;
+    dt->year = (u8)st.wYear;
+    dt->month = (u8)st.wMonth;
+    dt->day = (u8)st.wDay;
+    dt->hour = (u8)st.wHour;
+    dt->minute = (u8)st.wMinute;
+    dt->second = (u8)st.wSecond;
+    dt->milliseconds = (u16)st.wMilliseconds;
 #pragma warning( pop ) 
 }
 // ##############################################################################################
@@ -364,15 +363,15 @@ void tl_timer_update(TLTimer* timer) {
 }
 
 f64 tl_timer_seconds(const TLTimer* timer) {
-    return (timer->current / frequency.QuadPart) * 1.0;
+    return (timer->current * 1.0) / frequency.QuadPart;
 }
 
 f64 tl_timer_millis(const TLTimer* timer) {
-    return (timer->current * 1000 / frequency.QuadPart) * 1.0;
+    return timer->current * 1000.0 / frequency.QuadPart;
 }
 
 f64 tl_timer_micros(const TLTimer* timer) {
-    return (timer->current * 1000000 / frequency.QuadPart) * 1.0;
+    return timer->current * 1000000.0 / frequency.QuadPart;
 }
 // ##############################################################################################
 //
@@ -380,11 +379,11 @@ f64 tl_timer_micros(const TLTimer* timer) {
 //
 // ##############################################################################################
 
-static HWND hwnd;
-static b8 minimized = false;
-static b8 maximized = false;
-static b8 mouse_inside = false;
-static const char* prefix;
+static HWND m_hwnd;
+static b8 m_minimized = false;
+static b8 m_maximized = false;
+static b8 m_mouse_inside = false;
+static const char* m_prefix;
 
 b8 tl_platform_window_create(const TLSpecification* spec) {
     TLTRACE("tl_platform_window_create: Creating application window");
@@ -410,7 +409,7 @@ b8 tl_platform_window_create(const TLSpecification* spec) {
     u32 window_x = (GetSystemMetrics(SM_CXSCREEN) - spec->window.witdh) / 2;
     u32 window_y = (GetSystemMetrics(SM_CYSCREEN) - spec->window.height) / 2;
 
-    hwnd = CreateWindowEx(
+    m_hwnd = CreateWindowEx(
         window_ex_style,
         TEXT("teleios_window_class"),
         spec->name,
@@ -419,27 +418,34 @@ b8 tl_platform_window_create(const TLSpecification* spec) {
         window_width, window_height,
         0,
         0,
-        hinstance,
+        m_hinstance,
         0
     );
 
-    if (hwnd == NULL) {
+    if (m_hwnd == INVALID_HANDLE_VALUE) {
         TLERROR("tl_platform_window_create: Failed to create window 0x%x", GetLastError());
         return false;
     }
 
-    prefix = spec->name;
+    m_prefix = spec->name;
     return true;
 }
 
 void tl_platform_window_show(void) {
-    if (hwnd == NULL) return;
-    ShowWindow(hwnd, SW_SHOW);
+    if (m_hwnd == NULL) return;
+    ShowWindow(m_hwnd, SW_SHOW);
 }
 
 void tl_platform_window_hide(void) {
-    if (hwnd == NULL) return;
-    ShowWindow(hwnd, SW_HIDE);
+    if (m_hwnd == NULL) return;
+    ShowWindow(m_hwnd, SW_HIDE);
+}
+
+void tl_platform_window_destroy(void) {
+    if (m_hwnd == NULL) return;
+    if (!DestroyWindow(m_hwnd)) {
+        TLWARN("tl_platform_window_destroy: Failed with 0x%x", GetLastError());
+    }
 }
 
 static char intermediate[80];
@@ -451,8 +457,8 @@ void tl_platform_window_set_title(const char* title, ...) {
     va_end(parameters);
 
     tl_platform_memory_set(formated, 0, 80);
-    sprintf_s(formated, 100, "%s %s", prefix, intermediate);
-    SetWindowText(hwnd, formated);
+    sprintf_s(formated, 100, "%s %s", m_prefix, intermediate);
+    SetWindowText(m_hwnd, formated);
 }
 
 LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam) {
@@ -492,14 +498,14 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
         switch (wParam) {
 
         case SIZE_MINIMIZED: {
-            maximized = false;
-            minimized = true;
+            m_maximized = false;
+            m_minimized = true;
             tl_event_fire(TL_EVENT_WINDOW_MINIMIZED, NULL);
         } break;
 
         case SIZE_MAXIMIZED: {
-            maximized = true;
-            minimized = false;
+            m_maximized = true;
+            m_minimized = false;
             tl_event_fire(TL_EVENT_WINDOW_MAXIMIZED, NULL);
         } break;
 
@@ -508,9 +514,9 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
             event.data.u32[0] = LOWORD(lParam);
             event.data.u32[1] = HIWORD(lParam);
 
-            if (maximized || minimized) {
-                maximized = false;
-                minimized = false;
+            if (m_maximized || m_minimized) {
+                m_maximized = false;
+                m_minimized = false;
                 tl_event_fire(TL_EVENT_WINDOW_RESTORED, &event);
             }
             else {
@@ -540,7 +546,7 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
     } break;
 
     case WM_MOUSELEAVE: {
-        mouse_inside = false;
+        m_mouse_inside = false;
         tl_event_fire(TL_EVENT_INPUT_MOUSE_LEAVE, NULL);
     } break;
 
@@ -549,14 +555,14 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
         event.data.i32[0] = GET_X_LPARAM(lParam);
         event.data.i32[1] = GET_Y_LPARAM(lParam);
 
-        if (!mouse_inside) {
+        if (!m_mouse_inside) {
             TRACKMOUSEEVENT e = { 0 };
             e.cbSize = sizeof(TRACKMOUSEEVENT);
             e.dwFlags = TME_LEAVE;
             e.hwndTrack = hwnd;
             TrackMouseEvent(&e);
 
-            mouse_inside = true;
+            m_mouse_inside = true;
             tl_event_fire(TL_EVENT_INPUT_MOUSE_ENTER, &event);
         }
         else {
@@ -609,11 +615,11 @@ LRESULT CALLBACK tl_platform_window_procedure(HWND hwnd, u32 msg, WPARAM wParam,
 //
 // ##############################################################################################
 void* tl_platform_handle(void) {
-    return &hinstance;
+    return &m_hinstance;
 }
 
 void* tl_platform_window_handle(void) {
-    return &hwnd;
+    return &m_hwnd;
 }
 
 // ##############################################################################################
@@ -624,16 +630,16 @@ void* tl_platform_window_handle(void) {
 b8 tl_platform_initialize(void) {
     QueryPerformanceFrequency(&frequency);
 
-    hinstance = GetModuleHandle(NULL);
+    m_hinstance = GetModuleHandle(NULL);
     hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
+    m_heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
 
     WNDCLASS wc = { 0 };
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = tl_platform_window_procedure;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = hinstance;
+    wc.hInstance = m_hinstance;
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
@@ -658,8 +664,8 @@ b8 tl_platform_update(void) {
 }
 
 b8 tl_platform_terminate(void) {
-    if (heap != NULL) {
-        if (!HeapDestroy(heap)) {
+    if (m_heap != NULL) {
+        if (!HeapDestroy(m_heap)) {
             TLERROR("tl_platform_terminate: Failed to destroy heap 0x%x", GetLastError());
             return false;
         }

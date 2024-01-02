@@ -2,8 +2,8 @@
 #include "teleios/logger.h"
 #include "teleios/memory.h"
 
-static const LSIZE = sizeof(TLList);
-static const NSIZE = sizeof(TLNode);
+static const u64 LSIZE = sizeof(TLList);
+static const u64 NSIZE = sizeof(TLNode);
 
 static b8 tl_list_address_comparator(const void* first, const void* second);
 
@@ -168,11 +168,12 @@ const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void
     }
 
     switch (list->size) {
-    case 0:
+    case 0: {
         TLWARN("tl_list_remove: Trying to remove content from a empty list");
         return NULL;
+    }
 
-    case 1:
+    case 1: {
         const void* element = list->head->payload;
         if (!comparator(element, payload))
             return false;
@@ -182,8 +183,9 @@ const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void
         list->tail = NULL;
         list->size--;
         return element;
+    }
 
-    default:
+    default: {
         if (comparator(list->head->payload, payload)) {
             const void* element = list->head->payload;
             TLNode* next = list->head->next;
@@ -221,6 +223,7 @@ const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void
             tl_memory_free(current, TL_MEMORY_TYPE_CONTAINER_NODE, NSIZE);
             return element;
         }
+    }
     }
 
     return NULL;

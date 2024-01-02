@@ -43,19 +43,17 @@ const TLLayer* editor_layer_debug_get(void) {
 }
 
 b8 editor_layer_debug_initialize(void) {
-    layer = tl_memory_alloc(TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
+    layer = tl_layer_create("Editor Debug");
     if (layer == NULL) {
         TLERROR("editor_layer_debug_initialize: Failed to create layer");
         return false;
     }
 
-    layer->name = "Editor Debug";
     layer->initialize = editor_layer_initialize;
     layer->terminate = editor_layer_terminate;
     layer->update = editor_layer_update;
     layer->update_fixed = editor_ayer_update_fixed;
     layer->update_late = editor_layer_update_late;
-
 
     if (!tl_engine_layer_append(editor_layer_debug_get())) {
         TLERROR("editor_layer_debug_initialize: Engine refused to append layer");
@@ -66,14 +64,5 @@ b8 editor_layer_debug_initialize(void) {
 }
 
 b8 editor_layer_debug_terminate(void) {
-    if (layer != NULL) {
-        if (!tl_engine_layer_remove(editor_layer_debug_get())) {
-            TLERROR("editor_layer_debug_terminate: Engine refused to remove layer");
-            return false;
-        }
-
-        tl_memory_free(layer, TL_MEMORY_TYPE_LAYER, sizeof(TLLayer));
-    }
-
-    return true;
+    return tl_layer_destroy(layer);
 }

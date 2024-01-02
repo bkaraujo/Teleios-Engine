@@ -52,7 +52,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_AMD64_;CGLM_STATIC;TELEIOS_DEBUG;TLEXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_AMD64_;CGLM_STATIC;TELEIOS_EXPORT;TELEIOS_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -344,6 +344,7 @@
     <ClCompile Include="src\teleios\graphics.c" />
     <ClCompile Include="src\teleios\identity.c" />
     <ClCompile Include="src\teleios\input.c" />
+    <ClCompile Include="src\teleios\layer.c" />
     <ClCompile Include="src\teleios\logger.c" />
     <ClCompile Include="src\teleios\memory.c" />
     <ClCompile Include="src\teleios\platform_windows.c" />

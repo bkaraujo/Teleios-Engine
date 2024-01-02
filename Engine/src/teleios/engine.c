@@ -86,6 +86,7 @@ TLAPI b8 tl_engine_initialize(const TLSpecification* spec) {
 
     STEP = MICROSECOND / spec->simulation.per_second;
 
+
     return true;
 }
 
@@ -98,6 +99,9 @@ TLAPI b8 tl_engine_run(void) {
 
     u64 accumulator = 0;
 
+#ifdef TELEIOS_DEBUG
+    tl_memory_print();
+#endif
     tl_platform_window_show();
     while (running) {
         const u64 time_start = tl_time_epoch_micros();
@@ -119,7 +123,7 @@ TLAPI b8 tl_engine_run(void) {
                     accumulator -= STEP;
                 }
 
-                // Ferform the actual steps
+                // Perform the actual steps
                 for (unsigned i = 0; i < step; ++i) {
                     ups++;
                     TLNode* current = layers->head;
@@ -182,7 +186,9 @@ TLAPI b8 tl_engine_run(void) {
     }
 
     tl_platform_window_hide();
-
+#ifdef TELEIOS_DEBUG
+    tl_memory_print();
+#endif
     return true;
 }
 
@@ -201,6 +207,8 @@ TLAPI b8 tl_engine_terminate(void) {
         TLERROR("tl_engine_terminate: Failed to terminate layer stack");
         return false;
     }
+
+    tl_platform_window_destroy();
 
     if (!tl_input_terminate()) {
         TLERROR("tl_engine_terminate: Failed to terminate input manager");
@@ -221,8 +229,14 @@ TLAPI b8 tl_engine_terminate(void) {
         TLERROR("tl_engine_terminate: Failed to terminate environment manager");
 
     }
-    if (!tl_memory_terminate()) return false;
+
+    if (!tl_memory_terminate()) {
+        TLERROR("tl_engine_terminate: Failed to terminate memory manager");
+        return false;
+    }
+
     if (!tl_logger_terminate()) return false;
+
     if (!tl_platform_terminate()) return false;
 
     return true;
