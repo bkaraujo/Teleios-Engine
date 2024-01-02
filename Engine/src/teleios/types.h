@@ -2,6 +2,7 @@
 #define TELEIOS_TYPES_H
 
 #include <stddef.h>
+#include <stdbool.h>    // C99
 
 typedef unsigned char       u8;   // 255
 typedef unsigned short      u16;  // 65_535
@@ -31,10 +32,7 @@ typedef signed long long    i64; // -9_223_372_036_854_775_808 to 9_223_372_036_
 typedef float               f32; //	1.2E-38 to 3.4E+38
 typedef double              f64; // 2.3E-308 to 1.7E+308
 
-typedef signed char         b8;
-
-#define true                1
-#define false               0
+typedef bool                b8;
 
 #define KiB(b)              ((f64)(b / 1024.0))
 #define MiB(b)              ((f64)(KiB(b) / 1024.0))

@@ -90,8 +90,8 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
     program->handle = glCreateProgram();
     TLTRACE("tl_graphics_shader: Creating shader %u", program->handle);
 
-    int  success;
-    char infoLog[512];
+    i32  success;
+    i8 infoLog[512];
 
     u32* shader = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, count * sizeof(u32));
     for (unsigned i = 0; i < count; ++i) {
@@ -114,7 +114,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
         if (!success) {
             tl_memory_zero(infoLog, 512);
             glGetShaderInfoLog(handle, 512, NULL, infoLog);
-            TLERROR("editor_layer_initialize: Failed to compile shader %s: %s", source.file->path, infoLog);
+            TLERROR("tl_graphics_shader: Failed to compile shader %s: %s", source.file->path, infoLog);
 
             // Delete all previously create shader
             for (unsigned j = 0; j < count; ++j) {
@@ -139,7 +139,7 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
         if (!success) {
             tl_memory_zero(infoLog, 512);
             glGetProgramInfoLog(program->handle, 512, NULL, infoLog);
-            TLERROR("editor_layer_initialize: Failed to compile shader program: %s", infoLog);
+            TLERROR("tl_graphics_shader: Failed to compile shader program: %s", infoLog);
 
             // Delete all create shaders
             for (unsigned i = 0; i < count; ++i) {
@@ -161,13 +161,13 @@ TLAPI TLGraphics* tl_graphics_shader(const TLShaderSource* sources, const u8 cou
 
 TLAPI void tl_graphics_destroy(TLGraphics* primitive) {
     if (primitive->type == TL_GRAPHICS_PRIMITIVE_SHADER) {
-        TLTRACE("tl_graphics_primitive_destroy: Destroying Shader %u", primitive->handle);
+        TLTRACE("tl_graphics_destroy: Destroying Shader %u", primitive->handle);
         glDeleteProgram(primitive->handle);
         primitive->handle = GL_NONE;
     }
 
     if (primitive->type == TL_GRAPHICS_PRIMITIVE_GEOMETRY) {
-        TLTRACE("tl_graphics_primitive_destroy: Destroying VAO %u", primitive->handle);
+        TLTRACE("tl_graphics_destroy: Destroying VAO %u", primitive->handle);
         glDeleteBuffers(1, &primitive->payload.vertex.vbo);
         primitive->payload.vertex.vbo = GL_NONE;
 
@@ -189,7 +189,7 @@ TLAPI void tl_graphics_destroy(TLGraphics* primitive) {
 static TLGraphics* tl_graphics_primitive(const TLGraphcisType type) {
     TLGraphics* primitive = tl_memory_alloc(TL_MEMORY_TYPE_GRAPHICS, sizeof(TLGraphics));
     if (primitive == NULL) {
-        TLERROR("tl_graphics_primitive_create: Failed to create primitive");
+        TLERROR("tl_graphics_primitive: Failed to create primitive");
         return NULL;
     }
 
