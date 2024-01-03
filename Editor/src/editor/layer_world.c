@@ -100,7 +100,7 @@ b8 editor_layer_world_initialize(void) {
     layer->update_late = editor_layer_update_late;
 
 
-    if (!tl_engine_layer_append(editor_layer_world_get())) {
+    if (!tl_layerstack_append(editor_layer_world_get())) {
         TLERROR("editor_layer_debug_initialize: Engine refused to append layer");
         return false;
     }

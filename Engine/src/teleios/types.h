@@ -88,10 +88,21 @@ typedef struct TLNode {
 } TLNode;
 
 typedef struct {
+    u16 size;
     TLNode* head;
     TLNode* tail;
-    u16 size;
 } TLList;
+
+typedef struct TLEntry {
+    u64 key;
+    TLList* values;
+    struct TLEntry* next;
+} TLEntry;
+
+typedef struct {
+    u16 size;
+    TLEntry* head;
+} TLMap;
 
 typedef struct {
     const char identity[38];

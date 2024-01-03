@@ -1,5 +1,5 @@
 #include "teleios/teleios.h"
-#include "teleios/layerstack.h"
+#include "teleios/layer.h"
 
 // ####################################################################
 // ####################################################################
@@ -21,7 +21,7 @@ TLAPI TLLayer* tl_layer_create(const char* name) {
 TLAPI b8 tl_layer_destroy(TLLayer* layer) {
     if (layer == NULL) return true;
 
-    if (!tl_engine_layer_remove(layer)) {
+    if (!tl_layerstack_remove(layer)) {
         TLERROR("editor_layer_debug_terminate: Engine refused to remove layer");
         return false;
     }

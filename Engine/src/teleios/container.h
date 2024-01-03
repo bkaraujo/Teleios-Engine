@@ -6,6 +6,11 @@
 
 b8 tl_container_noop_dealocator(const void*);
 
+// ##########################################################################################
+//
+//                                  Double Linked List
+//
+// ##########################################################################################
 TLList* tl_list_create(void);
 b8 tl_list_clear(TLList* list, b8(*dealocator)(const void* payload));
 b8 tl_list_destroy(TLList* list);
@@ -17,4 +22,11 @@ b8 tl_list_remove_payload(TLList* list, const void* payload);
 b8 tl_list_remove_node(TLList* list, const TLNode* node);
 b8 tl_list_remove_all(TLList* list);
 const void* tl_list_remove(TLList* list, b8(*comparator)(const void*, const void*), const void* payload);
+// ##########################################################################################
+//
+//                                  Hashmap
+//
+// ##########################################################################################
+TLMap* tl_map_create(void);
+b8 tl_map_append(TLMap* container, u32 key, const void* payload);
 #endif // TELEIOS_CONTAINER_H

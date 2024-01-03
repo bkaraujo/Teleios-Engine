@@ -87,6 +87,7 @@ static const char* tl_memory_type(TLEMemoryType type) {
     switch (type) {
     case TL_MEMORY_TYPE_LAYER:          return "TL_MEMORY_TYPE_LAYER         ";
     case TL_MEMORY_TYPE_CONTAINER_LIST: return "TL_MEMORY_TYPE_CONTAINER_LIST";
+    case TL_MEMORY_TYPE_CONTAINER_MAP:  return "TL_MEMORY_TYPE_CONTAINER_MAP ";
     case TL_MEMORY_TYPE_CONTAINER_NODE: return "TL_MEMORY_TYPE_CONTAINER_NODE";
     case TL_MEMORY_TYPE_GRAPHICS:       return "TL_MEMORY_TYPE_GRAPHICS      ";
     case TL_MEMORY_TYPE_STRING:         return "TL_MEMORY_TYPE_STRING        ";

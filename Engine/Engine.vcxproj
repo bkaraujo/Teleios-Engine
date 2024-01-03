@@ -274,6 +274,7 @@
     <ClInclude Include="src\teleios\identity.h" />
     <ClInclude Include="src\teleios\input.h" />
     <ClInclude Include="src\teleios\inputcodes.h" />
+    <ClInclude Include="src\teleios\layer.h" />
     <ClInclude Include="src\teleios\layerstack.h" />
     <ClInclude Include="src\teleios\logger.h" />
     <ClInclude Include="src\teleios\memory.h" />
@@ -338,6 +339,7 @@
     <ClCompile Include="src\nuklear\nuklear.c" />
     <ClCompile Include="src\stb\image.c" />
     <ClCompile Include="src\teleios\container_list.c" />
+    <ClCompile Include="src\teleios\container_map.c" />
     <ClCompile Include="src\teleios\engine.c" />
     <ClCompile Include="src\teleios\environment.c" />
     <ClCompile Include="src\teleios\event.c" />

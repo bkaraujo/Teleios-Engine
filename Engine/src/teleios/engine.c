@@ -242,7 +242,7 @@ TLAPI b8 tl_engine_terminate(void) {
     return true;
 }
 
-TLAPI b8 tl_engine_layer_append(const TLLayer* layer) {
+TLAPI b8 tl_layerstack_append(const TLLayer* layer) {
     if (layer == NULL) {
         TLERROR("tl_engine_layer_remove: Layer is NULL.");
         return false;
@@ -267,7 +267,7 @@ TLAPI b8 tl_engine_layer_append(const TLLayer* layer) {
     return true;
 }
 
-TLAPI b8 tl_engine_layer_remove(const TLLayer* layer) {
+TLAPI b8 tl_layerstack_remove(const TLLayer* layer) {
     if (layer == NULL || tl_identity_empty(&layer->identity)) {
         TLERROR("tl_engine_layer_remove: Layer is NULL or identity is empty.");
         return false;
