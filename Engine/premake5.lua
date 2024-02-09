@@ -5,8 +5,8 @@ project "Engine"
     cppdialect "C++17"
     staticruntime "off"
 
-    targetdir ("%{wks.location}/buid/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/buid/int/" .. outputdir .. "/%{prj.name}")
+    targetdir ("%{wks.location}/build/bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/build/int/" .. outputdir .. "/%{prj.name}")
 
     files {
         "src/**.h",
@@ -19,6 +19,7 @@ project "Engine"
 
     defines {
         "_CRT_SECURE_NO_WARNINGS",
+        "CGLM_STATIC",
         "TELEIOS_EXPORT",
     }
 
@@ -43,7 +44,7 @@ project "Engine"
         }
 
         postbuildcommands {
-            "{COPY} %{wks.location}/bin/" .. outputdir .. "/%{prj.name}/%{prj.name}.dll %{wks.location}/bin/" .. outputdir .. "/Editor/"
+            "{COPY} %{wks.location}/build/bin/" .. outputdir .. "/%{prj.name}/Engine.dll %{wks.location}/build/bin/" .. outputdir .. "/Editor/"
         }
 
     filter "configurations:Debug"

@@ -5,8 +5,8 @@ project "Editor"
     cppdialect "C++17"
     staticruntime "off"
 
-    targetdir ("%{wks.location}/buid/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/buid/int/" .. outputdir .. "/%{prj.name}")
+    targetdir ("%{wks.location}/build/bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/build/int/" .. outputdir .. "/%{prj.name}")
 
     files {
         "src/**.h",

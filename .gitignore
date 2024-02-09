@@ -2,4 +2,4 @@
 **/*.sln
 **/*.vcxproj
 **/*.vcxproj.user
-buid/
+build/

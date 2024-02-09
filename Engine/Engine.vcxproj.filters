@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios">
+      <UniqueIdentifier>{91B2D1E1-FD67-4AD7-865C-44AEF21041DB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine">
+      <UniqueIdentifier>{16048A39-02E8-4A8F-6B48-45E2574B3511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine\application">
+      <UniqueIdentifier>{F9B82E93-E5DE-F8F9-CE24-7EC5BAE91DC6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine\logger">
+      <UniqueIdentifier>{45F93655-B1BB-6ADF-FA6B-F96B666D43BD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm">
+      <UniqueIdentifier>{454977C1-B1FE-EFB6-3AF3-E98DA6A7E6BA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\call">
+      <UniqueIdentifier>{9050EB30-7C49-0A83-A57B-EF0791D3E98E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\call\clipspace">
+      <UniqueIdentifier>{B33390A5-9F43-3C76-08FD-A094F42B2B0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\clipspace">
+      <UniqueIdentifier>{A852FEB9-14BF-B9B4-DDB2-511249DEDB1C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\handed">
+      <UniqueIdentifier>{D883AC24-C467-6D7A-2DC8-67CD19CB57FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\simd">
+      <UniqueIdentifier>{C138F430-AD31-1383-D663-F807C2BBF28E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\simd\avx">
+      <UniqueIdentifier>{5F23108E-4BB2-9957-F4D0-AD52E03EAAFD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\simd\neon">
+      <UniqueIdentifier>{20671B50-8CD3-D64A-55C7-6EA8C1F2F8B2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\simd\sse2">
+      <UniqueIdentifier>{0D5F1E50-79CB-D94A-42BF-71A8AEEAFBB2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\simd\wasm">
+      <UniqueIdentifier>{08462050-74B2-DB4A-3DA6-73A8A9D1FDB2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\struct">
+      <UniqueIdentifier>{F98DAF3F-E571-7095-4ED2-6AE83AD55A17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\struct\clipspace">
+      <UniqueIdentifier>{5C088BC3-48C3-7A6F-F17A-F3B9DD14C5FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\cglm\struct\handed">
+      <UniqueIdentifier>{0CF6B90E-78B8-ED98-C168-7C252D6AC676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\glad">
+      <UniqueIdentifier>{9A8E79C1-0644-F2B6-8F38-EC8DFBECE8BA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\stb">
+      <UniqueIdentifier>{8BD3C5A8-778B-07F6-E092-E051CC69A2E6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\teleios\engine\application\application.h">
+      <Filter>src\teleios\engine\application</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\logger\console.h">
+      <Filter>src\teleios\engine\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\types.h">
+      <Filter>src\teleios</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\aabb2d.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\affine-mat.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\affine-post.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\affine-pre.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\affine.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\affine2d.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\applesimd.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\bezier.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\box.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\aabb2d.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\affine.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\affine2d.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\bezier.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\box.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\cam.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\ortho_lh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\ortho_lh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\ortho_rh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\ortho_rh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\persp_lh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\persp_lh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\persp_rh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\persp_rh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\project_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\project_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\view_lh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\view_lh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\view_rh_no.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\clipspace\view_rh_zo.h">
+      <Filter>vendor\cglm\call\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\curve.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\ease.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\euler.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\frustum.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\io.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\ivec2.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\ivec3.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\ivec4.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat2.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat2x3.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat2x4.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat3.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat3x2.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat3x4.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat4.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat4x2.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\mat4x3.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\plane.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\project.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\quat.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\ray.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\sphere.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\vec2.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\vec3.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\call\vec4.h">
+      <Filter>vendor\cglm\call</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\cam.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\cglm.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\ortho_lh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\ortho_lh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\ortho_rh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\ortho_rh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\persp.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\persp_lh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\persp_lh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\persp_rh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\persp_rh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\project_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\project_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_lh.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_lh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_lh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_rh.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_rh_no.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\clipspace\view_rh_zo.h">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\color.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\common.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\config.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\curve.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\ease.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\euler.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\frustum.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\handed\euler_to_quat_lh.h">
+      <Filter>vendor\cglm\handed</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\handed\euler_to_quat_rh.h">
+      <Filter>vendor\cglm\handed</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\io.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\ivec2.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\ivec3.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\ivec4.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat2.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat2x3.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat2x4.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat3.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat3x2.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat3x4.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat4.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat4x2.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\mat4x3.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\plane.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\project.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\quat.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\ray.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\arm.h">
+      <Filter>vendor\cglm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\avx\affine.h">
+      <Filter>vendor\cglm\simd\avx</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\avx\mat4.h">
+      <Filter>vendor\cglm\simd\avx</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\intrin.h">
+      <Filter>vendor\cglm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\neon\affine.h">
+      <Filter>vendor\cglm\simd\neon</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\neon\mat2.h">
+      <Filter>vendor\cglm\simd\neon</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\neon\mat4.h">
+      <Filter>vendor\cglm\simd\neon</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\neon\quat.h">
+      <Filter>vendor\cglm\simd\neon</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\sse2\affine.h">
+      <Filter>vendor\cglm\simd\sse2</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\sse2\mat2.h">
+      <Filter>vendor\cglm\simd\sse2</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\sse2\mat3.h">
+      <Filter>vendor\cglm\simd\sse2</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\sse2\mat4.h">
+      <Filter>vendor\cglm\simd\sse2</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\sse2\quat.h">
+      <Filter>vendor\cglm\simd\sse2</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm.h">
+      <Filter>vendor\cglm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm\affine.h">
+      <Filter>vendor\cglm\simd\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm\mat2.h">
+      <Filter>vendor\cglm\simd\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm\mat3.h">
+      <Filter>vendor\cglm\simd\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm\mat4.h">
+      <Filter>vendor\cglm\simd\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\wasm\quat.h">
+      <Filter>vendor\cglm\simd\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\simd\x86.h">
+      <Filter>vendor\cglm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\sphere.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\aabb2d.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\affine-mat.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\affine-post.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\affine-pre.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\affine.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\affine2d.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\box.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\cam.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\ortho_lh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\ortho_lh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\ortho_rh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\ortho_rh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\persp_lh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\persp_lh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\persp_rh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\persp_rh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\project_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\project_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\view_lh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\view_lh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\view_rh_no.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\clipspace\view_rh_zo.h">
+      <Filter>vendor\cglm\struct\clipspace</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\color.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\curve.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\euler.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\frustum.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\handed\euler_to_quat_lh.h">
+      <Filter>vendor\cglm\struct\handed</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\handed\euler_to_quat_rh.h">
+      <Filter>vendor\cglm\struct\handed</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\io.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat2.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat2x3.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat2x4.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat3.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat3x2.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat3x4.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat4.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat4x2.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\mat4x3.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\plane.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\project.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\quat.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\sphere.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec2-ext.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec2.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec3-ext.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec3.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec4-ext.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\struct\vec4.h">
+      <Filter>vendor\cglm\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\types-struct.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\types.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\util.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec2-ext.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec2.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec3-ext.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec3.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec4-ext.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\vec4.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\cglm\version.h">
+      <Filter>vendor\cglm</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\glad\glad.h">
+      <Filter>vendor\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\glad\khrplatform.h">
+      <Filter>vendor\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\glad\wgl.h">
+      <Filter>vendor\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\stb\image.h">
+      <Filter>vendor\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\stb\truetype.h">
+      <Filter>vendor\stb</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\teleios\engine\logger\Logger.c">
+      <Filter>src\teleios\engine\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\aabb2d.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\affine.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\affine2d.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\bezier.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\box.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\cam.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\ortho_lh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\ortho_lh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\ortho_rh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\ortho_rh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\persp_lh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\persp_lh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\persp_rh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\persp_rh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\project_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\project_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\view_lh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\view_lh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\view_rh_no.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\clipspace\view_rh_zo.c">
+      <Filter>vendor\cglm\clipspace</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\curve.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\ease.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\euler.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\frustum.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\io.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\ivec2.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\ivec3.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\ivec4.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat2.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat2x3.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat2x4.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat3.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat3x2.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat3x4.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat4.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat4x2.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\mat4x3.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\plane.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\project.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\quat.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\ray.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\sphere.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\vec2.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\vec3.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\cglm\vec4.c">
+      <Filter>vendor\cglm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\glad\glad.c">
+      <Filter>vendor\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\glad\wgl.c">
+      <Filter>vendor\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb\image.c">
+      <Filter>vendor\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb\truetype.c">
+      <Filter>vendor\stb</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
