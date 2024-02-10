@@ -67,4 +67,24 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 typedef u8                  b8;
 
+#define TLSECONDS             1e+0    // (double)(1.0)
+#define TLMILLIS              1e+3    // (double)(1_000.0)
+#define TLMICROS              1e+6    // (double)(1_000_000.0)
+#define TLNANOS               1e+9    // (double)(1_000_000_000.0)
+
+typedef struct TLTime {
+    u16 year;
+    u8 month;
+    u8 day;
+    u8 hour;
+    u8 minute;
+    u8 second;
+    u16 millis;
+} TLTime;
+
+typedef struct TLTimer {
+    u64 start;
+    u64 current;
+} TLTimer;
+
 #endif // TELEIOS_TYPES_H

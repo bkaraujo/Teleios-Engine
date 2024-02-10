@@ -48,7 +48,7 @@ project "Editor"
         runtime "Debug"
         symbols "on"
         defines {
-            "TLDEBUG",
+            "TELEIOS_DEBUG",
         }
 
     filter "configurations:Release"
@@ -56,7 +56,7 @@ project "Editor"
         optimize "on"
 
         defines {
-            "TLRELEASE",
+            "TELEIOS_RELEASE",
         }
 
     filter "configurations:Dist"
@@ -64,5 +64,5 @@ project "Editor"
         optimize "on"
 
         defines {
-            "TLDIST",
+            "TELEIOS_DIST",
         }

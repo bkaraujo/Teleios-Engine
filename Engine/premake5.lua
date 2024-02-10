@@ -51,7 +51,7 @@ project "Engine"
         runtime "Debug"
         symbols "on"
         defines {
-            "TLDEBUG",
+            "TELEIOS_DEBUG",
         }
 
     filter "configurations:Release"
@@ -59,7 +59,7 @@ project "Engine"
         optimize "on"
 
         defines {
-            "TLRELEASE",
+            "TELEIOS_RELEASE",
         }
 
     filter "configurations:Dist"
@@ -67,5 +67,5 @@ project "Engine"
         optimize "on"
 
         defines {
-            "TLDIST",
+            "TELEIOS_DIST",
         }

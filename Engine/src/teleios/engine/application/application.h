@@ -1,5 +1,5 @@
-#ifndef TELEIOS_APPLICATION_H
-#define TELEIOS_APPLICATION_H
+#ifndef TELEIOS_ENGINE_APPLICATION_H
+#define TELEIOS_ENGINE_APPLICATION_H
 
 #include "teleios/engine/logger/console.h"
 

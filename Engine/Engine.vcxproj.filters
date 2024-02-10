@@ -13,8 +13,20 @@
     <Filter Include="src\teleios\engine\application">
       <UniqueIdentifier>{F9B82E93-E5DE-F8F9-CE24-7EC5BAE91DC6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\teleios\engine\chrono">
+      <UniqueIdentifier>{6E0BC03F-DACD-F3C9-237E-82568F7FCCA7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\teleios\engine\logger">
       <UniqueIdentifier>{45F93655-B1BB-6ADF-FA6B-F96B666D43BD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine\memory">
+      <UniqueIdentifier>{DE9ADA56-4A5D-0EE1-930D-9D6DFF0EE7BE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine\platform">
+      <UniqueIdentifier>{4AD5DF3B-B6E2-0D22-3FC9-090DABD5D9D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\teleios\engine\platform\windows">
+      <UniqueIdentifier>{A4C13206-107B-9DB0-99DA-B78A05935320}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
@@ -69,8 +81,35 @@
     <ClInclude Include="src\teleios\engine\application\application.h">
       <Filter>src\teleios\engine\application</Filter>
     </ClInclude>
+    <ClInclude Include="src\teleios\engine\chrono\time.h">
+      <Filter>src\teleios\engine\chrono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\chrono\timer.h">
+      <Filter>src\teleios\engine\chrono</Filter>
+    </ClInclude>
     <ClInclude Include="src\teleios\engine\logger\console.h">
       <Filter>src\teleios\engine\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\memory\operator.h">
+      <Filter>src\teleios\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\platform\Lifecycle.h">
+      <Filter>src\teleios\engine\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\platform\console.h">
+      <Filter>src\teleios\engine\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\platform\detector.h">
+      <Filter>src\teleios\engine\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\platform\memory.h">
+      <Filter>src\teleios\engine\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\platform\windows\common.h">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\teleios\engine\string.h">
+      <Filter>src\teleios\engine</Filter>
     </ClInclude>
     <ClInclude Include="src\teleios\types.h">
       <Filter>src\teleios</Filter>
@@ -634,6 +673,30 @@
   <ItemGroup>
     <ClCompile Include="src\teleios\engine\logger\Logger.c">
       <Filter>src\teleios\engine\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\memory\MemoryOperator.c">
+      <Filter>src\teleios\engine\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsConsole.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsLifecycle.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsMemory.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsTime.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsTimer.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\platform\windows\WindowsWindow.c">
+      <Filter>src\teleios\engine\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\teleios\engine\string.c">
+      <Filter>src\teleios\engine</Filter>
     </ClCompile>
     <ClCompile Include="vendor\cglm\aabb2d.c">
       <Filter>vendor\cglm</Filter>
