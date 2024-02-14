@@ -6,10 +6,7 @@
 #include "teleios/logger/console.h"
 
 void* tl_platform_memory_halloc(u64 size) {
-    void* block = HeapAlloc(e_heap, HEAP_ZERO_MEMORY, size);
-    if (block == NULL) TLFATAL("tl_platform_memory_halloc: Failed to allocate memory");
-
-    return block;
+    return HeapAlloc(e_heap, HEAP_ZERO_MEMORY, size);
 }
 
 void tl_platform_memory_hfree(void* pointer) {
@@ -19,10 +16,7 @@ void tl_platform_memory_hfree(void* pointer) {
 }
 
 void* tl_platform_memory_salloc(u64 size) {
-    void* block = _malloca(size);
-    if (block == NULL) TLFATAL("tl_platform_memory_salloc: Failed to allocate memory");
-
-    return block;
+    return _malloca(size);
 }
 
 void tl_platform_memory_sfree(void* pointer) {
