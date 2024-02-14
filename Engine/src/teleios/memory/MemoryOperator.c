@@ -1,5 +1,5 @@
-#include "teleios/engine/platform/memory.h"
-#include "teleios/engine/memory/operator.h"
+#include "teleios/platform/memory.h"
+#include "teleios/memory/operator.h"
 
 TLEXPORT void tl_memory_set(void* pointer, i32 value, u64 size) {
     tl_platform_memory_set(pointer, value, size);

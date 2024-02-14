@@ -1,8 +1,8 @@
-#include "teleios/engine/platform/detector.h"
+#include "teleios/platform/detector.h"
 #ifdef TL_PLATFORM_WINDOWS
-#include "teleios/engine/platform/windows/common.h"
-#include "teleios/engine/platform/memory.h"
-#include "teleios/engine/logger/console.h"
+#include "teleios/platform/windows/common.h"
+#include "teleios/platform/memory.h"
+#include "teleios/logger/console.h"
 
 HINSTANCE e_hinstance;
 HANDLE e_heap;

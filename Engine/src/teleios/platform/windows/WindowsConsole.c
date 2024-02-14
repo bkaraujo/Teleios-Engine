@@ -1,8 +1,8 @@
-#include "teleios/engine/platform/Detector.h"
+#include "teleios/platform/Detector.h"
 #ifdef TL_PLATFORM_WINDOWS
-#include "teleios/engine/platform/windows/common.h"
-#include "teleios/engine/platform/Console.h"
-#include "teleios/engine/string.h"
+#include "teleios/platform/windows/common.h"
+#include "teleios/platform/Console.h"
+#include "teleios/string.h"
 
 typedef enum {
     BlackFore = 0,

@@ -1,5 +1,5 @@
-#ifndef TELEIOS_ENGINE_PLATFORM_DETECTOR_H
-#define TELEIOS_ENGINE_PLATFORM_DETECTOR_H
+#ifndef TELEIOS_PLATFORM_DETECTOR_H
+#define TELEIOS_PLATFORM_DETECTOR_H
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #   define TL_PLATFORM_WINDOWS 1
@@ -32,4 +32,4 @@
 #   error "Unknown platform!"
 #endif
 
-#endif // TELEIOS_ENGINE_PLATFORM_DETECTOR_H
+#endif // TELEIOS_PLATFORM_DETECTOR_H

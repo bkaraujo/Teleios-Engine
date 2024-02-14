@@ -1,7 +1,7 @@
-#include "teleios/engine/logger/console.h"
-#include "teleios/engine/platform/console.h"
-#include "teleios/engine/memory/operator.h"
-#include "teleios/engine/chrono/time.h"
+#include "teleios/logger/console.h"
+#include "teleios/platform/console.h"
+#include "teleios/memory/operator.h"
+#include "teleios/chrono/time.h"
 
 #include <stdio.h>
 #include <stdarg.h>

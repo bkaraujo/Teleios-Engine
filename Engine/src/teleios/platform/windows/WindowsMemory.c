@@ -1,9 +1,9 @@
-#include "teleios/engine/platform/detector.h"
+#include "teleios/platform/detector.h"
 #ifdef TL_PLATFORM_WINDOWS
 #include <malloc.h>
-#include "teleios/engine/platform/windows/common.h"
-#include "teleios/engine/platform/memory.h"
-#include "teleios/engine/logger/console.h"
+#include "teleios/platform/windows/common.h"
+#include "teleios/platform/memory.h"
+#include "teleios/logger/console.h"
 
 void* tl_platform_memory_halloc(u64 size) {
     void* block = HeapAlloc(e_heap, HEAP_ZERO_MEMORY, size);

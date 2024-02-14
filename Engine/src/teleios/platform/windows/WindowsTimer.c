@@ -1,7 +1,7 @@
-#include "teleios/engine/platform/detector.h"
+#include "teleios/platform/detector.h"
 #ifdef TL_PLATFORM_WINDOWS
-#include "teleios/engine/platform/windows/common.h"
-#include "teleios/engine/chrono/timer.h"
+#include "teleios/platform/windows/common.h"
+#include "teleios/chrono/timer.h"
 
 void tl_chrono_timer_start(TLTimer* timer) {
     LARGE_INTEGER time = { 0 };

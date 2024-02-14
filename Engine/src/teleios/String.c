@@ -1,5 +1,5 @@
 #include <string.h>
-#include "teleios/engine/string.h"
+#include "teleios/string.h"
 
 TLEXPORT b8 tl_string_is_empty(const char* string) {
     if (string == NULL) return true;

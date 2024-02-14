@@ -1,5 +1,5 @@
-#ifndef TELEIOS_ENGINE_CHRONO_TIMER_H
-#define TELEIOS_ENGINE_CHRONO_TIMER_H
+#ifndef TELEIOS_CHRONO_TIMER_H
+#define TELEIOS_CHRONO_TIMER_H
 
 #include "teleios/types.h"
 
@@ -11,4 +11,4 @@ f64 tl_chrono_timer_micros(TLTimer* timer);
 f64 tl_chrono_timer_millis(TLTimer* timer);
 f64 tl_chrono_timer_seconds(TLTimer* timer);
 
-#endif // TELEIOS_ENGINE_CHRONO_TIMER_H
+#endif // TELEIOS_CHRONO_TIMER_H

@@ -1,7 +1,7 @@
-#include "teleios/engine/platform/detector.h"
+#include "teleios/platform/detector.h"
 #ifdef TL_PLATFORM_WINDOWS
-#include "teleios/engine/platform/windows/common.h"
-#include "teleios/engine/chrono/time.h"
+#include "teleios/platform/windows/common.h"
+#include "teleios/chrono/time.h"
 
 void tl_chrono_time_now(TLTime* time) {
     SYSTEMTIME lt = { 0 }; GetLocalTime(&lt);
