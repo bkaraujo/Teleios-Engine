@@ -1,5 +1,4 @@
 .vs/
 **/*.sln
-**/*.vcxproj
-**/*.vcxproj.user
+**/*.vcxproj*
 build/
