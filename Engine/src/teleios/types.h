@@ -72,6 +72,38 @@ typedef u8                  b8;
 #define TLMICROS              1e+6    // (double)(1_000_000.0)
 #define TLNANOS               1e+9    // (double)(1_000_000_000.0)
 
+#define PSIZE                 8
+
+typedef enum {
+    TL_MEMORY_TYPE_CONTAINER_ARRAY,
+    TL_MEMORY_TYPE_MAXIMUM
+} TLMemoryType;
+
+typedef struct TLArray TLArray;
+typedef struct TLMemoryArena TLMemoryArena;
+
+typedef struct TLEvent {
+    union {
+        i64 i64[2];
+        u64 u64[2];
+
+        f64 f64[2];
+
+        i32 i32[4];
+        u32 u32[4];
+        f32 f32[4];
+
+        i16 i16[8];
+
+        u16 u16[8];
+
+        i8 i8[16];
+        u8 u8[16];
+
+        char c[16];
+    } payload;
+} TLEvent;
+
 typedef struct TLTime {
     u16 year;
     u8 month;
