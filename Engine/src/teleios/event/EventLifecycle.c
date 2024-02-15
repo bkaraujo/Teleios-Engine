@@ -27,12 +27,29 @@ b8 tl_event_register(u16 code, PFN_handler handler) {
         return false;
     }
 
+    if (code == U16MAX) {
+        for (unsigned i = 0; i < U16MAX; ++i) {
+            if (tl_array_contains(registry[i], handler)) {
+                TLWARN("tl_event_register: Handler function already registered for event %llu", i);
+                return false;
+            }
+
+            if (!tl_array_insert(registry[i], handler)) {
+                TLWARN("tl_event_register: Failed to register handler function %p for event %llu", handler, i);
+                return false;
+            }
+        }
+
+        TLDEBUG("tl_event_register: All Events, %p", handler);
+        return true;
+    }
+
     if (tl_array_contains(registry[code], handler)) {
         TLWARN("tl_event_register: Handler function already registered for event %llu", code);
         return false;
     }
 
-    TLDEBUG("tl_event_register: %llu, %p)", code, handler);
+    TLDEBUG("tl_event_register: %llu, %p", code, handler);
     return tl_array_insert(registry[code], handler);
 }
 
