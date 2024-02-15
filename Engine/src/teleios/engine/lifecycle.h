@@ -4,6 +4,7 @@
 #include "teleios/types.h"
 
 TLEXPORT b8 tl_engine_initialize(void);
+TLEXPORT b8 tl_engine_configure(const TLSpecification* spec);
 TLEXPORT b8 tl_engine_run(void);
 TLEXPORT b8 tl_engine_terminate(void);
 

@@ -41,7 +41,7 @@ void tl_window_destroy(void) {
     tl_event_fire(TL_EVENT_WINDOW_CLOSED, NULL);
 }
 
-b8 tl_window_create(u32 width, u32 height, const char* title) {
+b8 tl_window_create(const TLSpecification* spec) {
     // ===================================================
     // Define the window styles
     // ===================================================
@@ -50,14 +50,17 @@ b8 tl_window_create(u32 width, u32 height, const char* title) {
     // ===================================================
     // Adjust the window size to acomodate the borders
     // ===================================================
+    u32 window_width = spec->window.width;
+    u32 window_height = spec->window.height;
+
     RECT border_rect = { 0, 0, 0, 0 };
     if (!AdjustWindowRectEx(&border_rect, window_style, 0, window_ex_style)) {
         TLERROR("tl_window_create: Failed to AdjustWindowRectEx: 0x%x", GetLastError());
         return false;
     }
 
-    u32 window_width = width + border_rect.right - border_rect.left;
-    u32 window_height = height + border_rect.bottom - border_rect.top;
+    window_width += border_rect.right - border_rect.left;
+    window_height += border_rect.bottom - border_rect.top;
     // ===================================================
     // Centralize the window position
     // ===================================================
@@ -69,7 +72,7 @@ b8 tl_window_create(u32 width, u32 height, const char* title) {
     e_window = CreateWindowEx(
         window_ex_style,
         "teleios_window_class",
-        title,
+        spec->window.title,
         window_style,
         window_x, window_y,
         window_width, window_height,

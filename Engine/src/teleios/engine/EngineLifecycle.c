@@ -39,8 +39,12 @@ TLEXPORT b8 tl_engine_initialize(void) {
     if (!tl_event_initialize()) return false;
     if (!tl_event_register(U16MAX, tl_engine_eventlistener)) return false;
     if (!tl_input_initialize()) return false;
-    if (!tl_window_create(1024, 768, "Teleios Engine")) return false;
 
+    return true;
+}
+
+TLEXPORT b8 tl_engine_configure(const TLSpecification* spec) {
+    if (!tl_window_create(spec)) return false;
     return true;
 }
 

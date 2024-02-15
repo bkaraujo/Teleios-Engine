@@ -121,4 +121,18 @@ typedef struct TLTimer {
     u64 current;
 } TLTimer;
 
+typedef struct {
+    struct {
+        u8 major;
+        u8 minor;
+        u8 patch;
+    } version;
+
+    struct {
+        const char* title;
+        u32 width;
+        u32 height;
+    } window;
+} TLSpecification;
+
 #endif // TELEIOS_TYPES_H
