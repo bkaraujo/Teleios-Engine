@@ -9,11 +9,11 @@ typedef struct TLArray {
     TLALIGN(PSIZE) const void** payload;
 } TLArray;
 
-#define NullUnused                                                  \
-{                                                                   \
-    u64 avaliable = (u64)(array->size - array->lenth);              \
-    tl_memory_zero(&array->payload[array->lenth], avaliable* PSIZE);\
+#ifdef TELEIOS_DEBUG
+static TLINLINE void tl_array_zero(TLArray* array) {
+    tl_memory_zero(&array->payload[array->lenth], (u64)(array->size - array->lenth) * PSIZE);
 }
+#endif // TELEIOS_DEBUG
 
 TLEXPORT TLArray* tl_array_create(void) {
     TLArray* array = tl_memory_halloc(TL_MEMORY_TYPE_CONTAINER_ARRAY, sizeof(TLArray));
@@ -60,7 +60,7 @@ TLEXPORT b8 tl_array_contains(TLArray* array, void* payload) {
     return false;
 }
 
-TLEXPORT b8 tl_array_remove(TLArray* array, void* payload) {
+TLEXPORT b8 tl_array_remove(TLArray* array, const void* payload) {
     if (array == NULL) { TLWARN("tl_array_remove: TLArray is null"); return false; }
     if (payload == NULL) { TLWARN("tl_array_remove: Payload is null"); return false; }
 
@@ -69,13 +69,13 @@ TLEXPORT b8 tl_array_remove(TLArray* array, void* payload) {
             tl_memory_copy(&array->payload[i + 1], &array->payload[i], (u64)(array->lenth - i - 1) * PSIZE);
             array->lenth--;
 #ifdef TELEIOS_DEBUG
-            NullUnused;
-#endif
+            tl_array_zero(array);
+#endif // TELEIOS_DEBUG
             return true;
         }
     }
 
-    TLWARN("tl_array_get: Payload not found");
+    TLWARN("tl_array_remove: Payload not found");
     return false;
 }
 
@@ -155,15 +155,29 @@ TLEXPORT b8 tl_array_remove_at(TLArray* array, u32 index) {
 
     array->lenth--;
 #ifdef TELEIOS_DEBUG
-    NullUnused;
-#endif
+    tl_array_zero(array);
+#endif // TELEIOS_DEBUG
     return false;
 }
 
 TLEXPORT b8 tl_array_merge(TLArray* array, const TLArray* from) {
-    return false;
+    if (array == NULL) { TLWARN("tl_array_merge: TLArray is null"); return false; }
+    if (from == NULL) { TLWARN("tl_array_merge: TLArray is null"); return false; }
+
+    for (unsigned i = 0; i < from->lenth; ++i) {
+        tl_array_insert(array, from->payload[i]);
+    }
+
+    return true;
 }
 
 TLEXPORT b8 tl_array_purge(TLArray* array, const TLArray* unwanted) {
-    return false;
+    if (array == NULL) { TLWARN("tl_array_purge: TLArray is null"); return false; }
+    if (unwanted == NULL) { TLWARN("tl_array_purge: unwanted TLArray is null"); return false; }
+
+    for (unsigned i = 0; i < unwanted->lenth; ++i) {
+        tl_array_remove(array, unwanted->payload[i]);
+    }
+
+    return true;
 }
