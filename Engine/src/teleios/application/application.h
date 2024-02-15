@@ -25,6 +25,8 @@ int main(int argc, char** argv) {
         spec.window.width = 1024;
         spec.window.height = 768;
 
+        spec.graphics.vsync = false;
+
         tl_application_set(&spec);
 
         if (!tl_engine_configure(&spec)) {

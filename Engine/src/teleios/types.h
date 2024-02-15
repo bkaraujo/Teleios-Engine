@@ -133,6 +133,10 @@ typedef struct {
         u32 width;
         u32 height;
     } window;
+
+    struct {
+        b8 vsync;
+    } graphics;
 } TLSpecification;
 
 #endif // TELEIOS_TYPES_H
