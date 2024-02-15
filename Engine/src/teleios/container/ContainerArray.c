@@ -1,13 +1,8 @@
+#include "teleios/core/types.h"
 #include "teleios/container/array.h"
 #include "teleios/memory/allocator.h"
 #include "teleios/memory/operator.h"
 #include "teleios/logger/console.h"
-
-typedef struct TLArray {
-    u32 lenth;
-    u32 size;
-    TLALIGN(PSIZE) const void** payload;
-} TLArray;
 
 #ifdef TELEIOS_DEBUG
 static TLINLINE void tl_array_zero(TLArray* array) {

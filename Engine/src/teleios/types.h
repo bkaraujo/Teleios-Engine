@@ -79,8 +79,10 @@ typedef enum {
     TL_MEMORY_TYPE_MAXIMUM
 } TLMemoryType;
 
+typedef struct TLMap TLMap;
 typedef struct TLArray TLArray;
-typedef struct TLMemoryArena TLMemoryArena;
+
+#define TLArraySize 16
 
 typedef struct TLEvent {
     union {
