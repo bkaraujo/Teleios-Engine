@@ -77,12 +77,18 @@ typedef u8                  b8;
 typedef enum {
     TL_MEMORY_TYPE_FILE,
     TL_MEMORY_TYPE_CONTAINER_ARRAY,
+    TL_MEMORY_TYPE_CONTAINER_LIST,
+    TL_MEMORY_TYPE_CONTAINER_LIST_NODE,
+    TL_MEMORY_TYPE_CONTAINER_LIST_ITERATOR,
     TL_MEMORY_TYPE_GRAPHICS,
     TL_MEMORY_TYPE_MAXIMUM
 } TLMemoryType;
 
-typedef struct TLMap TLMap;
+typedef struct TLNode TLNode;
+typedef struct TLList TLList;
+typedef struct TLListIterator TLListIterator;
 typedef struct TLArray TLArray;
+
 #define TLArraySize 16
 
 typedef struct TLFile {
@@ -139,6 +145,11 @@ typedef struct TLSpecification {
     } version;
 
     struct {
+        u64 initial;
+        u64 maximum;
+    } memory;
+
+    struct {
         const char* title;
         u32 width;
         u32 height;
@@ -147,6 +158,7 @@ typedef struct TLSpecification {
     struct {
         b8 vsync;
     } graphics;
+
 } TLSpecification;
 
 #endif // TELEIOS_TYPES_H
