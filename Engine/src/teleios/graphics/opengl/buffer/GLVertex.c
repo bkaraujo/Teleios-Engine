@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "glad/glad.h"
 
 #include "teleios/graphics/opengl/Debug.h"
@@ -112,3 +113,4 @@ void tl_glvertexbuffer_unbind(u32 handle) {
 void tl_glvertexbuffer_destroy(u32 handle) {
     tl_glbuffer_destroy(handle);
 }
+#endif // TELEIOS_GRAPHICS_OPENGL

@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "glad/glad.h"
 #include "stb/image.h"
 #include "teleios/filesystem.h"
@@ -84,3 +85,4 @@ TLEXPORT void tl_graphics_texture_destroy(const TLTexture* texture) {
     glDeleteTextures(1, &texture->handle); GLCHECK();
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)texture, sizeof(TLTexture));
 }
+#endif // TELEIOS_GRAPHICS_OPENGL

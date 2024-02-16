@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "teleios/logger/console.h"
 #include "teleios/memory/allocator.h"
 #include "teleios/graphics/geometry.h"
@@ -50,3 +51,4 @@ TLEXPORT void tl_graphics_geometry_destroy(const TLGeometry* geometry) {
     glDeleteVertexArrays(1, &geometry->handle); GLCHECK();
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)geometry, sizeof(TLGeometry));
 }
+#endif // TELEIOS_GRAPHICS_OPENGL

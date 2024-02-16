@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "glad/glad.h"
 
 #include "teleios/graphics/opengl/debug.h"
@@ -31,3 +32,5 @@ void tl_glbuffer_destroy(u32 handle) {
     glDeleteBuffers(1, &handle);
     GLCHECK();
 }
+
+#endif // TELEIOS_GRAPHICS_OPENGL

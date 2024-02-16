@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "teleios/platform/detector.h"
 #ifdef TL_PLATFORM_WINDOWS
 #include "teleios/platform/windows/common.h"
@@ -177,3 +178,4 @@ b8 tl_graphics_terminate(void) {
 }
 
 #endif // TL_PLATFORM_WINDOWS
+#endif // TELEIOS_GRAPHICS_OPENGL

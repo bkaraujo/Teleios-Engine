@@ -74,6 +74,10 @@ typedef u8                  b8;
 
 #define PSIZE                 8
 
+#define TLMIN(a,b) ((a) < (b) ? (a) : (b))
+#define TLMAX(a,b) ((a) < (b) ? (b) : (a))
+#define TLARRSIZE(a) (sizeof(a)/sizeof(a)[0])
+
 typedef enum {
     TL_MEMORY_TYPE_FILE,
     TL_MEMORY_TYPE_CONTAINER_ARRAY,

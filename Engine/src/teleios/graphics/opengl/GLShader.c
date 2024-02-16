@@ -1,3 +1,4 @@
+#ifdef TELEIOS_GRAPHICS_OPENGL
 #include "glad/glad.h"
 
 #include "teleios/filesystem.h"
@@ -262,3 +263,4 @@ TLEXPORT void tl_graphics_shader_destroy(const TLShader* shader) {
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader->sources, shader->source_count * sizeof(TLShaderSource));
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader, sizeof(TLShader));
 }
+#endif // TELEIOS_GRAPHICS_OPENGL

@@ -21,6 +21,7 @@ project "Engine"
         "_CRT_SECURE_NO_WARNINGS",
         "CGLM_STATIC",
         "TELEIOS_EXPORT",
+        "TELEIOS_GRAPHICS_OPENGL"
     }
 
     undefines {
