@@ -40,10 +40,7 @@ project "Engine"
 
     filter "system:windows"
         systemversion "latest"
-        defines {
-            "TL_PLATFORM_WINDOWS",
-        }
-
+        
         postbuildcommands {
             "{COPY} %{wks.location}/build/bin/" .. outputdir .. "/%{prj.name}/Engine.dll %{wks.location}/build/bin/" .. outputdir .. "/Editor/"
         }
@@ -69,4 +66,5 @@ project "Engine"
 
         defines {
             "TELEIOS_DIST",
+            
         }

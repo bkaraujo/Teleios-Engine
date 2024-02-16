@@ -1,15 +1,24 @@
 #ifndef TELEIOS_APPLICATION_H
 #define TELEIOS_APPLICATION_H
 
-#include <stdlib.h>
+#include "teleios/platform/detector.h"
+#if defined(TL_PLATFORM_WINDOWS)
+#   include <Windows.h>
+#else
+#   include <stdlib.h>
+#endif // defined(TL_PLATFORM_WINDOWS)
+
 #include "teleios/engine/lifecycle.h"
 
 static inline void tl_application_set(TLSpecification* spec);
 static inline b8 tl_application_initialize(void);
 static inline b8 tl_application_terminate(void);
 
+#if defined(TELEIOS_DIST) && defined(TL_PLATFORM_WINDOWS)
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
+#else
 int main(int argc, char** argv) {
-
+#endif // defined(TELEIOS_DIST) && defined(TL_PLATFORM_WINDOWS)
     {
         TLSpecification spec = { 0 };
         spec.version.major = 0;
@@ -53,6 +62,7 @@ int main(int argc, char** argv) {
 
     if (!tl_engine_terminate()) exit(99);
 
+    return 0;
 }
 
 #endif // TELEIOS_APPLICATION_H

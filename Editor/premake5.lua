@@ -40,9 +40,12 @@ project "Editor"
 
     filter "system:windows"
         systemversion "latest"
-        defines {
-            "TL_PLATFORM_WINDOWS",
-        }
+
+        filter "configurations:Dist"
+            linkoptions {
+                "/SUBSYSTEM:WINDOWS",
+                "/ENTRY:WinMainCRTStartup",
+            }
 
     filter "configurations:Debug"
         runtime "Debug"
