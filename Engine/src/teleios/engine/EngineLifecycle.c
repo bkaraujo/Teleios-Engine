@@ -34,19 +34,16 @@ static b8 tl_engine_eventlistener(u16 code, const TLEvent* event) {
     return false;
 }
 
-TLEXPORT b8 tl_engine_initialize(void) {
-    if (!tl_platform_initialize()) return false;
+TLEXPORT b8 tl_engine_initialize(const TLSpecification* spec) {
+    if (!tl_platform_initialize(spec)) return false;
     if (!tl_memory_initialize()) return false;
     if (!tl_event_initialize()) return false;
     if (!tl_event_register(U16MAX, tl_engine_eventlistener)) return false;
     if (!tl_input_initialize()) return false;
 
-    return true;
-}
-
-TLEXPORT b8 tl_engine_configure(const TLSpecification* spec) {
     if (!tl_window_create(spec)) return false;
     if (!tl_graphics_initialize(spec)) return false;
+
     return true;
 }
 

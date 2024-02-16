@@ -2,18 +2,13 @@
 #define TELEIOS_APPLICATION_H
 
 #include <stdlib.h>
-#include "teleios/engine/Lifecycle.h"
+#include "teleios/engine/lifecycle.h"
 
 static inline void tl_application_set(TLSpecification* spec);
 static inline b8 tl_application_initialize(void);
 static inline b8 tl_application_terminate(void);
 
 int main(int argc, char** argv) {
-
-    if (!tl_engine_initialize()) {
-        if (!tl_engine_terminate()) exit(99);
-        exit(90);
-    }
 
     {
         TLSpecification spec = { 0 };
@@ -29,26 +24,26 @@ int main(int argc, char** argv) {
 
         tl_application_set(&spec);
 
-        if (!tl_engine_configure(&spec)) {
+        if (!tl_engine_initialize(&spec)) {
             if (!tl_engine_terminate()) exit(99);
-            exit(91);
+            exit(90);
         }
     }
 
     if (!tl_application_initialize()) {
         if (!tl_engine_terminate()) exit(99);
-        exit(92);
+        exit(91);
 
     }
 
     if (!tl_engine_run()) {
         if (!tl_application_terminate()) {
             if (!tl_engine_terminate()) exit(99);
-            exit(93);
+            exit(92);
         }
 
         if (!tl_engine_terminate()) exit(99);
-        exit(94);
+        exit(93);
     }
 
     if (!tl_application_terminate()) {

@@ -11,7 +11,7 @@ LARGE_INTEGER e_frequency;
 HANDLE e_hstdout;
 CONSOLE_SCREEN_BUFFER_INFO e_csbi;
 
-b8 tl_platform_initialize(void) {
+b8 tl_platform_initialize(const TLSpecification* spec) {
     e_hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
     if (e_hstdout == INVALID_HANDLE_VALUE) { return false; }
 
@@ -24,7 +24,7 @@ b8 tl_platform_initialize(void) {
     e_hinstance = GetModuleHandle(0);
     if (e_hinstance == NULL) { TLERROR("tl_platform_initialize: Failed to GetModuleHandle: 0x%x", GetLastError()); return false; }
 
-    e_heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
+    e_heap = HeapCreate(HEAP_NO_SERIALIZE, spec->memory.initial, spec->memory.maximum);
     if (e_heap == NULL) { TLERROR("tl_platform_initialize: Failed to HeapCreate: 0x%x", GetLastError()); return false; }
 
     WNDCLASS wc = { 0 };

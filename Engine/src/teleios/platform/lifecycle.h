@@ -3,7 +3,7 @@
 
 #include "teleios/types.h"
 
-b8 tl_platform_initialize(void);
+b8 tl_platform_initialize(const TLSpecification* spec);
 void tl_platform_update(void);
 b8 tl_platform_terminate(void);
 
