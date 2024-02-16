@@ -7,7 +7,7 @@
 
 #include "teleios/graphics/draw.h"
 #include "teleios/graphics/lifecycle.h"
-#include "teleios/graphics/opengl/gldebug.h"
+#include "teleios/graphics/opengl/debug.h"
 
 #include "glad/wgl.h"
 #include "glad/glad.h"

@@ -75,14 +75,24 @@ typedef u8                  b8;
 #define PSIZE                 8
 
 typedef enum {
+    TL_MEMORY_TYPE_FILE,
     TL_MEMORY_TYPE_CONTAINER_ARRAY,
+    TL_MEMORY_TYPE_GRAPHICS,
     TL_MEMORY_TYPE_MAXIMUM
 } TLMemoryType;
 
 typedef struct TLMap TLMap;
 typedef struct TLArray TLArray;
-
 #define TLArraySize 16
+
+typedef struct TLFile {
+    const char* path;
+    const u64 size;
+    union {
+        void* raw;
+        const char* string;
+    } payload;
+} TLFile;
 
 typedef struct TLEvent {
     union {
@@ -121,7 +131,7 @@ typedef struct TLTimer {
     u64 current;
 } TLTimer;
 
-typedef struct {
+typedef struct TLSpecification {
     struct {
         u8 major;
         u8 minor;

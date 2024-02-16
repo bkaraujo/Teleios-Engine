@@ -8,5 +8,4 @@ typedef struct TLArray {
     u32 size;
     TLALIGN(PSIZE) const void** payload;
 } TLArray;
-
 #endif 
