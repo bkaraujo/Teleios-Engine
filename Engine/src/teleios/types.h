@@ -79,6 +79,8 @@ typedef u8                  b8;
 #define TLARRSIZE(a) (sizeof(a)/sizeof(a)[0])
 
 typedef enum {
+    TL_MEMORY_TYPE_MEMORY_POOL,
+    TL_MEMORY_TYPE_MEMORY_PAGE,
     TL_MEMORY_TYPE_FILE,
     TL_MEMORY_TYPE_CONTAINER_ARRAY,
     TL_MEMORY_TYPE_CONTAINER_LIST,

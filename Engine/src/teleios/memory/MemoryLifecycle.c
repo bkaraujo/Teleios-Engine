@@ -14,6 +14,8 @@ b8 tl_memory_initialize(void) {
 static const char* tl_memory_name(TLMemoryType type) {
     switch (type)
     {
+    case TL_MEMORY_TYPE_MEMORY_POOL: return "TL_MEMORY_TYPE_MEMORY_POOL";
+    case TL_MEMORY_TYPE_MEMORY_PAGE: return "TL_MEMORY_TYPE_MEMORY_PAGE";
     case TL_MEMORY_TYPE_FILE: return "TL_MEMORY_TYPE_FILE";
     case TL_MEMORY_TYPE_CONTAINER_ARRAY: return "TL_MEMORY_TYPE_CONTAINER_ARRAY";
     case TL_MEMORY_TYPE_CONTAINER_LIST: return "TL_MEMORY_TYPE_CONTAINER_LIST";
@@ -22,6 +24,7 @@ static const char* tl_memory_name(TLMemoryType type) {
     case TL_MEMORY_TYPE_GRAPHICS: return "TL_MEMORY_TYPE_GRAPHICS";
     case TL_MEMORY_TYPE_MAXIMUM: return "TL_MEMORY_TYPE_MAXIMUM";
     }
+
     return "???";
 }
 
