@@ -16,7 +16,10 @@ void tl_platform_memory_hfree(void* pointer) {
 }
 
 void* tl_platform_memory_salloc(u64 size) {
-    return _malloca(size);
+    void* block = _malloca(size);
+    if (block != NULL) tl_platform_memory_zero(block, size);
+
+    return block;
 }
 
 void tl_platform_memory_sfree(void* pointer) {
