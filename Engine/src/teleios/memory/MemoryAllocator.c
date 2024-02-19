@@ -5,7 +5,7 @@
 
 void* tl_memory_salloc(TLMemoryType type, u64 size) {
     void* block = tl_platform_memory_salloc(size);
-    if (block == NULL) { TLERROR("tl_memory_halloc: Failed to allocate %llu bytes", size); return NULL; }
+    if (block == NULL) { TLERROR("tl_memory_salloc: Failed to allocate %llu bytes", size); return NULL; }
 
     registry.total += size;
     registry.named[type] += size;
@@ -13,7 +13,7 @@ void* tl_memory_salloc(TLMemoryType type, u64 size) {
 
 }
 void tl_memory_sfree(TLMemoryType type, void* pointer, u64 size) {
-    if (pointer == NULL) { TLERROR("tl_memory_hfree: Pointer is null"); return; }
+    if (pointer == NULL) { TLERROR("tl_memory_sfree: Pointer is null"); return; }
     tl_platform_memory_sfree(pointer);
 
     registry.total -= size;
