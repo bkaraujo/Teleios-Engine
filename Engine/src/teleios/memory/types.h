@@ -3,9 +3,9 @@
 
 #include "teleios/types.h"
 
-#define TLPAGESIZE (32 * 1024 * 1024)
+#define TLPAGESIZE (u32)(32 * 1024 * 1024)
 typedef struct TLMemoryPage {
-    u16 index;
+    u32 index;
     const char* raw[TLPAGESIZE];
     struct TLMemoryPage* next;
 } TLMemoryPage;
@@ -20,7 +20,7 @@ typedef struct TLMemoryPage {
  * a new one is allocated and added to the list.
  */
 typedef struct TLMemoryPool {
-    u16 size;
+    u32 size;
     struct TLMemoryPage* head;
     struct TLMemoryPage* tail;
 } TLMemoryPool;

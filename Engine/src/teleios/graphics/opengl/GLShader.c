@@ -1,6 +1,7 @@
 #ifdef TELEIOS_GRAPHICS_OPENGL
 #include "glad/glad.h"
 
+#include "teleios/string.h"
 #include "teleios/filesystem.h"
 #include "teleios/logger/console.h"
 #include "teleios/graphics/shader.h"
@@ -51,21 +52,16 @@ static inline u32 tl_shader_compile(u32 shader, TLShaderType type, const char* p
 }
 
 static inline u32 tl_shader_load_source(u32 shader, const TLShaderSource* source) {
-    TLTRACE("tl_shader_load_source: [%lu] %s", shader, source->path);
+    if (source->source != NULL) return tl_shader_compile(shader, source->type, source->source);
 
+    TLTRACE("tl_shader_load_source: [%lu] %s", shader, source->path);
     const TLFile* file = tl_filesystem_read_string(source->path);
     if (file == NULL) {
         TLERROR("tl_shader_load_source: Failed to read \"%s\"", source->path);
         return U32MAX;
     }
 
-    u32 gltype = U32MAX;
-    switch (source->type) {
-    case TL_SHADER_FRAGMENT: gltype = GL_FRAGMENT_SHADER; break;
-    case TL_SHADER_VERTEX: gltype = GL_VERTEX_SHADER;  break;
-    }
-
-    u32 handle = tl_shader_compile(shader, source->type, file->payload.string);
+    u32 handle = handle = tl_shader_compile(shader, source->type, file->payload.string);
     tl_filesystem_free(file);
 
     return handle;
@@ -88,8 +84,24 @@ TLEXPORT const TLShader* tl_graphics_shader_create(u8 count, const TLShaderSourc
         *(u32*)&shader->handle = glCreateProgram(); GLCHECK();
         TLTRACE("tl_graphics_shader_create: Generated Shader Program [%lu]", shader->handle);
         *(u32*)&shader->source_count = count;
+
+        // Defensive copy
         shader->sources = tl_memory_halloc(TL_MEMORY_TYPE_GRAPHICS, shader->source_count * sizeof(TLShaderSource));
-        tl_memory_copy((void*)shader->sources, (void*)sources, count * sizeof(TLShaderSource));
+        for (unsigned i = 0; i < shader->source_count; ++i) {
+            if (sources[i].path != NULL) {
+                u64 length = tl_string_length(sources[i].path);
+                *((u64*)&shader->sources[i].path) = tl_memory_halloc(TL_MEMORY_TYPE_GRAPHICS, length);
+                tl_memory_copy((void*)sources[i].path, (void*)shader->sources[i].path, length);
+            }
+
+            if (sources[i].source != NULL) {
+                u64 length = tl_string_length(sources[i].source);
+                *((u64*)&shader->sources[i].source) = tl_memory_halloc(TL_MEMORY_TYPE_GRAPHICS, length);
+                tl_memory_copy((void*)sources[i].source, (void*)shader->sources[i].source, length);
+            }
+
+            tl_memory_copy((void*)&sources[i].type, (void*)&shader->sources[i].type, sizeof(sources[i].type));
+        }
     }
     // ##########################################################
     // Attach Shader Steps
@@ -259,6 +271,12 @@ TLEXPORT void tl_graphics_shader_destroy(const TLShader* shader) {
     if (shader == &DEFAULT) return;
 
     if (shader->handle != GL_NONE) { glDeleteProgram(shader->handle); GLCHECK(); }
+
+    for (unsigned i = 0; i < shader->source_count; ++i) {
+        // Release defensive copy
+        if (shader->sources[i].path != NULL) tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader->sources[i].path, tl_string_length(shader->sources[i].path));
+        if (shader->sources[i].source != NULL) tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader->sources[i].source, tl_string_length(shader->sources[i].source));
+    }
 
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader->sources, shader->source_count * sizeof(TLShaderSource));
     tl_memory_hfree(TL_MEMORY_TYPE_GRAPHICS, (void*)shader, sizeof(TLShader));

@@ -23,7 +23,7 @@ void tl_memory_pool_destroy(TLMemoryPool* pool) {
     tl_memory_sfree(TL_MEMORY_TYPE_MEMORY_POOL, pool, sizeof(TLMemoryPool));
 }
 
-void* tl_memory_pool_alloc(TLMemoryPool* pool, u64 size) {
+void* tl_memory_pool_alloc(TLMemoryPool* pool, u32 size) {
     if (pool == NULL) { TLWARN("tl_memory_pool_alloc: TLMemoryPool is null"); return NULL; }
     if (size > TLPAGESIZE) { TLWARN("tl_memory_pool_alloc: Requested memory is bigger then TLMemoryPage size"); return NULL; }
 
@@ -31,7 +31,8 @@ void* tl_memory_pool_alloc(TLMemoryPool* pool, u64 size) {
         TLMemoryPage* page = tl_memory_halloc(TL_MEMORY_TYPE_MEMORY_PAGE, sizeof(TLMemoryPage));
 
         pool->size += TLPAGESIZE;
-        pool->head = pool->tail = page;
+        pool->head = page;
+        pool->tail = page;
     }
 
     // ####################################################################################
@@ -49,7 +50,7 @@ void* tl_memory_pool_alloc(TLMemoryPool* pool, u64 size) {
     if (page == NULL) {
         page = tl_memory_halloc(TL_MEMORY_TYPE_MEMORY_PAGE, sizeof(TLMemoryPage));
         pool->size += TLPAGESIZE;
-        pool->tail->next = page;
+        if (pool->tail != NULL) pool->tail->next = page;
         pool->tail = page;
     }
 

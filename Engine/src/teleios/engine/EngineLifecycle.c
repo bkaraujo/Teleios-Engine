@@ -11,6 +11,7 @@
 #include "teleios/chrono/time.h"
 #include "teleios/chrono/timer.h"
 #include "teleios/graphics/lifecycle.h"
+#include "teleios/ui/lifecycle.h"
 
 static b8 m_running = true;
 static b8 m_paused = false;
@@ -43,6 +44,7 @@ TLEXPORT b8 tl_engine_initialize(const TLSpecification* spec) {
 
     if (!tl_window_create(spec)) return false;
     if (!tl_graphics_initialize(spec)) return false;
+    if (!tl_ui_initialize()) return false;
 
     return true;
 }
@@ -71,7 +73,10 @@ static void tl_engine_loop() {
             time_last += time_delta;
             tl_graphics_clear();
 
+            // tl_ecs_update();
+            tl_ui_update();
             tl_graphics_update();
+
             tl_input_update();
 
             fps++;
@@ -93,6 +98,7 @@ static void tl_engine_loop() {
 TLEXPORT b8 tl_engine_terminate(void) {
     TLTRACE("tl_engine_terminate: Terminating the engine");
 
+    if (!tl_ui_terminate()) return false;
     if (!tl_graphics_terminate()) return false;
     tl_window_destroy();
 

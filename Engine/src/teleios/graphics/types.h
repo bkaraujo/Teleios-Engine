@@ -11,6 +11,7 @@ typedef enum {
 typedef struct TLShaderSource {
     TLShaderType type;
     const char* path;
+    const char* source;
 } TLShaderSource;
 
 typedef struct TLShader {
