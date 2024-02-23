@@ -51,9 +51,6 @@ void tl_platform_console_write(u8 color, const i8* message) {
     // Actual Logging
     // #######################################################
     SetConsoleTextAttribute(e_hstdout, levels[color]);
-#ifdef TELEIOS_DEBUG
-    OutputDebugString(message);
-#endif
     WriteConsole(e_hstdout, message, (DWORD)tl_string_length(message), NULL, 0);
     // #######################################################
     // Restores previous ScreenBufferInfo

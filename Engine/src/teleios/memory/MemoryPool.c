@@ -10,19 +10,6 @@ TLMemoryPool* tl_memory_pool_create(void) {
     return pool;
 }
 
-void tl_memory_pool_destroy(TLMemoryPool* pool) {
-    if (pool == NULL) return;
-
-    TLMemoryPage* current = pool->head;
-    while (current != NULL) {
-        TLMemoryPage* next = current->next;
-        tl_memory_hfree(TL_MEMORY_TYPE_MEMORY_PAGE, current, sizeof(TLMemoryPage));
-        current = next;
-    }
-
-    tl_memory_sfree(TL_MEMORY_TYPE_MEMORY_POOL, pool, sizeof(TLMemoryPool));
-}
-
 void* tl_memory_pool_alloc(TLMemoryPool* pool, u32 size) {
     if (pool == NULL) { TLWARN("tl_memory_pool_alloc: TLMemoryPool is null"); return NULL; }
     if (size > TLPAGESIZE) { TLWARN("tl_memory_pool_alloc: Requested memory is bigger then TLMemoryPage size"); return NULL; }
@@ -57,4 +44,28 @@ void* tl_memory_pool_alloc(TLMemoryPool* pool, u32 size) {
     void* block = &page->raw[page->index];
     page->index += size;
     return block;
+}
+
+void tl_memory_pool_reset(TLMemoryPool* pool) {
+    if (pool == NULL) { TLWARN("tl_memory_pool_reset: TLMemoryPool is null"); return; }
+    if (pool->size == 0) return;
+
+    TLMemoryPage* current = pool->head;
+    while (current != NULL) {
+        current->index = 0;
+        current = current->next;
+    }
+}
+
+void tl_memory_pool_destroy(TLMemoryPool* pool) {
+    if (pool == NULL) { TLWARN("tl_memory_pool_destroy: TLMemoryPool is null"); return; }
+
+    TLMemoryPage* current = pool->head;
+    while (current != NULL) {
+        TLMemoryPage* next = current->next;
+        tl_memory_hfree(TL_MEMORY_TYPE_MEMORY_PAGE, current, sizeof(TLMemoryPage));
+        current = next;
+    }
+
+    tl_memory_sfree(TL_MEMORY_TYPE_MEMORY_POOL, pool, sizeof(TLMemoryPool));
 }

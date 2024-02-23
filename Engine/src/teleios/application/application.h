@@ -8,6 +8,10 @@
 #   include <stdlib.h>
 #endif // defined(TL_PLATFORM_WINDOWS)
 
+#ifdef TELEIOS_GRAPHICS_OPENGL
+#   include "glad/types.h"
+#endif // TELEIOS_GRAPHICS_OPENGL
+
 #include "teleios/engine/lifecycle.h"
 
 static inline void tl_application_set(TLSpecification* spec);
@@ -30,6 +34,16 @@ int main(int argc, char** argv) {
         spec.window.height = 768;
 
         spec.graphics.vsync = false;
+#ifdef TELEIOS_GRAPHICS_OPENGL
+        spec.graphics.test.depth = false;
+        spec.graphics.test.stencil = false;
+        spec.graphics.test.scissor = false;
+        spec.graphics.clear_color[0] = .37f;
+        spec.graphics.clear_color[1] = .73f;
+        spec.graphics.clear_color[2] = .48f;
+        spec.graphics.clear_color[3] = 1;
+        spec.graphics.depth_function = GL_LESS;
+#endif // TELEIOS_GRAPHICS_OPENGL
 
         tl_application_set(&spec);
 

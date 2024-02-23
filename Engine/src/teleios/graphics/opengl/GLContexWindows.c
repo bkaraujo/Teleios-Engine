@@ -21,6 +21,8 @@ static inline b8 gl_create(PIXELFORMATDESCRIPTOR* pfd);
 
 static b8 tl_graphics_events(u16 code, const TLEvent* event) {
     glViewport(0, 0, event->payload.u32[0], event->payload.u32[1]);
+    GLCHECK();
+
     return false;
 }
 
@@ -48,13 +50,26 @@ b8 tl_graphics_initialize(const TLSpecification* spec) {
     TLINFO("GL_VENDOR: %s", glGetString(GL_VENDOR)); GLCHECK();
     TLINFO("GL_VERSION: %s", glGetString(GL_VERSION)); GLCHECK();
 
-    glEnable(GL_DEPTH_TEST); GLCHECK();
-    glEnable(GL_STENCIL_TEST); GLCHECK();
-    glClearColor(.37f, .73f, .48f, 1); GLCHECK();
+    if (spec->graphics.test.depth) {
+        glEnable(GL_BLEND); GLCHECK();
+        glDepthFunc(spec->graphics.depth_function);
+    }
+    else {
+        glDisable(GL_BLEND); GLCHECK();
+    } 
+    if (spec->graphics.test.stencil) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE); GLCHECK();
+    if (spec->graphics.test.scissor) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST); GLCHECK();
+
+    glClearColor(
+        spec->graphics.clear_color[0],
+        spec->graphics.clear_color[1],
+        spec->graphics.clear_color[2],
+        spec->graphics.clear_color[3]
+    ); GLCHECK();
 
     if (wglSwapIntervalEXT == NULL) {
         TLWARN("tl_graphics_initialize: Impossible to set v-sync");
-    }
+    } 
     else {
         if (!wglSwapIntervalEXT(spec->graphics.vsync == true)) {
             TLWARN("tl_graphics_initialize: Failed to disable v-sync");
@@ -71,7 +86,7 @@ b8 tl_graphics_initialize(const TLSpecification* spec) {
     return true;
 }
 
-static b8 gl_create(PIXELFORMATDESCRIPTOR* pfd) {
+static inline b8 gl_create(PIXELFORMATDESCRIPTOR* pfd) {
     HDC device = GetDC(e_window);
 
     i32 attribs[] = {
@@ -120,7 +135,7 @@ static b8 gl_create(PIXELFORMATDESCRIPTOR* pfd) {
     return true;
 }
 
-static b8 gl_init_extentions(PIXELFORMATDESCRIPTOR* pfd) {
+static inline b8 gl_init_extentions(PIXELFORMATDESCRIPTOR* pfd) {
     WNDCLASS window_class = {
         .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
         .lpfnWndProc = DefWindowProcA,
@@ -154,11 +169,13 @@ static b8 gl_init_extentions(PIXELFORMATDESCRIPTOR* pfd) {
 }
 
 void tl_graphics_clear(void) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); GLCHECK();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+    GLCHECK();
 }
 
-void tl_graphics_draw(u16 index) {
-    glDrawElements(GL_TRIANGLES, index, GL_UNSIGNED_INT, 0); GLCHECK();
+void tl_graphics_draw(u16 index, void* offset) {
+    glDrawElements(GL_TRIANGLES, index, GL_UNSIGNED_INT, offset); 
+    GLCHECK();
 }
 
 void tl_graphics_update(void) {

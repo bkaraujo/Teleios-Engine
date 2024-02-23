@@ -3,6 +3,6 @@
 
 #include "teleios/types.h"
 
-void tl_graphics_draw(u16 index);
+void tl_graphics_draw(u16 index, void* offset);
 
 #endif // TELEIOS_GRAPHICS_DRAW_H

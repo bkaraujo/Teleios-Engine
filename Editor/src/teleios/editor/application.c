@@ -2,6 +2,7 @@
 
 static inline void tl_application_set(TLSpecification* spec) {
     spec->window.title = "Teleios Editor";
+    spec->graphics.test.depth = true;
 }
 
 static inline b8 tl_application_initialize(void) {
