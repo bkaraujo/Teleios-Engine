@@ -18,15 +18,9 @@ project "Engine"
     }
 
     defines {
-        "_CRT_SECURE_NO_WARNINGS",
         "CGLM_STATIC",
         "TELEIOS_EXPORT",
         "TELEIOS_GRAPHICS_OPENGL"
-    }
-
-    undefines {
-        "UNICODE",
-        "_UNICODE",
     }
 
     includedirs {
@@ -43,6 +37,15 @@ project "Engine"
         
         postbuildcommands {
             "{COPY} %{wks.location}/build/bin/" .. outputdir .. "/%{prj.name}/Engine.dll %{wks.location}/build/bin/" .. outputdir .. "/Editor/"
+        }
+
+        defines {
+            "_CRT_SECURE_NO_WARNINGS",
+        }
+
+        undefines {
+            "UNICODE",
+            "_UNICODE",
         }
 
     filter "configurations:Debug"

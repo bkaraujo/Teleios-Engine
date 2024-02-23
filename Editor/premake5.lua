@@ -18,13 +18,8 @@ project "Editor"
     }
 
     defines {
-        "_CRT_SECURE_NO_WARNINGS",
-        "TELEIOS_EXPORT",
-    }
-
-    undefines {
-        "UNICODE",
-        "_UNICODE",
+        "TELEIOS_IMPORT",
+        "TELEIOS_GRAPHICS_OPENGL"
     }
 
     includedirs {
@@ -40,6 +35,15 @@ project "Editor"
 
     filter "system:windows"
         systemversion "latest"
+
+        undefines {
+            "UNICODE",
+            "_UNICODE",
+        }
+
+        defines {
+            "_CRT_SECURE_NO_WARNINGS",
+        }
 
         filter "configurations:Dist"
             linkoptions {
